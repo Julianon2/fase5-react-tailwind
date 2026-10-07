@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Paso a Paso S22 — Props y Componentes Reutilizables</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#0f1117; --surface:#1a1f2e; --surface2:#222840; --border:#2a3352;
+  --txt:#e2e8f0; --txt-dim:#8892a4;
+  --accent:#3b82f6; --accent-glow:rgba(59,130,246,.12);
+  --green:#22c55e; --green-bg:rgba(34,197,94,.10);
+  --red:#f87171; --red-bg:rgba(248,113,113,.10);
+  --yellow:#f59e0b; --yellow-bg:rgba(245,158,11,.10);
+  --purple:#a78bfa; --purple-bg:rgba(167,139,250,.10);
+  --teal:#2dd4bf; --teal-bg:rgba(45,212,191,.10);
+  --code-bg:#0d1117; --sidebar-w:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;display:flex;min-height:100vh;user-select:none;}
+
+.sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:0;left:0;bottom:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:24px 0 40px;display:flex;flex-direction:column;}
+.sidebar-brand{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-brand .curso{font-size:11px;color:var(--teal);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.sidebar-brand h1{font-size:14px;font-weight:700;color:var(--txt);margin-top:4px;line-height:1.3;}
+.sidebar-brand .ficha{font-size:11px;color:var(--txt-dim);margin-top:2px;}
+.progress-wrap{padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-dim);margin-bottom:8px;}
+.progress-label span:last-child{color:var(--teal);font-weight:700;}
+.progress-bar-bg{height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--teal);border-radius:10px;transition:width .4s ease;width:0%;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--txt-dim);font-size:13px;font-weight:500;text-decoration:none;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--accent-glow);color:var(--txt);}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);}
+.nav-item.active .nav-dot{background:var(--accent);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .15s;}
+.nav-item:hover .nav-dot{background:var(--txt-dim);}
+.nav-item.done{color:var(--teal);}
+.nav-item.done .nav-dot{background:var(--teal);}
+
+.main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px 80px;max-width:820px;}
+
+.page-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+.page-tag{font-size:11px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.page-title{font-size:28px;font-weight:700;color:var(--txt);line-height:1.2;text-wrap:balance;}
+.page-subtitle{font-size:14px;color:var(--txt-dim);margin-top:8px;}
+.page-warning{margin-top:20px;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--yellow);font-weight:500;}
+
+.intro-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px 36px;margin-bottom:52px;}
+.intro-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+.intro-title{font-size:20px;font-weight:800;color:var(--txt);line-height:1.25;margin-bottom:10px;}
+.intro-sub{font-size:14px;color:var(--txt-dim);margin-bottom:20px;line-height:1.6;}
+.intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.intro-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.intro-item-icon{font-size:22px;margin-bottom:8px;}
+.intro-item-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-dim);margin-bottom:4px;}
+.intro-item-desc{font-size:13px;color:var(--txt);font-weight:500;line-height:1.4;}
+
+.section{margin-bottom:56px;scroll-margin-top:32px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.step-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.3);border-radius:6px;padding:3px 10px;white-space:nowrap;letter-spacing:.04em;flex-shrink:0;}
+.step-badge.green{background:var(--green-bg);color:var(--green);border-color:rgba(34,197,94,.3);}
+.step-badge.yellow{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,158,11,.3);}
+.step-badge.extra{background:var(--purple-bg);color:var(--purple);border-color:rgba(167,139,250,.3);}
+.step-badge.teal{background:var(--teal-bg);color:var(--teal);border-color:rgba(45,212,191,.3);}
+.section-title{font-size:20px;font-weight:700;color:var(--txt);text-wrap:balance;}
+
+.step-list{display:flex;flex-direction:column;gap:20px;}
+.step-item{display:flex;gap:16px;}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-body p{color:var(--txt);font-size:14px;}
+.step-body strong{color:var(--txt);font-weight:600;}
+
+.code-wrap{margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.code-header{display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 14px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-dot.r{background:#ff5f57;} .code-dot.y{background:#febc2e;} .code-dot.g{background:#28c840;}
+.code-filename{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-dim);flex:1;}
+.code-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.code-tag.blue{background:rgba(59,130,246,.15);color:var(--accent);}
+.code-tag.green{background:var(--green-bg);color:var(--green);}
+.code-tag.yellow{background:var(--yellow-bg);color:var(--yellow);}
+.code-tag.purple{background:var(--purple-bg);color:var(--purple);}
+pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;color:#abb2bf;}
+pre .c{color:#5c6370;} pre .k{color:#c678dd;} pre .s{color:#98c379;}
+pre .f{color:#61afef;} pre .n{color:#e5c07b;} pre .y{color:#d19a66;}
+pre .edit{color:#fbbf24;background:rgba(245,158,11,.12);border-radius:3px;padding:0 2px;}
+
+.callout{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:8px;font-size:13px;margin:14px 0;line-height:1.5;}
+.callout.ok{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout.err{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);color:var(--red);}
+.callout.warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.2);color:var(--yellow);}
+.callout.info{background:var(--accent-glow);border:1px solid rgba(59,130,246,.2);color:#93c5fd;}
+.callout.teal{background:var(--teal-bg);border:1px solid rgba(45,212,191,.2);color:var(--teal);}
+.callout.tip{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.callout strong{color:inherit;font-weight:600;}
+
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--surface2);color:var(--txt-dim);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:top;}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);}
+tr:last-child td{border-bottom:none;}
+
+.checklist{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.checklist li{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--txt-dim);cursor:pointer;transition:all .15s;}
+.checklist li:hover{border-color:var(--teal);}
+.checklist li.marcado{background:var(--teal-bg);border-color:rgba(45,212,191,.35);color:var(--txt);}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--teal);}
+.checklist li.marcado .check-box{border-color:var(--teal);background:var(--teal-bg);}
+.checklist li strong{color:var(--txt);font-weight:600;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:1px 6px;border-radius:4px;color:#93c5fd;}
+
+.complete-btn{display:flex;align-items:center;gap:10px;margin-top:28px;padding:14px 20px;background:var(--teal-bg);border:1px solid rgba(45,212,191,.3);border-radius:10px;color:var(--teal);font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:all .2s;font-family:'Inter',sans-serif;}
+.complete-btn:hover{border-color:var(--teal);}
+.complete-btn.done{cursor:default;}
+.complete-btn .btn-icon{font-size:18px;}
+.complete-btn .btn-txt{flex:1;text-align:left;}
+.complete-btn .btn-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(45,212,191,.15);color:var(--teal);opacity:0;}
+.complete-btn.done .btn-badge{opacity:1;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+.aprendiz-select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--txt);font-size:12.5px;font-family:'Inter',sans-serif;cursor:pointer;}
+.aprendiz-select:focus{outline:none;border-color:var(--teal);}
+.aprendiz-select.falta{border-color:var(--yellow);}
+
+.submit-wrap{margin-top:28px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+.submit-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 20px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.submit-btn:hover{background:#2f6fe0;transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.submit-status{margin-top:10px;font-size:12.5px;text-align:center;color:var(--txt-dim);}
+.submit-status.ok{color:var(--green);}
+.submit-status.err{color:var(--red);}
+
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+<canvas class="confetti-wrap" id="confetti-canvas"></canvas>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="curso">SENA ADSO · S22</div>
+    <h1>Props y Componentes — Guía Paso a Paso</h1>
+    <div class="ficha">Ficha 3229944 · Oct 2026</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 4</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="aprendiz-wrap">
+    <label class="aprendiz-label" for="aprendiz-select">Aprendiz</label>
+    <select id="aprendiz-select" class="aprendiz-select">
+      <option value="">Selecciona tu nombre...</option>
+      <option>ANDRES STEVEN LOPEZ SCARPETTA</option>
+      <option>EDGAR STICK LOPEZ MURCIA</option>
+      <option>HEYDER IVAN VELASCO DELGADO</option>
+      <option>JESUS DAVID ORTIZ MUÑOZ</option>
+      <option>JHOJAN STEVEN SERRANO PATIÑO</option>
+      <option>JHON EDGARDO LUGO VILLANUEVA</option>
+      <option>JONIER STIVEN GUTIERREZ SALCEDO</option>
+      <option>JUAN PABLO PORRAS LOZANO</option>
+      <option>KEVIN MIGUEL ORTIZ TELLEZ</option>
+      <option>LAURA FERNANDA SOSA CEDIEL</option>
+      <option>LEIDY VIVIANA SANCHEZ ACOSTA</option>
+      <option>LUIS CARLOS CADENA VALENCIA</option>
+      <option>MARTIN SMITH LOPEZ MURCIA</option>
+      <option>MICHAEL FERMAN HERNANDEZ BERMUDEZ</option>
+      <option>NITSON ESTIVEN LOPEZ YUSTES</option>
+    </select>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Componente</div>
+    <a class="nav-item active" href="#paso1"><span class="nav-dot"></span>Paso 1 — Crear ProductCard.jsx</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Datos</div>
+    <a class="nav-item" href="#paso2"><span class="nav-dot"></span>Paso 2 — Array de productos</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Renderizado</div>
+    <a class="nav-item" href="#paso3"><span class="nav-dot"></span>Paso 3 — .map() y key</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Verificación</div>
+    <a class="nav-item" href="#paso4"><span class="nav-dot"></span>Paso 4 — Probar en el navegador</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#checklist"><span class="nav-dot"></span>Checklist final</a>
+  </div>
+</div>
+
+<main class="main">
+
+  <div class="page-header">
+    <div class="page-tag">Sesión 22 · Fase 5 React y Tailwind</div>
+    <h1 class="page-title">De 3 tarjetas copiadas a 1 componente con props</h1>
+    <p class="page-subtitle">SENA ADSO · Ficha 3229944 · Octubre 2026</p>
+    <div class="page-warning">⚠️ Sigue cada paso en orden. No avances al siguiente hasta que el anterior funcione y hayas marcado el check.</div>
+  </div>
+
+  <div class="intro-card">
+    <div class="intro-tag">¿Qué construimos hoy?</div>
+    <div class="intro-title">ProductCard.jsx + array de productos + .map()</div>
+    <p class="intro-sub">Las 3 tarjetas de producto que vienen repetidas desde S20 se convierten en un solo componente <code>ProductCard</code>, que recibe <code>nombre</code> y <code>precio</code> como props. Los 3 productos pasan a vivir en un array de datos, y el grid se genera automáticamente recorriendo ese array con <code>.map()</code>.</p>
+    <div class="intro-grid">
+      <div class="intro-item"><div class="intro-item-icon">📦</div><div class="intro-item-label">Paso 1</div><div class="intro-item-desc">Crear ProductCard.jsx — componente que recibe props</div></div>
+      <div class="intro-item"><div class="intro-item-icon">🗂️</div><div class="intro-item-label">Paso 2</div><div class="intro-item-desc">Array de productos en App.jsx, con los 3 datos de siempre</div></div>
+      <div class="intro-item"><div class="intro-item-icon">🔁</div><div class="intro-item-label">Paso 3</div><div class="intro-item-desc">productos.map() genera una &lt;ProductCard /&gt; por cada producto</div></div>
+    </div>
+  </div>
+
+  <!-- ════ PASO 1 ════ -->
+  <section class="section" id="paso1" data-step="paso1">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 1 · Componente</span>
+      <h2 class="section-title">Crear src/ProductCard.jsx</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Mismo primer paso que con <code>Navbar.jsx</code> en S21: crear el archivo, mover el JSX de una tarjeta, y envolverlo en una función — pero esta vez, con props en vez de texto fijo.</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body">
+        <p>En <code>src/</code>, crear el archivo <code>ProductCard.jsx</code> (al lado de <code>App.jsx</code> y <code>Navbar.jsx</code>).</p>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">2</div><div class="step-body">
+        <p>En <code>App.jsx</code>, cortar (Ctrl+X) el bloque completo de <strong>una</strong> de las 3 tarjetas (cualquiera, por ejemplo la del Mouse) y pegarlo (Ctrl+V) dentro de <code>ProductCard.jsx</code>. Las otras 2 tarjetas se borran en el Paso 3 — por ahora déjalas donde están.</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">Bloque que se mueve de App.jsx a ProductCard.jsx</span><span class="code-tag blue">cortar y pegar</span></div><pre>&lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-2 p-4 rounded-xl shadow-md bg-white"</span>&gt;
+  &lt;<span class="f">img</span> <span class="n">src</span>=<span class="s">"https://placehold.co/300x200"</span> <span class="n">className</span>=<span class="s">"rounded-lg"</span> /&gt;
+  &lt;<span class="f">h3</span> <span class="n">className</span>=<span class="s">"font-bold text-lg"</span>&gt;Mouse Inalámbrico&lt;/<span class="f">h3</span>&gt;
+  &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-texto-dim text-sm"</span>&gt;Mouse ergonómico, conexión Bluetooth&lt;/<span class="f">p</span>&gt;
+  &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-verde font-extrabold"</span>&gt;$89.900&lt;/<span class="f">p</span>&gt;
+&lt;/<span class="f">div</span>&gt;</pre></div>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">3</div><div class="step-body">
+        <p>Ese bloque que acabas de pegar tiene los datos del Mouse escritos a mano (<code>Mouse Inalámbrico</code>, <code>$89.900</code>, etc.) — pero <code>ProductCard</code> no debe quedar fijo a un solo producto, porque el Paso 3 lo va a reutilizar para los 3 productos del catálogo (y más adelante, para cualquier cantidad que venga del backend).</p>
+        <p style="color:var(--txt-dim);font-size:14px;margin:10px 0;">Por eso, en vez de dejar el texto fijo, <strong>la estructura cambia</strong>: cada dato (nombre, descripción, precio, imagen) se reemplaza por una prop genérica — un "espacio en blanco" que se llena distinto cada vez que el componente se use. Reescribe <code>ProductCard.jsx</code> para que quede exactamente así, envuelto en una función que recibe <code>props</code>:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductCard.jsx</span><span class="code-tag green">estructura final (sin export todavía)</span></div><pre><span class="k">function</span> <span class="f">ProductCard</span>(props) {
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-2 p-4 rounded-xl shadow-md bg-white"</span>&gt;
+      &lt;<span class="f">img</span> <span class="n">src</span>=<span class="s">{props.imagen}</span> <span class="n">className</span>=<span class="s">"rounded-lg"</span> /&gt;
+      &lt;<span class="f">h3</span> <span class="n">className</span>=<span class="s">"font-bold text-lg"</span>&gt;<span class="edit">{props.nombre}</span>&lt;/<span class="f">h3</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-texto-dim text-sm"</span>&gt;<span class="edit">{props.descripcion}</span>&lt;/<span class="f">p</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-verde font-extrabold"</span>&gt;<span class="edit">{props.precio}</span>&lt;/<span class="f">p</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  )
+}</pre></div>
+
+        <p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Lo que cambió respecto al bloque que pegaste:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Antes (texto fijo del Mouse)</th><th>Ahora (prop genérica)</th></tr>
+            <tbody>
+              <tr><td>src="https://placehold.co/300x200"</td><td>src={props.imagen}</td></tr>
+              <tr><td>Mouse Inalámbrico</td><td>{props.nombre}</td></tr>
+              <tr><td>Mouse ergonómico, conexión Bluetooth</td><td>{props.descripcion}</td></tr>
+              <tr><td>$89.900</td><td>{props.precio}</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parte</th><th>Qué significa</th></tr></thead>
+            <tbody>
+              <tr><td>function ProductCard(props)</td><td>El parámetro props llega automáticamente con todo lo que se le pase al usar &lt;ProductCard /&gt;</td></tr>
+              <tr><td>props.imagen</td><td>Prop nueva, además de nombre/descripcion/precio — reemplaza la URL fija <code>"https://placehold.co/300x200"</code>, así cada producto puede tener su propia imagen (hoy las 3 comparten la misma URL de prueba, pero la prop ya queda lista para cuando cada producto real tenga su propia foto)</td></tr>
+              <tr><td>src={props.imagen}</td><td>En un atributo normal de HTML, las llaves reemplazan las comillas — el valor viene de JavaScript, no es texto fijo</td></tr>
+              <tr><td>{props.nombre}</td><td>Dentro del contenido de una etiqueta, las llaves insertan el valor de la prop</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout info"><span class="callout-icon">💡</span><span>En el Paso 3 vas a ver de dónde sale cada prop: <code>props.nombre</code>, <code>props.imagen</code>, etc. van a recibir los datos del Mouse, del Teclado o del Monitor según cuál producto se esté dibujando en ese momento — el mismo componente, con datos distintos cada vez.</span></div>
+        <div class="callout warn"><span class="callout-icon">⚠️</span><span>Formatea el archivo con <code>Shift + Alt + F</code> si la indentación queda desordenada al pegar. Para formatear solo una parte seleccionada, usa <code>Ctrl + K</code> seguido de <code>Ctrl + F</code>.</span></div>
+        <div class="callout ok"><span class="callout-icon">✅</span><span><strong>Cómo verificar:</strong> el archivo <code>ProductCard.jsx</code> existe, con la función <code>ProductCard(props)</code> y 4 props usadas (<code>imagen</code>, <code>nombre</code>, <code>descripcion</code>, <code>precio</code>) — todavía sin <code>export default</code>, eso es el siguiente paso.</span></div>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">4</div><div class="step-body">
+        <p>Al final de <code>ProductCard.jsx</code>, exportar el componente — mismo mecanismo que <code>Navbar.jsx</code>:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductCard.jsx</span><span class="code-tag green">agregar al final</span></div><pre><span class="edit"><span class="k">export default</span> ProductCard</span></pre></div>
+        <div class="callout ok"><span class="callout-icon">✅</span><span><strong>Cómo verificar:</strong> sin líneas rojas en VS Code dentro de <code>ProductCard.jsx</code>.</span></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ════ PASO 2 ════ -->
+  <section class="section" id="paso2" data-step="paso2">
+    <div class="section-header">
+      <span class="step-badge">Paso 2 · Datos</span>
+      <h2 class="section-title">Crear el array de productos en App.jsx</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Los 3 productos (Mouse, Teclado, Monitor) se convierten en un array de objetos — la misma estructura que usará la API real en S24.</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body">
+        <p>Al principio de <code>App.jsx</code>, importar <code>ProductCard</code> junto a los imports que ya existen, y declarar el array de productos antes de <code>function App()</code>:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">agregar al inicio</span></div><pre><span class="k">import</span> Navbar <span class="k">from</span> <span class="s">'./Navbar.jsx'</span>
+<span class="edit"><span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">'./ProductCard.jsx'</span></span>
+
+<span class="edit"><span class="k">const</span> productos = [
+  {
+    nombre: <span class="s">"Mouse Inalámbrico"</span>,
+    descripcion: <span class="s">"Mouse ergonómico, conexión Bluetooth"</span>,
+    precio: <span class="s">"$89.900"</span>,
+    imagen: <span class="s">"https://placehold.co/300x200"</span>
+  },
+  {
+    nombre: <span class="s">"Teclado Mecánico"</span>,
+    descripcion: <span class="s">"Switches azules, retroiluminado RGB"</span>,
+    precio: <span class="s">"$149.900"</span>,
+    imagen: <span class="s">"https://placehold.co/300x200"</span>
+  },
+  {
+    nombre: <span class="s">"Monitor 24\""</span>,
+    descripcion: <span class="s">"Full HD, 75Hz, panel IPS"</span>,
+    precio: <span class="s">"$899.900"</span>,
+    imagen: <span class="s">"https://placehold.co/300x200"</span>
+  }
+]</span>
+
+<span class="k">function</span> <span class="f">App</span>() {
+  ...</pre></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parte</th><th>Qué significa</th></tr></thead>
+            <tbody>
+              <tr><td>const productos = [ ]</td><td>Array (lista) que contiene 3 elementos — cada elemento es un objeto entre llaves</td></tr>
+              <tr><td>{ nombre: "...", ... }</td><td>Un objeto con 4 propiedades — la estructura exacta que luego recibirá ProductCard como props</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout ok"><span class="callout-icon">✅</span><span><strong>Cómo verificar:</strong> sin errores rojos en <code>App.jsx</code> — el array está declarado pero todavía no se usa en ningún lado, eso es el Paso 3.</span></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ════ PASO 3 ════ -->
+  <section class="section" id="paso3" data-step="paso3">
+    <div class="section-header">
+      <span class="step-badge extra">Paso 3 · Renderizado</span>
+      <h2 class="section-title">Reemplazar las 3 tarjetas por productos.map()</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Ahora se borran las 3 tarjetas escritas a mano (o las 2 que quedaron, si ya moviste una al Paso 1) y se reemplazan por una sola línea que las genera automáticamente.</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body">
+        <p>Dentro del <code>&lt;section className="grid ...">&gt;</code>, borrar las 3 tarjetas (o las que te queden) y escribir en su lugar:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">reemplazar el contenido del section</span></div><pre>&lt;<span class="f">section</span> <span class="n">className</span>=<span class="s">"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"</span>&gt;
+  <span class="edit">{productos.<span class="n">map</span>((p) =&gt; (
+    &lt;<span class="f">ProductCard</span>
+      <span class="n">key</span>=<span class="s">{p.nombre}</span>
+      <span class="n">nombre</span>=<span class="s">{p.nombre}</span>
+      <span class="n">descripcion</span>=<span class="s">{p.descripcion}</span>
+      <span class="n">precio</span>=<span class="s">{p.precio}</span>
+      <span class="n">imagen</span>=<span class="s">{p.imagen}</span>
+    /&gt;
+  ))}</span>
+&lt;/<span class="f">section</span>&gt;</pre></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parte</th><th>Qué significa</th></tr></thead>
+            <tbody>
+              <tr><td>{productos.map((p) =&gt; ( ... ))}</td><td>Recorre el array; por cada objeto "p", genera el JSX que está entre paréntesis</td></tr>
+              <tr><td>key={p.nombre}</td><td>Identificador único exigido por React — aquí se usa el nombre porque no se repite entre productos</td></tr>
+              <tr><td>nombre={p.nombre}</td><td>Pasa el valor real de ese producto como prop — no es el mismo "nombre" de ambos lados por coincidencia, es intencional: la prop se llama igual que la propiedad del objeto</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout info"><span class="callout-icon">💡</span><span>El nombre de la prop (izquierda del <code>=</code>) y el nombre de la propiedad del objeto (<code>p.algo</code>, derecha del <code>=</code>) no tienen que llamarse igual — aquí coinciden a propósito, para que sea más fácil de leer.</span></div>
+        <div class="callout ok"><span class="callout-icon">✅</span><span><strong>Cómo verificar:</strong> en <code>localhost:5173</code>, el catálogo se ve exactamente igual que antes — 3 tarjetas con las mismas imágenes, nombres y precios. El cambio es invisible a simple vista, pero ahora viene de datos, no de JSX repetido.</span></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ════ PASO 4 ════ -->
+  <section class="section" id="paso4" data-step="paso4">
+    <div class="section-header">
+      <span class="step-badge teal">Paso 4 · Verificación</span>
+      <h2 class="section-title">Confirmar que todo sigue funcionando</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">El objetivo de hoy no es cambiar el diseño — es que el mismo catálogo se genere a partir de datos.</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body">
+        <p>Abrir <code>localhost:5173</code>: el catálogo debe verse igual que en S20-S21 — 3 tarjetas, mismos textos y precios.</p>
+      </div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-body">
+        <p>Abrir la consola del navegador (F12 → <strong>Console</strong>). No debe aparecer la advertencia amarilla de <code>key</code>, ni errores rojos.</p>
+        <div class="callout warn"><span class="callout-icon">⚠️</span><span>Si ves <code>Warning: Each child in a list should have a unique "key" prop</code>, revisa que el <code>key={p.nombre}</code> esté escrito dentro de <code>&lt;ProductCard&gt;</code>, no dentro de <code>.map()</code> por fuera del componente.</span></div>
+      </div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-body">
+        <p><strong>Prueba real de que .map() funciona:</strong> agregar temporalmente un cuarto objeto al array <code>productos</code> (copiando la estructura de uno existente, con datos inventados) y guardar — debe aparecer una 4ta tarjeta sola, sin tocar el <code>&lt;section&gt;</code> para nada. Después puedes borrar ese objeto de prueba si no lo quieres dejar.</p>
+        <div class="callout ok"><span class="callout-icon">✅</span><span><strong>Cómo verificar:</strong> la 4ta tarjeta aparece automáticamente en el grid — esa es la prueba de que agregar un producto ya no requiere escribir JSX nuevo, solo agregar un dato.</span></div>
+      </div></div>
+    </div>
+
+    <div class="callout teal" style="margin-top:24px;">
+      <span class="callout-icon">🚀</span>
+      <span><strong>Próxima sesión — S23:</strong> useState — hacer que un componente "recuerde" algo entre clics, aplicado a un contador simple y al buscador de productos.</span>
+    </div>
+  </section>
+
+  <!-- ════ CHECKLIST ════ -->
+  <section class="section" id="checklist" data-step="checklist">
+    <div class="section-header">
+      <span class="step-badge green">Cierre</span>
+      <h2 class="section-title">Checklist final de la sesión</h2>
+    </div>
+    <ul class="checklist" id="checklist-ul">
+      <li data-check="chk1"><span class="check-box"></span><span><strong>src/ProductCard.jsx</strong> creado, recibe props (nombre, descripcion, precio, imagen) y las usa con { }</span></li>
+      <li data-check="chk2"><span class="check-box"></span><span>ProductCard.jsx exportado con export default, App.jsx lo importa</span></li>
+      <li data-check="chk3"><span class="check-box"></span><span>App.jsx tiene un array productos con los 3 objetos (nombre, descripcion, precio, imagen)</span></li>
+      <li data-check="chk4"><span class="check-box"></span><span>El grid se genera con productos.map(), cada &lt;ProductCard /&gt; con key único</span></li>
+      <li data-check="chk5"><span class="check-box"></span><span>Catálogo igual que antes visualmente — sin advertencia de key ni errores en consola</span></li>
+    </ul>
+  </section>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="btn-enviar">
+      <span>📤</span><span>Enviar todo mi progreso</span>
+    </button>
+    <div class="submit-status" id="submit-status"></div>
+  </div>
+
+</main>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['c','x','a','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+
+const STEPS = ['paso1','paso2','paso3','paso4','checklist'];
+const KEY   = 's22-progress';
+
+function getState() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} }
+
+function updateProgress() {
+  const state = getState();
+  const done  = STEPS.filter(s => state[s]).length;
+  const pct   = Math.round((done / STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-txt').textContent  = done + ' / ' + STEPS.length;
+}
+
+function renderButtons() {
+  const state = getState();
+  STEPS.forEach(id => {
+    const section = document.querySelector(`[data-step="${id}"]`);
+    if (!section || section.querySelector('.complete-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'complete-btn' + (state[id] ? ' done' : '');
+    btn.dataset.step = id;
+    btn.innerHTML = `<span class="btn-icon">${state[id] ? '✅' : '🎯'}</span>
+      <span class="btn-txt">${state[id] ? '¡Paso completado!' : 'Marcar como completado'}</span>
+      <span class="btn-badge">LISTO</span>`;
+    if (!state[id]) btn.addEventListener('click', () => completeStep(id, btn));
+    section.appendChild(btn);
+    const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+    if (nav && state[id]) nav.classList.add('done');
+  });
+}
+
+function completeStep(id, btn) {
+  const state = getState(); state[id] = true; saveState(state);
+  btn.classList.add('done');
+  btn.querySelector('.btn-icon').textContent = '✅';
+  btn.querySelector('.btn-txt').textContent  = '¡Paso completado!';
+  const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+  if (nav) nav.classList.add('done');
+  updateProgress();
+  launchConfetti(STEPS.filter(s => state[s]).length === STEPS.length);
+}
+
+function launchConfetti(big) {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#3b82f6','#2dd4bf','#22c55e','#f59e0b','#a78bfa','#f87171'];
+  const count  = big ? 180 : 60;
+  const parts  = Array.from({length: count}, () => ({
+    x: canvas.width * (big ? Math.random() : .5 + (Math.random()-.5)*.4),
+    y: big ? -10 : canvas.height * .4,
+    r: Math.random() * 7 + 3, color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: 0, tiltAngle: 0, tiltSpeed: Math.random()*.1+.05,
+    vx: Math.random()*4-2, vy: Math.random()*3+2
+  }));
+  let frame = 0; const total = big ? 160 : 80;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p => {
+      ctx.beginPath(); ctx.fillStyle = p.color;
+      ctx.ellipse(p.x, p.y, p.r, p.r*.4, p.tilt, 0, Math.PI*2); ctx.fill();
+      p.x += p.vx; p.y += p.vy; p.tiltAngle += p.tiltSpeed; p.tilt = Math.sin(p.tiltAngle)*12; p.vy += .08;
+    });
+    if (++frame < total) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+function getChecklistState() { try { return JSON.parse(localStorage.getItem('s22-checklist') || '{}'); } catch { return {}; } }
+function saveChecklistState(s) { try { localStorage.setItem('s22-checklist', JSON.stringify(s)); } catch {} }
+
+function renderChecklist() {
+  const state = getChecklistState();
+  document.querySelectorAll('#checklist-ul li').forEach(li => {
+    const id = li.dataset.check;
+    if (state[id]) { li.classList.add('marcado'); li.querySelector('.check-box').textContent = '✓'; }
+    li.addEventListener('click', () => {
+      const s = getChecklistState();
+      s[id] = !s[id];
+      saveChecklistState(s);
+      li.classList.toggle('marcado', s[id]);
+      li.querySelector('.check-box').textContent = s[id] ? '✓' : '';
+      const allChecked = Array.from(document.querySelectorAll('#checklist-ul li')).every(el => s[el.dataset.check]);
+      if (allChecked) launchConfetti(false);
+    });
+  });
+}
+
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.25 });
+sections.forEach(s => obs.observe(s));
+
+renderButtons();
+updateProgress();
+renderChecklist();
+
+/* ═══ Selector de aprendiz + envío a Google Sheets (Apps Script) ═══ */
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbyhq0L17BN2xp5FnAHuRXugHBYE4P9-4DvdWU4mR-1FnVBGUoBCGIkZw5O2ZEVu7T8P/exec';
+const ARCHIVO_ACTUAL  = '02_GUIA_PROPS_COMPONENTES';
+const APRENDIZ_KEY    = 'sena-aprendiz-nombre';
+
+const selectAprendiz = document.getElementById('aprendiz-select');
+const nombreGuardado = localStorage.getItem(APRENDIZ_KEY);
+if (nombreGuardado) selectAprendiz.value = nombreGuardado;
+selectAprendiz.addEventListener('change', () => {
+  localStorage.setItem(APRENDIZ_KEY, selectAprendiz.value);
+  selectAprendiz.classList.remove('falta');
+});
+
+const btnEnviar = document.getElementById('btn-enviar');
+const statusEl  = document.getElementById('submit-status');
+
+btnEnviar.addEventListener('click', async () => {
+  const aprendiz = selectAprendiz.value;
+  if (!aprendiz) {
+    selectAprendiz.classList.add('falta');
+    statusEl.textContent = 'Selecciona tu nombre arriba antes de enviar.';
+    statusEl.className = 'submit-status err';
+    selectAprendiz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const state = getState();
+  const pasosCompletados = STEPS.filter(s => state[s]);
+
+  btnEnviar.disabled = true;
+  statusEl.textContent = 'Enviando...';
+  statusEl.className = 'submit-status';
+
+  try {
+    await fetch(URL_APPS_SCRIPT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        aprendiz: aprendiz,
+        archivo: ARCHIVO_ACTUAL,
+        completados: pasosCompletados.length,
+        total: STEPS.length,
+        pasos: pasosCompletados
+      })
+    });
+    statusEl.textContent = '✅ Progreso enviado — ' + pasosCompletados.length + '/' + STEPS.length + ' pasos.';
+    statusEl.className = 'submit-status ok';
+  } catch (err) {
+    statusEl.textContent = '❌ No se pudo enviar. Revisa tu conexión e intenta de nuevo.';
+    statusEl.className = 'submit-status err';
+  } finally {
+    btnEnviar.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

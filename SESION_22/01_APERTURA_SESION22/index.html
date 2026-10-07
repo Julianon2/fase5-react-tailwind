@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 22: Props y Componentes Reutilizables | SENA ADSO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sena-verde: #39a900;
+  --sena-verde-dark: #2d8400;
+  --sena-verde-glow: rgba(57,169,0,0.10);
+  --sena-verde-border: rgba(57,169,0,0.30);
+  --sena-naranja: #ff6b00;
+  --sena-naranja-glow: rgba(255,107,0,0.10);
+  --sena-naranja-border: rgba(255,107,0,0.30);
+  --texto: #1a1a2e;
+  --texto-dim: rgba(26,26,46,0.62);
+  --texto-dimmer: rgba(26,26,46,0.38);
+  --bg: #f8fafc;
+  --bg-alt: #f4f7f2;
+  --borde: #e2e8f0;
+  --acento-azul: #3b82f6;
+  --acento-azul-glow: rgba(59,130,246,0.10);
+  --acento-purpura: #8b5cf6;
+  --acento-purpura-glow: rgba(139,92,246,0.10);
+  --alerta-amarillo: #f59e0b;
+  --alerta-amarillo-glow: rgba(245,158,11,0.10);
+  --alerta-rojo: #ef4444;
+  --alerta-rojo-glow: rgba(239,68,68,0.10);
+  --acento-teal: #0ea5e9;
+  --acento-teal-glow: rgba(14,165,233,0.10);
+  --acento-teal-border: rgba(14,165,233,0.30);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter',sans-serif; color:var(--texto); background:var(--bg); line-height:1.6; overflow-x:hidden; }
+
+.topbar { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.95); backdrop-filter:blur(16px); border-bottom:2px solid var(--sena-verde); padding:12px 32px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 12px var(--sena-verde-glow); }
+.topbar-left { display:flex; align-items:center; gap:16px; }
+.sena-logo { background:var(--sena-verde); color:#fff; font-weight:900; font-size:18px; padding:8px 16px; border-radius:8px; letter-spacing:1px; }
+.topbar-brand { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--sena-verde-dark); }
+.topbar-sub { font-size:12px; color:var(--texto-dimmer); margin-top:2px; display:none; }
+@media(min-width:600px){ .topbar-sub{display:block;} }
+.topbar-nav { display:none; gap:4px; flex-wrap:wrap; }
+@media(min-width:900px){ .topbar-nav{display:flex;} }
+.topbar-nav a { color:var(--texto-dim); text-decoration:none; font-size:11px; font-weight:600; padding:6px 14px; border-radius:20px; border:1px solid transparent; transition:all .25s; white-space:nowrap; }
+.topbar-nav a:hover { color:var(--sena-verde-dark); border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+
+.slide { min-height:100vh; padding:80px 48px; position:relative; scroll-margin-top:64px; border-bottom:1px solid var(--borde); }
+.slide.bg-alt { background:var(--bg-alt); }
+.slide.bg-verde { background:linear-gradient(135deg, var(--sena-verde-glow) 0%, #ffffff 60%); }
+.slide.bg-azul  { background:linear-gradient(135deg, var(--acento-azul-glow) 0%, #ffffff 60%); }
+.slide.bg-teal  { background:linear-gradient(135deg, var(--acento-teal-glow) 0%, #ffffff 60%); }
+.slide-inner { max-width:1200px; margin:0 auto; }
+.slide-num-badge { position:absolute; top:24px; right:24px; background:var(--sena-verde-glow); color:var(--sena-verde); font-size:11px; font-weight:700; padding:6px 12px; border-radius:20px; letter-spacing:1px; border:1px solid var(--sena-verde-border); }
+
+.bg-dots { position:absolute; inset:0; background-image:radial-gradient(var(--sena-verde-border) 1px, transparent 1px); background-size:28px 28px; pointer-events:none; opacity:0.35; }
+.bg-glow { position:absolute; width:600px; height:600px; border-radius:50%; filter:blur(120px); opacity:0.22; pointer-events:none; z-index:0; }
+.bg-glow.g1 { background:radial-gradient(circle, var(--sena-verde-glow), transparent 70%); top:-200px; left:-200px; }
+.bg-glow.g2 { background:radial-gradient(circle, var(--sena-naranja-glow), transparent 70%); bottom:-200px; right:-200px; }
+
+.portada-tag { display:inline-flex; align-items:center; gap:8px; background:var(--sena-verde-glow); border:1px solid var(--sena-verde-border); padding:10px 20px; border-radius:30px; font-size:12px; font-weight:700; color:var(--sena-verde-dark); letter-spacing:1.5px; margin-bottom:32px; position:relative; z-index:1; }
+.portada-tag .dot { width:6px; height:6px; background:var(--sena-verde); border-radius:50%; animation:blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.portada-titulo { font-family:'Syne',sans-serif; font-size:clamp(40px,7vw,68px); font-weight:800; line-height:1.1; margin-bottom:20px; color:var(--texto); position:relative; z-index:1; }
+.portada-titulo .linea2 { display:block; background:linear-gradient(135deg, var(--acento-teal), var(--acento-azul)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-titulo .linea3 { display:block; background:linear-gradient(135deg, var(--sena-naranja), var(--acento-purpura)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-desc { font-size:clamp(15px,2vw,18px); color:var(--texto-dim); max-width:680px; margin-bottom:40px; position:relative; z-index:1; line-height:1.7; }
+.portada-meta { display:flex; gap:16px; flex-wrap:wrap; position:relative; z-index:1; }
+.portada-meta-item { background:rgba(255,255,255,0.9); border:1px solid var(--borde); padding:10px 20px; border-radius:12px; font-size:14px; font-weight:600; color:var(--texto-dim); }
+
+.sec-header { margin-bottom:40px; position:relative; z-index:1; }
+.sec-tag { display:inline-block; font-size:11px; font-weight:700; padding:6px 14px; border-radius:20px; letter-spacing:1.2px; margin-bottom:14px; text-transform:uppercase; border:1px solid transparent; }
+.sec-tag.verde   { background:var(--sena-verde-glow); color:var(--sena-verde); border-color:var(--sena-verde-border); }
+.sec-tag.naranja { background:var(--sena-naranja-glow); color:var(--sena-naranja); border-color:var(--sena-naranja-border); }
+.sec-tag.azul    { background:var(--acento-azul-glow); color:var(--acento-azul); border-color:rgba(59,130,246,0.30); }
+.sec-tag.purpura { background:var(--acento-purpura-glow); color:var(--acento-purpura); border-color:rgba(139,92,246,0.30); }
+.sec-tag.amarillo{ background:var(--alerta-amarillo-glow); color:var(--alerta-amarillo); border-color:rgba(245,158,11,0.30); }
+.sec-tag.teal    { background:var(--acento-teal-glow); color:var(--acento-teal); border-color:var(--acento-teal-border); }
+.sec-titulo { font-family:'Syne',sans-serif; font-size:clamp(28px,4vw,42px); font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.sec-desc { font-size:clamp(15px,1.8vw,17px); color:var(--texto-dim); max-width:800px; line-height:1.7; }
+
+.info-box { border-radius:12px; padding:20px 24px; margin:20px 0; border-left:4px solid; position:relative; z-index:1; }
+.info-box.tip     { background:var(--sena-verde-glow); border-color:var(--sena-verde); }
+.info-box.warning { background:var(--alerta-amarillo-glow); border-color:var(--alerta-amarillo); }
+.info-box.danger  { background:var(--alerta-rojo-glow); border-color:var(--alerta-rojo); }
+.info-box.info    { background:var(--acento-azul-glow); border-color:var(--acento-azul); }
+.info-box.teal    { background:var(--acento-teal-glow); border-color:var(--acento-teal); }
+.info-box.purpura { background:var(--acento-purpura-glow); border-color:var(--acento-purpura); }
+.info-box-title   { font-weight:700; font-size:14px; margin-bottom:8px; }
+.info-box.tip     .info-box-title { color:var(--sena-verde-dark); }
+.info-box.warning .info-box-title { color:#92400e; }
+.info-box.danger  .info-box-title { color:#991b1b; }
+.info-box.info    .info-box-title { color:#1e40af; }
+.info-box.teal    .info-box-title { color:#0369a1; }
+.info-box.purpura .info-box-title { color:#5b21b6; }
+.info-box-content { font-size:14px; color:var(--texto-dim); line-height:1.7; }
+
+.concepto-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:20px; position:relative; z-index:1; margin-bottom:28px; }
+.concepto-card { background:#fff; border:2px solid var(--borde); border-radius:16px; padding:24px; }
+.concepto-icon  { font-size:36px; margin-bottom:12px; }
+.concepto-titulo{ font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--texto); margin-bottom:6px; }
+.concepto-desc  { font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.concepto-card.verde   { border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.concepto-card.azul    { border-color:rgba(59,130,246,0.25); background:var(--acento-azul-glow); }
+.concepto-card.teal    { border-color:var(--acento-teal-border); background:var(--acento-teal-glow); }
+.concepto-card.purpura { border-color:rgba(139,92,246,0.25); background:var(--acento-purpura-glow); }
+.concepto-card.naranja { border-color:var(--sena-naranja-border); background:var(--sena-naranja-glow); }
+.concepto-card.amarillo{ border-color:rgba(245,158,11,0.30); background:var(--alerta-amarillo-glow); }
+
+.tabla-wrap { overflow-x:auto; position:relative; z-index:1; margin:20px 0; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th { background:var(--sena-verde); color:#fff; padding:12px 16px; text-align:left; font-weight:700; }
+th:first-child { border-radius:8px 0 0 0; } th:last-child { border-radius:0 8px 0 0; }
+td { padding:12px 16px; border-bottom:1px solid var(--borde); vertical-align:top; }
+tr:nth-child(even) td { background:var(--bg-alt); }
+tr:hover td { background:var(--sena-verde-glow); }
+
+.entregable-box { background:linear-gradient(135deg, var(--sena-verde-glow), var(--acento-teal-glow)); border:2px solid var(--sena-verde-border); border-radius:16px; padding:28px 32px; position:relative; z-index:1; margin-top:32px; }
+.entregable-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--sena-verde-dark); margin-bottom:16px; }
+.entregable-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.entregable-list li { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:var(--texto); }
+.entregable-list li::before { content:'✅'; flex-shrink:0; }
+
+.roadmap-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){ .roadmap-grid{ grid-template-columns:1fr; } }
+.roadmap-card { background:#fff; border:2px solid var(--borde); border-radius:18px; padding:28px 24px 24px; position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s; }
+.roadmap-card:hover { transform:translateY(-4px); box-shadow:0 16px 32px rgba(14,165,233,.14); border-color:var(--acento-teal-border); }
+.roadmap-num { position:absolute; top:-6px; right:4px; font-family:'Syne',sans-serif; font-size:72px; font-weight:800; color:var(--acento-teal); opacity:.10; line-height:1; pointer-events:none; }
+.roadmap-icon { font-size:34px; margin-bottom:14px; }
+.roadmap-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--acento-teal); background:var(--acento-teal-glow); border:1px solid var(--acento-teal-border); padding:4px 10px; border-radius:20px; margin-bottom:12px; }
+.roadmap-titulo { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--texto); margin-bottom:10px; line-height:1.25; }
+.roadmap-desc { font-size:13px; color:var(--texto-dim); line-height:1.65; }
+
+/* ── RAP cards — competencia y resultados de aprendizaje ── */
+.rap-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){ .rap-grid{ grid-template-columns:1fr; } }
+.rap-card { background:#fff; border-radius:18px; padding:0; overflow:hidden; border:2px solid var(--borde); position:relative; transition:transform .2s, box-shadow .2s; }
+.rap-card:hover { transform:translateY(-4px); box-shadow:0 18px 36px rgba(0,0,0,.09); }
+.rap-card-bar { height:6px; width:100%; }
+.rap-card.done .rap-card-bar { background:linear-gradient(90deg, var(--sena-verde), #6bd44e); }
+.rap-card.active .rap-card-bar { background:linear-gradient(90deg, var(--acento-teal), var(--acento-azul)); }
+.rap-card.pending .rap-card-bar { background:linear-gradient(90deg, var(--acento-teal), #7dd3fc); opacity:.6; }
+.rap-card.active { border-color:var(--acento-teal); box-shadow:0 0 0 4px var(--acento-teal-glow), 0 18px 36px rgba(14,165,233,.14); }
+.rap-card-body { padding:28px 26px 26px; }
+.rap-card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+.rap-card-icon { font-size:42px; line-height:1; }
+.rap-card-status { font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:5px 12px; border-radius:20px; white-space:nowrap; }
+.rap-card.done .rap-card-status { background:var(--sena-verde-glow); color:var(--sena-verde-dark); }
+.rap-card.active .rap-card-status { background:var(--acento-teal-glow); color:#0369a1; }
+.rap-card.pending .rap-card-status { background:var(--acento-teal-glow); color:#0369a1; opacity:.8; }
+.rap-card-id { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--texto-dimmer); margin-bottom:6px; text-transform:uppercase; }
+.rap-card-titulo { font-family:'Syne',sans-serif; font-size:21px; font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.rap-card-desc { font-size:13.5px; color:var(--texto-dim); line-height:1.6; }
+.rap-card.active .rap-card-icon { animation: rapPulse 1.8s ease-in-out infinite; }
+@keyframes rapPulse { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
+
+.footer-nav { position:fixed; bottom:0; left:0; right:0; z-index:90; background:rgba(255,255,255,0.95); backdrop-filter:blur(16px); border-top:2px solid var(--sena-verde); padding:14px 32px; display:flex; align-items:center; justify-content:space-between; }
+.footer-btn { background:var(--sena-verde); color:#fff; border:none; padding:10px 24px; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; transition:all .2s; }
+.footer-btn:hover { background:var(--sena-verde-dark); transform:translateY(-1px); }
+.footer-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.footer-page { font-size:13px; font-weight:600; color:var(--texto-dim); }
+
+.code-editor { background:#1a1a2e; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+.code-editor-header { background:#12121f; padding:10px 16px; display:flex; align-items:center; gap:8px; }
+.term-dot { width:11px; height:11px; border-radius:50%; }
+.term-dot.r { background:#ff5f57; } .term-dot.y { background:#febc2e; } .term-dot.g { background:#28c840; }
+.code-editor-title { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#8892a4; flex:1; }
+.code-editor-body { padding:14px 0; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.85; flex:1; overflow-x:auto; }
+.cl { display:grid; grid-template-columns:24px 1fr; column-gap:10px; padding:0 18px; white-space:pre; }
+.cl .ln { color:#4a5178; user-select:none; text-align:right; }
+.cl .code { color:#e2e8f0; }
+.indent-1 .code { padding-left:18px; }
+.cm { color:#565f89; font-style:italic; }
+.sel { color:#7dcfff; }
+.prop { color:#9ece6a; }
+.val { color:#e2e8f0; }
+.tag { color:#f7768e; }
+.attr { color:#e0af68; }
+.str { color:#9ece6a; }
+.punc { color:#8892a4; }
+
+/* Comparación */
+.dom-compare { display:grid; grid-template-columns:1fr auto 1fr; gap:20px; align-items:center; margin:24px 0; position:relative; z-index:1; }
+@media(max-width:900px){ .dom-compare{ grid-template-columns:1fr; } }
+.dom-box { background:#fff; border:2px solid var(--borde); border-radius:16px; padding:22px; }
+.dom-box.mal { border-color:rgba(239,68,68,.3); background:var(--alerta-rojo-glow); }
+.dom-box.bien { border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.dom-box-title { font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px; }
+.dom-box-desc { font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.dom-vs { font-family:'Syne',sans-serif; font-weight:800; font-size:16px; color:var(--texto-dimmer); text-align:center; }
+
+.sec-tag.rojo { background:var(--alerta-rojo-glow); color:var(--alerta-rojo); border-color:rgba(239,68,68,0.30); }
+
+/* Demo animada — props fluyendo */
+.props-demo-wrap { max-width:680px; margin:0 auto 24px; position:relative; z-index:1; }
+.props-flow { display:flex; align-items:center; justify-content:center; gap:18px; flex-wrap:wrap; background:#fff; border:2px solid var(--borde); border-radius:16px; padding:28px 24px; }
+.props-source { background:var(--acento-azul-glow); border:2px solid rgba(59,130,246,.3); border-radius:12px; padding:14px 18px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#1e40af; text-align:left; }
+.props-arrow { font-size:28px; color:var(--acento-teal); animation: propsArrow 1.6s ease-in-out infinite; }
+@keyframes propsArrow { 0%,100%{ transform:translateX(0); opacity:.5; } 50%{ transform:translateX(6px); opacity:1; } }
+.props-targets { display:flex; flex-direction:column; gap:10px; }
+.props-card-mini { background:var(--sena-verde-glow); border:2px solid var(--sena-verde-border); border-radius:10px; padding:10px 16px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--sena-verde-dark); font-weight:700; animation: propsPulse 1.6s ease-in-out infinite; }
+.props-card-mini:nth-child(2) { animation-delay:.2s; }
+.props-card-mini:nth-child(3) { animation-delay:.4s; }
+@keyframes propsPulse { 0%,100%{ transform:scale(1); box-shadow:none; } 50%{ transform:scale(1.04); box-shadow:0 0 0 4px var(--sena-verde-glow); } }
+
+@media(max-width:768px){ .slide{padding:60px 24px;} .topbar{padding:10px 20px;} }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="sena-logo">SENA</div>
+    <div>
+      <div class="topbar-brand">ADSO · Construcción de Software</div>
+      <div class="topbar-sub">Ficha 3229944 · Garzón, Huila</div>
+    </div>
+  </div>
+  <nav class="topbar-nav">
+    <a href="#portada">Inicio</a>
+    <a href="#competencia">Competencia</a>
+    <a href="#plan">Plan</a>
+    <a href="#logros">Logros</a>
+    <a href="#problema-repeticion">El problema</a>
+    <a href="#props">Props</a>
+    <a href="#map-key">.map() y key</a>
+    <a href="#entregable">Entregable</a>
+  </nav>
+</div>
+
+<!-- ══════════ SLIDE 1 — PORTADA ══════════ -->
+<section class="slide" id="portada">
+  <div class="bg-dots"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="slide-inner" style="position:relative;z-index:1;">
+    <div class="portada-tag"><span class="dot"></span> SESIÓN 22 · FASE 5 REACT Y TAILWIND CSS</div>
+    <h1 class="portada-titulo">
+      TechStore Pro<br>
+      <span class="linea2">Props y Componentes</span>
+      <span class="linea3">Reutilizables</span>
+    </h1>
+    <p class="portada-desc">
+      En S21 separamos el navbar en su propio componente, pero las 3 tarjetas de producto siguen copiadas y pegadas en <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">App.jsx</code>. Hoy se resuelve eso de verdad: un componente <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">&lt;ProductCard /&gt;</code> que recibe datos distintos cada vez que se usa.
+    </p>
+    <div class="portada-meta">
+      <div class="portada-meta-item">📅 Sesión 22 de 44</div>
+      <div class="portada-meta-item">📦 Props</div>
+      <div class="portada-meta-item">🔁 .map() y key</div>
+      <div class="portada-meta-item">🗂️ Fase 5 — React y Tailwind</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">01 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 2 — COMPETENCIA Y RESULTADOS DE APRENDIZAJE ══════════ -->
+<section class="slide bg-alt" id="competencia">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag purpura">Marco de formación</span>
+      <h2 class="sec-titulo">Competencia 220501096</h2>
+      <p class="sec-desc">Construcción del software de acuerdo con el diseño establecido. Todo lo que hacemos en esta fase construye evidencia real para estos 5 Resultados de Aprendizaje.</p>
+    </div>
+
+    <div class="rap-grid">
+      <div class="rap-card done">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon">🗺️</span>
+            <span class="rap-card-status">✅ Cerrado</span>
+          </div>
+          <div class="rap-card-id">RAP1</div>
+          <div class="rap-card-titulo">Planear</div>
+          <div class="rap-card-desc">Planear actividades de construcción según el diseño establecido.</div>
+        </div>
+      </div>
+
+      <div class="rap-card done">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon">🗄️</span>
+            <span class="rap-card-status">✅ Cerrado</span>
+          </div>
+          <div class="rap-card-id">RAP2</div>
+          <div class="rap-card-titulo">Base de datos</div>
+          <div class="rap-card-desc">Construir la base de datos a partir del modelo de datos. Cerrado en Fase 3.</div>
+        </div>
+      </div>
+
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon">🧩</span>
+            <span class="rap-card-status">🟡 Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP3</div>
+          <div class="rap-card-titulo">Componentes front-end</div>
+          <div class="rap-card-desc">Crear componentes front-end de acuerdo con el diseño. En curso — Fase 5.</div>
+        </div>
+      </div>
+
+      <div class="rap-card pending">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon">💻</span>
+            <span class="rap-card-status">🟡 En curso</span>
+          </div>
+          <div class="rap-card-id">RAP4</div>
+          <div class="rap-card-titulo">Codificar</div>
+          <div class="rap-card-desc">Codificar el software según el diseño establecido. Backend listo, frontend en migración.</div>
+        </div>
+      </div>
+
+      <div class="rap-card pending">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon">🧪</span>
+            <span class="rap-card-status">🟡 En curso</span>
+          </div>
+          <div class="rap-card-id">RAP5</div>
+          <div class="rap-card-titulo">Pruebas</div>
+          <div class="rap-card-desc">Realizar pruebas para verificar la funcionalidad. Evidencia en cada sesión.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box tip" style="margin-top:20px;">
+      <div class="info-box-title">📍 Dónde estamos hoy</div>
+      <div class="info-box-content">La Sesión 22 aporta evidencia directa a <strong>RAP3</strong> (componente reutilizable que recibe datos externos, patrón central del diseño de interfaces en React) y <strong>RAP4</strong> (código nuevo aplicado sobre <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">frontend-react/</code>) — hoy las 3 tarjetas duplicadas se convierten en 1 solo componente usado 3 veces.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">02 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 3 — PLAN ══════════ -->
+<section class="slide" id="plan">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag naranja">Agenda</span>
+      <h2 class="sec-titulo">Plan de la sesión</h2>
+      <p class="sec-desc">240 minutos para entender qué son las props y dejar de copiar y pegar tarjetas.</p>
+    </div>
+
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">1</div>
+        <div class="roadmap-icon">🎬</div>
+        <div class="roadmap-tag">0–30 min</div>
+        <div class="roadmap-titulo">Apertura</div>
+        <div class="roadmap-desc">El problema de las 3 tarjetas copiadas, qué son las props, y la sintaxis de .map() con key.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">2</div>
+        <div class="roadmap-icon">📦</div>
+        <div class="roadmap-tag">30–100 min</div>
+        <div class="roadmap-titulo">Crear ProductCard.jsx</div>
+        <div class="roadmap-desc">Componente nuevo que recibe props y las usa dentro de su JSX, en vez de tener texto fijo.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">3</div>
+        <div class="roadmap-icon">🗂️</div>
+        <div class="roadmap-tag">100–170 min</div>
+        <div class="roadmap-titulo">Array de productos</div>
+        <div class="roadmap-desc">Mover los 3 productos de código repetido a un array de objetos JavaScript.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">4</div>
+        <div class="roadmap-icon">🔁</div>
+        <div class="roadmap-tag">170–220 min</div>
+        <div class="roadmap-titulo">.map() + key</div>
+        <div class="roadmap-desc">Recorrer el array con .map() y renderizar un &lt;ProductCard /&gt; por cada producto.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">5</div>
+        <div class="roadmap-icon">🏁</div>
+        <div class="roadmap-tag">220–240 min</div>
+        <div class="roadmap-titulo">Cierre</div>
+        <div class="roadmap-desc">Revisión de entregables y vista previa de la Sesión 23 — useState y eventos.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">03 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 4 — LOGROS ══════════ -->
+<section class="slide bg-teal" id="logros">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag teal">Objetivos</span>
+      <h2 class="sec-titulo">¿Qué vamos a lograr?</h2>
+      <p class="sec-desc">Al terminar la sesión, el catálogo de TechStore Pro se genera a partir de datos, no de código repetido.</p>
+    </div>
+
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">01</div>
+        <div class="roadmap-icon">📦</div>
+        <div class="roadmap-tag">Componente</div>
+        <div class="roadmap-titulo">ProductCard.jsx reutilizable</div>
+        <div class="roadmap-desc">Un componente, usado 3 veces con datos distintos — ya no 3 bloques de JSX casi idénticos.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">02</div>
+        <div class="roadmap-icon">🗂️</div>
+        <div class="roadmap-tag">Datos</div>
+        <div class="roadmap-titulo">Array de productos</div>
+        <div class="roadmap-desc">Los 3 productos viven en un array de objetos — agregar un producto 4 ya no implica copiar JSX.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">03</div>
+        <div class="roadmap-icon">🔁</div>
+        <div class="roadmap-tag">Renderizado</div>
+        <div class="roadmap-titulo">El grid se genera con .map()</div>
+        <div class="roadmap-desc">App.jsx recorre el array y genera las tarjetas automáticamente, una por producto.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">04 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 5 — EL PROBLEMA ══════════ -->
+<section class="slide bg-azul" id="problema-repeticion">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag rojo">Recordando S20-S21</span>
+      <h2 class="sec-titulo">El problema que ya tienes en tu proyecto</h2>
+      <p class="sec-desc">En <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">App.jsx</code> hay 3 bloques de tarjeta de producto — mismo HTML, mismas clases, solo cambia el texto:</p>
+    </div>
+
+    <div class="code-editor" style="max-width:680px;margin:0 auto 20px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">App.jsx — estado actual (código real de tu proyecto)</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">&lt;<span class="tag">div</span> <span class="attr">className</span>=<span class="str">"flex flex-col gap-2 p-4 rounded-xl shadow-md bg-white"</span>&gt;</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  &lt;<span class="tag">h3</span>&gt;Mouse Inalámbrico&lt;/<span class="tag">h3</span>&gt;</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">  &lt;<span class="tag">p</span>&gt;$89.900&lt;/<span class="tag">p</span>&gt;</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">&lt;/<span class="tag">div</span>&gt;</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">&lt;<span class="tag">div</span> <span class="attr">className</span>=<span class="str">"flex flex-col gap-2 p-4 rounded-xl shadow-md bg-white"</span>&gt;</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">  &lt;<span class="tag">h3</span>&gt;Teclado Mecánico&lt;/<span class="tag">h3</span>&gt;</span></div>
+        <div class="cl"><span class="ln">8</span><span class="code">  &lt;<span class="tag">p</span>&gt;$149.900&lt;/<span class="tag">p</span>&gt;</span></div>
+        <div class="cl"><span class="ln">9</span><span class="code">&lt;/<span class="tag">div</span>&gt;</span></div>
+        <div class="cl"><span class="ln">10</span><span class="code"><span class="cm">{/* ...y una 3ra vez más, para el Monitor 24" */}</span></span></div>
+      </div>
+    </div>
+
+    <div class="info-box danger">
+      <div class="info-box-title">❌ Por qué esto es un problema</div>
+      <div class="info-box-content">Si mañana cambia el diseño de la tarjeta (ej. agregar una etiqueta "Nuevo"), hay que editarlo <strong>3 veces</strong> — y si el catálogo real tiene 50 productos (como lo tendrá cuando se conecte al backend en S24), serían 50 copias del mismo bloque. Un solo error de tipeo en una copia, y esa tarjeta se ve distinta a las demás.</div>
+    </div>
+
+    <div class="info-box warning">
+      <div class="info-box-title">⚠️ No es un error de S20-S21</div>
+      <div class="info-box-content">Para 3 tarjetas de práctica, copiar y pegar fue la forma más simple de avanzar. El problema aparece al escalar — y React tiene una solución exacta para esto: un componente que recibe <strong>datos diferentes</strong> cada vez que se usa.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">05 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 6 — ¿QUÉ SON LAS PROPS? ══════════ -->
+<section class="slide bg-verde" id="props">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag verde">Concepto</span>
+      <h2 class="sec-titulo">Props — datos que entran a un componente</h2>
+      <p class="sec-desc">"Props" es la forma corta de decir <em>properties</em> (propiedades). Son la manera en que un componente padre le pasa información a un componente hijo — igual que los atributos de una etiqueta HTML.</p>
+    </div>
+
+    <div class="props-demo-wrap">
+      <div class="props-flow">
+        <div class="props-source">
+          &lt;ProductCard<br>
+          &nbsp;&nbsp;nombre="Mouse"<br>
+          &nbsp;&nbsp;precio="$89.900"<br>
+          /&gt;
+        </div>
+        <div class="props-arrow">→</div>
+        <div class="props-targets">
+          <div class="props-card-mini">🖱️ Mouse — $89.900</div>
+          <div class="props-card-mini">⌨️ Teclado — $149.900</div>
+          <div class="props-card-mini">🖥️ Monitor — $899.900</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon">📨</div>
+        <div class="concepto-titulo">Se pasan como atributos</div>
+        <div class="concepto-desc">Igual que <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">&lt;img src="..." /&gt;</code> — cada atributo que escribas dentro de <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">&lt;ProductCard nombre="..." /&gt;</code> es una prop.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon">📥</div>
+        <div class="concepto-titulo">El componente las recibe como parámetro</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;">function ProductCard(props)</code> — <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">props</code> es un objeto con todo lo que se le pasó.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon">🔒</div>
+        <div class="concepto-titulo">Son de solo lectura</div>
+        <div class="concepto-desc">El componente hijo nunca modifica sus props — solo las usa para mostrar algo. Eso se aprende a cambiar con <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">useState</code> en S23.</div>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      <div class="info-box-title">✅ La idea clave de hoy</div>
+      <div class="info-box-content">Un solo componente <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">ProductCard</code>, usado 3 veces con props distintas, reemplaza 3 bloques de JSX casi idénticos. El componente es el "molde"; las props son lo que cambia en cada copia.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">06 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 7 — CÓMO SE USAN LAS PROPS DENTRO DEL COMPONENTE ══════════ -->
+<section class="slide bg-teal" id="props-uso">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag teal">Concepto</span>
+      <h2 class="sec-titulo">Usar props dentro del JSX con { }</h2>
+      <p class="sec-desc">Dentro del componente, cada prop se inserta en el JSX con llaves — el mismo <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">{ }</code> que se vio en la Sesión 21 para mezclar JavaScript con HTML.</p>
+    </div>
+
+    <div class="code-editor" style="max-width:640px;margin:0 auto 24px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">src/ProductCard.jsx (nuevo archivo de hoy)</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">function</span> <span class="sel">ProductCard</span>(props) {</span></div>
+        <div class="cl indent-1"><span class="ln">2</span><span class="code"><span class="prop">return</span> (</span></div>
+        <div class="cl indent-1"><span class="ln">3</span><span class="code">  &lt;<span class="tag">div</span>&gt;</span></div>
+        <div class="cl indent-1"><span class="ln">4</span><span class="code">    &lt;<span class="tag">h3</span>&gt;<span class="punc">{</span>props.nombre<span class="punc">}</span>&lt;/<span class="tag">h3</span>&gt;</span></div>
+        <div class="cl indent-1"><span class="ln">5</span><span class="code">    &lt;<span class="tag">p</span>&gt;<span class="punc">{</span>props.precio<span class="punc">}</span>&lt;/<span class="tag">p</span>&gt;</span></div>
+        <div class="cl indent-1"><span class="ln">6</span><span class="code">  &lt;/<span class="tag">div</span>&gt;</span></div>
+        <div class="cl indent-1"><span class="ln">7</span><span class="code">)</span></div>
+        <div class="cl"><span class="ln">8</span><span class="code">}</span></div>
+      </div>
+    </div>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><td>function ProductCard(props)</td><td>El parámetro <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">props</code> recibe automáticamente todos los atributos que se le pasaron al usar <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">&lt;ProductCard /&gt;</code></td></tr>
+          <tr><td>props.nombre</td><td>Accede al valor de la prop <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">nombre</code> — igual que acceder a cualquier propiedad de un objeto en JavaScript</td></tr>
+          <tr><td>{ } alrededor de props.nombre</td><td>Obligatorio — sin las llaves, JSX lo trataría como texto literal, no como código JavaScript</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box info">
+      <div class="info-box-title">💡 ¿Por qué se llama "props" y no "parámetros"?</div>
+      <div class="info-box-content">Técnicamente sí es un parámetro de la función — "props" es solo el nombre que la comunidad de React usa por convención, porque ese parámetro siempre contiene las "propiedades" que el componente padre le pasó.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">07 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 8 — ARRAY DE DATOS ══════════ -->
+<section class="slide" id="array-datos">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag azul">Concepto</span>
+      <h2 class="sec-titulo">Los datos viven en un array, no en el JSX</h2>
+      <p class="sec-desc">En vez de escribir 3 veces <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">&lt;ProductCard nombre="..." precio="..." /&gt;</code>, los 3 productos se guardan en un array de objetos de JavaScript — la misma forma en que el backend real los entrega.</p>
+    </div>
+
+    <div class="code-editor" style="max-width:640px;margin:0 auto 24px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">App.jsx — array de productos</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> productos = [</span></div>
+        <div class="cl indent-1"><span class="ln">2</span><span class="code">  { nombre: <span class="str">"Mouse Inalámbrico"</span>, precio: <span class="str">"$89.900"</span> },</span></div>
+        <div class="cl indent-1"><span class="ln">3</span><span class="code">  { nombre: <span class="str">"Teclado Mecánico"</span>, precio: <span class="str">"$149.900"</span> },</span></div>
+        <div class="cl indent-1"><span class="ln">4</span><span class="code">  { nombre: <span class="str">"Monitor 24\""</span>, precio: <span class="str">"$899.900"</span> },</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">];</span></div>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      <div class="info-box-title">✅ Por qué esto importa para después</div>
+      <div class="info-box-content">Cuando en la Sesión 24 se conecte el catálogo a <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">GET /api/productos</code>, el backend va a devolver exactamente esto — un array de objetos. Lo que se practica hoy con datos de prueba es la misma estructura que se usará con datos reales.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">08 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 9 — .map() ══════════ -->
+<section class="slide bg-alt" id="map-key">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag purpura">Concepto</span>
+      <h2 class="sec-titulo">.map() — de un array de datos a un array de componentes</h2>
+      <p class="sec-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:14px;">.map()</code> ya se usó en la Sesión 5 (Fase 2) para transformar productos en texto HTML. Hoy se usa para transformar productos en componentes <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">&lt;ProductCard /&gt;</code>.</p>
+    </div>
+
+    <div class="code-editor" style="max-width:640px;margin:0 auto 20px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">App.jsx — dentro del return</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">&lt;<span class="tag">section</span> <span class="attr">className</span>=<span class="str">"grid ..."</span>&gt;</span></div>
+        <div class="cl indent-1"><span class="ln">2</span><span class="code">  {productos.<span class="sel">map</span>((p) =&gt; (</span></div>
+        <div class="cl indent-1"><span class="ln">3</span><span class="code">    &lt;<span class="tag">ProductCard</span> <span class="attr">key</span>=<span class="punc">{</span>p.nombre<span class="punc">}</span> <span class="attr">nombre</span>=<span class="punc">{</span>p.nombre<span class="punc">}</span> <span class="attr">precio</span>=<span class="punc">{</span>p.precio<span class="punc">}</span> /&gt;</span></div>
+        <div class="cl indent-1"><span class="ln">4</span><span class="code">  ))}</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">&lt;/<span class="tag">section</span>&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="dom-compare">
+      <div class="dom-box mal">
+        <div class="dom-box-title">❌ Antes de hoy</div>
+        <div class="dom-box-desc">3 bloques de JSX escritos a mano — agregar un producto 4 significa copiar y pegar un bloque entero.</div>
+      </div>
+      <div class="dom-vs">VS</div>
+      <div class="dom-box bien">
+        <div class="dom-box-title">✅ Con .map()</div>
+        <div class="dom-box-desc">1 línea de JSX que se repite sola — agregar un producto 4 significa solo agregar un objeto al array.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">09 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 10 — KEY ══════════ -->
+<section class="slide bg-azul" id="key">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag azul">Concepto</span>
+      <h2 class="sec-titulo">key — el identificador que React necesita</h2>
+      <p class="sec-desc">Cuando se genera una lista de componentes con <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">.map()</code>, React exige una prop especial llamada <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">key</code> en cada elemento — no es opcional.</p>
+    </div>
+
+    <div class="concepto-grid">
+      <div class="concepto-card azul">
+        <div class="concepto-icon">🔑</div>
+        <div class="concepto-titulo">¿Para qué sirve?</div>
+        <div class="concepto-desc">Le permite al Virtual DOM (visto en S21) identificar cuál tarjeta es cuál entre renders — así sabe exactamente qué actualizar si la lista cambia, sin recrear las que no cambiaron.</div>
+      </div>
+      <div class="concepto-card azul">
+        <div class="concepto-icon">🆔</div>
+        <div class="concepto-titulo">Debe ser único entre hermanos</div>
+        <div class="concepto-desc">Dos tarjetas en la misma lista no pueden tener el mismo <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">key</code> — por eso hoy se usa <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">p.nombre</code> (cada producto tiene nombre distinto).</div>
+      </div>
+      <div class="concepto-card azul">
+        <div class="concepto-icon">🚫</div>
+        <div class="concepto-titulo">No se usa dentro del componente</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;">key</code> es solo para React — no llega como prop normal, <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">props.key</code> no existe dentro de <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">ProductCard</code>.</div>
+      </div>
+    </div>
+
+    <div class="info-box warning">
+      <div class="info-box-title">⚠️ Si se te olvida el key</div>
+      <div class="info-box-content">El catálogo igual se ve bien en pantalla — pero la consola del navegador muestra una advertencia amarilla: <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Warning: Each child in a list should have a unique "key" prop</code>. No rompe nada hoy, pero sí puede causar bugs reales más adelante, cuando la lista cambie dinámicamente (S23 en adelante).</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">10 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 11 — PREREQUISITOS ══════════ -->
+<section class="slide bg-alt" id="prerequisitos">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag amarillo">Antes de empezar</span>
+      <h2 class="sec-titulo">Prerequisitos</h2>
+      <p class="sec-desc">Todo lo de hoy se construye sobre lo que ya existe de S19–S21 — no hay instalación nueva.</p>
+    </div>
+
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon">✅</div>
+        <div class="concepto-titulo">Navbar.jsx ya separado</div>
+        <div class="concepto-desc">El componente de la Sesión 21 sigue funcionando — hoy no se toca, solo se le suma un segundo patrón.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon">✅</div>
+        <div class="concepto-titulo">Catálogo con 3 tarjetas</div>
+        <div class="concepto-desc">Los 3 bloques de tarjeta de S20 siguen en <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">App.jsx</code> — hoy se convierten en datos + 1 componente.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon">📁</div>
+        <div class="concepto-titulo">Se crea un archivo nuevo</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;">src/ProductCard.jsx</code> — el segundo componente propio del proyecto, siguiendo el mismo patrón que <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">Navbar.jsx</code>.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon">🧠</div>
+        <div class="concepto-titulo">Conceptos nuevos: props, .map(), key</div>
+        <div class="concepto-desc">No requieren instalar nada — son parte del lenguaje JavaScript (.map()) y de React (props, key).</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">11 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 12 — RESUMEN DE CONCEPTOS NUEVOS ══════════ -->
+<section class="slide" id="resumen-conceptos">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag purpura">Referencia rápida</span>
+      <h2 class="sec-titulo">Los conceptos nuevos de hoy</h2>
+      <p class="sec-desc">Todo lo de S19-S21 (Tailwind, componentes, JSX) sigue funcionando igual — esto es lo que se suma hoy.</p>
+    </div>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Concepto</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><td>Props</td><td>Datos que un componente padre le pasa a un componente hijo, como atributos</td></tr>
+          <tr><td>props.nombreDeLaProp</td><td>Forma de leer una prop específica dentro del componente que la recibe</td></tr>
+          <tr><td>Array de objetos</td><td>Estructura de datos en JavaScript — cada objeto representa un producto</td></tr>
+          <tr><td>.map()</td><td>Transforma cada elemento de un array en un componente JSX</td></tr>
+          <tr><td>key</td><td>Prop obligatoria en listas generadas con .map() — identifica cada elemento de forma única</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <span class="slide-num-badge">12 / 13</span>
+</section>
+
+<!-- ══════════ SLIDE 13 — ENTREGABLE ══════════ -->
+<section class="slide bg-verde" id="entregable">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag verde">Cierre · Sesión 22</span>
+      <h2 class="sec-titulo">¡Empezamos!</h2>
+    </div>
+
+    <div class="entregable-box">
+      <div class="entregable-title">Criterios de evaluación</div>
+      <ul class="entregable-list">
+        <li>src/ProductCard.jsx creado, recibe props (nombre, precio) y las usa en su JSX</li>
+        <li>App.jsx tiene un array de productos (nombre, precio) con los 3 productos de siempre</li>
+        <li>El grid se genera con productos.map(), usando &lt;ProductCard /&gt; con key único</li>
+        <li>El catálogo se ve exactamente igual que antes — mismo diseño, mismos 3 productos</li>
+        <li>Sin la advertencia de "key" en la consola del navegador</li>
+        <li>Probado en localhost:5173 con recarga en vivo funcionando</li>
+      </ul>
+    </div>
+
+    <div class="concepto-grid" style="margin-top:24px;">
+      <div class="concepto-card azul">
+        <div class="concepto-icon">📖</div>
+        <div class="concepto-titulo">02 — Guía paso a paso</div>
+        <div class="concepto-desc">La parte <strong>obligatoria</strong> de hoy: crear ProductCard.jsx, el array de productos, y renderizar con .map().</div>
+        <a href="#" style="display:inline-block;margin-top:10px;color:#1e40af;font-weight:700;text-decoration:underline;font-size:13px;">Abrir guía →</a>
+      </div>
+      <div class="concepto-card teal">
+        <div class="concepto-icon">✏️</div>
+        <div class="concepto-titulo">03 — Ejercicios de práctica</div>
+        <div class="concepto-desc"><strong>Opcional</strong> — solo si sobra tiempo después de terminar la guía 02. Refuerzo de props.</div>
+        <a href="#" style="display:inline-block;margin-top:10px;color:#0369a1;font-weight:700;text-decoration:underline;font-size:13px;">Abrir ejercicios →</a>
+      </div>
+    </div>
+
+    <div class="info-box teal" style="margin-top:20px;">
+      <div class="info-box-title">Próxima sesión — S23</div>
+      <div class="info-box-content"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">useState</code>: estado y eventos. Primera vez que un componente "recuerda" algo entre clics — aplicado a un contador simple y al buscador de productos.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">13 / 13</span>
+</section>
+
+<!-- ── FOOTER NAV FIJO ── -->
+<nav class="footer-nav">
+  <button class="footer-btn" id="btn-prev" onclick="navSlide(-1)" disabled>← Anterior</button>
+  <span class="footer-page" id="footer-page">Slide 1 de 13</span>
+  <button class="footer-btn" id="btn-next" onclick="navSlide(1)">Siguiente →</button>
+</nav>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+const slides = Array.from(document.querySelectorAll('.slide'));
+let current = 0;
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const pageLabel = document.getElementById('footer-page');
+
+function updateNav() {
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = current === slides.length - 1;
+  pageLabel.textContent = 'Slide ' + (current + 1) + ' de ' + slides.length;
+}
+
+function navSlide(dir) {
+  current = Math.max(0, Math.min(slides.length - 1, current + dir));
+  slides[current].scrollIntoView({ behavior: 'smooth' });
+  updateNav();
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      current = slides.indexOf(e.target);
+      updateNav();
+    }
+  });
+}, { threshold: 0.5 });
+slides.forEach(s => observer.observe(s));
+
+updateNav();
+</script>
+</body>
+</html>
