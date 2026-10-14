@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Paso a Paso S24 — useEffect y Fetch a la API Real</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#0f1117; --surface:#1a1f2e; --surface2:#222840; --border:#2a3352;
+  --txt:#e2e8f0; --txt-dim:#8892a4;
+  --accent:#3b82f6; --accent-glow:rgba(59,130,246,.12);
+  --green:#22c55e; --green-bg:rgba(34,197,94,.10);
+  --red:#f87171; --red-bg:rgba(248,113,113,.10);
+  --yellow:#f59e0b; --yellow-bg:rgba(245,158,11,.10);
+  --purple:#a78bfa; --purple-bg:rgba(167,139,250,.10);
+  --teal:#2dd4bf; --teal-bg:rgba(45,212,191,.10);
+  --code-bg:#0d1117; --sidebar-w:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;display:flex;min-height:100vh;user-select:none;}
+
+.sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:0;left:0;bottom:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:24px 0 40px;display:flex;flex-direction:column;}
+.sidebar-brand{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-brand .curso{font-size:11px;color:var(--teal);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.sidebar-brand h1{font-size:14px;font-weight:700;color:var(--txt);margin-top:4px;line-height:1.3;}
+.sidebar-brand .ficha{font-size:11px;color:var(--txt-dim);margin-top:2px;}
+.progress-wrap{padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-dim);margin-bottom:8px;}
+.progress-label span:last-child{color:var(--teal);font-weight:700;}
+.progress-bar-bg{height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--teal);border-radius:10px;transition:width .4s ease;width:0%;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--txt-dim);font-size:13px;font-weight:500;text-decoration:none;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--accent-glow);color:var(--txt);}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);}
+.nav-item.active .nav-dot{background:var(--accent);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .15s;}
+.nav-item:hover .nav-dot{background:var(--txt-dim);}
+.nav-item.done{color:var(--teal);}
+.nav-item.done .nav-dot{background:var(--teal);}
+
+.main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px 80px;max-width:820px;}
+
+.page-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+.page-tag{font-size:11px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.page-title{font-size:28px;font-weight:700;color:var(--txt);line-height:1.2;text-wrap:balance;}
+.page-subtitle{font-size:14px;color:var(--txt-dim);margin-top:8px;}
+.page-warning{margin-top:20px;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--yellow);font-weight:500;}
+
+.intro-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px 36px;margin-bottom:52px;}
+.intro-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+.intro-title{font-size:20px;font-weight:800;color:var(--txt);line-height:1.25;margin-bottom:10px;}
+.intro-sub{font-size:14px;color:var(--txt-dim);margin-bottom:20px;line-height:1.6;}
+.intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.intro-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.intro-item-icon{font-size:22px;margin-bottom:8px;}
+.intro-item-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-dim);margin-bottom:4px;}
+.intro-item-desc{font-size:13px;color:var(--txt);font-weight:500;line-height:1.4;}
+
+.section{margin-bottom:56px;scroll-margin-top:32px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.step-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.3);border-radius:6px;padding:3px 10px;white-space:nowrap;letter-spacing:.04em;flex-shrink:0;}
+.step-badge.green{background:var(--green-bg);color:var(--green);border-color:rgba(34,197,94,.3);}
+.step-badge.yellow{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,158,11,.3);}
+.step-badge.extra{background:var(--purple-bg);color:var(--purple);border-color:rgba(167,139,250,.3);}
+.step-badge.teal{background:var(--teal-bg);color:var(--teal);border-color:rgba(45,212,191,.3);}
+.section-title{font-size:20px;font-weight:700;color:var(--txt);text-wrap:balance;}
+
+.step-list{display:flex;flex-direction:column;gap:20px;}
+.step-item{display:flex;gap:16px;}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-body p{color:var(--txt);font-size:14px;}
+.step-body strong{color:var(--txt);font-weight:600;}
+
+.code-wrap{margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.code-header{display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 14px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-dot.r{background:#ff5f57;} .code-dot.y{background:#febc2e;} .code-dot.g{background:#28c840;}
+.code-filename{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-dim);flex:1;}
+.code-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.code-tag.blue{background:rgba(59,130,246,.15);color:var(--accent);}
+.code-tag.green{background:var(--green-bg);color:var(--green);}
+.code-tag.yellow{background:var(--yellow-bg);color:var(--yellow);}
+.code-tag.purple{background:var(--purple-bg);color:var(--purple);}
+pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;color:#abb2bf;}
+pre .c{color:#5c6370;} pre .k{color:#c678dd;} pre .s{color:#98c379;}
+pre .f{color:#61afef;} pre .n{color:#e5c07b;} pre .y{color:#d19a66;}
+pre .edit{color:#fbbf24;background:rgba(245,158,11,.12);border-radius:3px;padding:0 2px;}
+
+.callout{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:8px;font-size:13px;margin:14px 0;line-height:1.5;}
+.callout.ok{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout.err{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);color:var(--red);}
+.callout.warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.2);color:var(--yellow);}
+.callout.info{background:var(--accent-glow);border:1px solid rgba(59,130,246,.2);color:#93c5fd;}
+.callout.teal{background:var(--teal-bg);border:1px solid rgba(45,212,191,.2);color:var(--teal);}
+.callout.tip{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.callout strong{color:inherit;font-weight:600;}
+
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--surface2);color:var(--txt-dim);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:top;}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);}
+tr:last-child td{border-bottom:none;}
+
+.checklist{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.checklist li{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--txt-dim);cursor:pointer;transition:all .15s;}
+.checklist li:hover{border-color:var(--teal);}
+.checklist li.marcado{background:var(--teal-bg);border-color:rgba(45,212,191,.35);color:var(--txt);}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--teal);}
+.checklist li.marcado .check-box{border-color:var(--teal);background:var(--teal-bg);}
+.checklist li strong{color:var(--txt);font-weight:600;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:1px 6px;border-radius:4px;color:#93c5fd;}
+
+.subsec{margin:28px 0 16px;}
+.subsec-title{font-size:15px;font-weight:700;color:var(--txt);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+
+.complete-btn{display:flex;align-items:center;gap:10px;margin-top:28px;padding:14px 20px;background:var(--teal-bg);border:1px solid rgba(45,212,191,.3);border-radius:10px;color:var(--teal);font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:all .2s;font-family:'Inter',sans-serif;}
+.complete-btn:hover{border-color:var(--teal);}
+.complete-btn.done{cursor:default;}
+.complete-btn .btn-icon{font-size:18px;}
+.complete-btn .btn-txt{flex:1;text-align:left;}
+.complete-btn .btn-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(45,212,191,.15);color:var(--teal);opacity:0;}
+.complete-btn.done .btn-badge{opacity:1;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+.aprendiz-select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--txt);font-size:12.5px;font-family:'Inter',sans-serif;cursor:pointer;}
+.aprendiz-select:focus{outline:none;border-color:var(--teal);}
+.aprendiz-select.falta{border-color:var(--yellow);}
+
+.submit-wrap{margin-top:28px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+.submit-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 20px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.submit-btn:hover{background:#2f6fe0;transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.submit-status{margin-top:10px;font-size:12.5px;text-align:center;color:var(--txt-dim);}
+.submit-status.ok{color:var(--green);}
+.submit-status.err{color:var(--red);}
+
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+[data-lucide] { display:inline-block; }
+.intro-item-icon svg { width:1em; height:1em; stroke-width:2; vertical-align:-0.15em; }
+.callout-icon svg { width:16px; height:16px; stroke-width:2.5; vertical-align:-3px; display:inline-block; }
+.page-warning svg { width:14px; height:14px; stroke-width:2.5; vertical-align:-2px; display:inline-block; margin-right:2px; }
+.btn-icon svg { width:1em; height:1em; stroke-width:2.5; vertical-align:-0.15em; }
+.submit-btn svg { width:16px; height:16px; stroke-width:2.5; vertical-align:-3px; display:inline-block; }
+</style>
+<canvas class="confetti-wrap" id="confetti-canvas"></canvas>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="curso">SENA ADSO · S24</div>
+    <h1>useEffect y Fetch — Guía Paso a Paso</h1>
+    <div class="ficha">Ficha 3229944 · Oct 2026</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 5</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="aprendiz-wrap">
+    <label class="aprendiz-label" for="aprendiz-select">Aprendiz</label>
+    <select id="aprendiz-select" class="aprendiz-select">
+      <option value="">Selecciona tu nombre...</option>
+      <option>ANDRES STEVEN LOPEZ SCARPETTA</option>
+      <option>EDGAR STICK LOPEZ MURCIA</option>
+      <option>HEYDER IVAN VELASCO DELGADO</option>
+      <option>JESUS DAVID ORTIZ MUÑOZ</option>
+      <option>JHOJAN STEVEN SERRANO PATIÑO</option>
+      <option>JHON EDGARDO LUGO VILLANUEVA</option>
+      <option>JONIER STIVEN GUTIERREZ SALCEDO</option>
+      <option>JUAN PABLO PORRAS LOZANO</option>
+      <option>KEVIN MIGUEL ORTIZ TELLEZ</option>
+      <option>LAURA FERNANDA SOSA CEDIEL</option>
+      <option>LEIDY VIVIANA SANCHEZ ACOSTA</option>
+      <option>LUIS CARLOS CADENA VALENCIA</option>
+      <option>MARTIN SMITH LOPEZ MURCIA</option>
+      <option>MICHAEL FERMAN HERNANDEZ BERMUDEZ</option>
+      <option>NITSON ESTIVEN LOPEZ YUSTES</option>
+    </select>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Backend</div>
+    <a class="nav-item active" href="#paso1"><span class="nav-dot"></span>Paso 1 — Levantar el servidor</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Conexión</div>
+    <a class="nav-item" href="#paso2"><span class="nav-dot"></span>Paso 2 — useEffect + fetch</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Estados</div>
+    <a class="nav-item" href="#paso3"><span class="nav-dot"></span>Paso 3 — Loading y error</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Ajuste</div>
+    <a class="nav-item" href="#paso4"><span class="nav-dot"></span>Paso 4 — ProductCard real</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#checklist"><span class="nav-dot"></span>Checklist final</a>
+  </div>
+</div>
+
+<main class="main">
+
+  <div class="page-header">
+    <div class="page-tag">Sesión 24 · Fase 5 React y Tailwind</div>
+    <h1 class="page-title">El catálogo se conecta al backend real</h1>
+    <p class="page-subtitle">SENA ADSO · Ficha 3229944 · Octubre 2026</p>
+    <div class="page-warning"><i data-lucide="alert-triangle"></i> Sigue cada paso en orden. No avances al siguiente hasta que el anterior funcione y hayas marcado el check.</div>
+  </div>
+
+  <div class="intro-card">
+    <div class="intro-tag">¿Qué construimos hoy?</div>
+    <div class="intro-title">useEffect + fetch + loading/error + ProductCard real</div>
+    <p class="intro-sub">El array <code>productos</code> escrito a mano en <code>App.jsx</code> desaparece. En su lugar: <code>useState([])</code> + <code>useEffect</code> que hace <code>fetch</code> al backend real de la Fase 3, con estados de carga y error, y <code>ProductCard</code> ajustado a los campos reales.</p>
+    <div class="intro-grid">
+      <div class="intro-item"><div class="intro-item-icon"><i data-lucide="monitor"></i></div><div class="intro-item-label">Paso 1</div><div class="intro-item-desc">Levantar el backend de la Fase 3 y confirmar que responde</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><i data-lucide="refresh-cw"></i></div><div class="intro-item-label">Paso 2</div><div class="intro-item-desc">useEffect + fetch reemplazando el array escrito a mano</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><i data-lucide="hourglass"></i></div><div class="intro-item-label">Paso 3</div><div class="intro-item-desc">Estados cargando/error, mostrados condicionalmente en el JSX</div></div>
+    </div>
+  </div>
+
+  <!-- ════ PASO 1 ════ -->
+  <section class="section" id="paso1" data-step="paso1">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 1 · Backend</span>
+      <h2 class="section-title">Levantar el servidor de la Fase 3</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Antes de tocar React, hay que confirmar que el backend responde — si no está corriendo, nada de lo de hoy va a funcionar.</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body">
+        <p>Abrir una terminal nueva (sin cerrar la que tiene <code>npm run dev</code> del frontend) y navegar hasta la carpeta <code>backend/</code> de <code>plantilla_proyecto</code>. Correr:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — dentro de backend/</span></div><pre>npm run dev</pre></div>
+        <div class="callout info"><span class="callout-icon"><i data-lucide="lightbulb"></i></span><span>Si el comando no existe o da error, revisa el <code>package.json</code> del backend — puede llamarse <code>npm start</code> en vez de <code>npm run dev</code>, según cómo quedó configurado en la Fase 3.</span></div>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">2</div><div class="step-body">
+        <p>Confirmar en la terminal que el servidor arrancó correctamente, normalmente mostrando algo como "Servidor corriendo en el puerto 3000" o similar, y que la conexión a MongoDB Atlas fue exitosa.</p>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">3</div><div class="step-body">
+        <p>Abrir una pestaña nueva del navegador y visitar directamente:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">navegador</span></div><pre>http://localhost:3000/api/productos</pre></div>
+        <div class="callout ok"><span class="callout-icon"><i data-lucide="check-circle"></i></span><span><strong>Cómo verificar:</strong> debe aparecer un array en formato JSON con los productos guardados en la base de datos — con campos <code>id</code>, <code>icono</code>, <code>nombre</code>, <code>descripcion</code>, <code>precio</code>, <code>imagen</code>. Si ves esto, el backend está listo.</span></div>
+        <div class="callout warn"><span class="callout-icon"><i data-lucide="alert-triangle"></i></span><span>Si la base de datos está vacía (array <code>[]</code>), el resto de la guía va a funcionar igual, pero el catálogo se va a ver sin tarjetas. No es un error de código.</span></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ════ PASO 2 ════ -->
+  <section class="section" id="paso2" data-step="paso2">
+    <div class="section-header">
+      <span class="step-badge">Paso 2 · Conexión</span>
+      <h2 class="section-title">Reemplazar el array por useEffect + fetch</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">En <code>App.jsx</code>, el array <code>productos</code> de las sesiones anteriores se borra por completo y se reemplaza por datos que vienen del backend real.</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body">
+        <p>En <code>App.jsx</code>, agregar <code>useEffect</code> al import de React:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useState } <span class="k">from</span> <span class="s">"react"</span>;</pre></div>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">después</span></div><pre><span class="k">import</span> { useState, <span class="edit">useEffect</span> } <span class="k">from</span> <span class="s">"react"</span>;</pre></div>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">2</div><div class="step-body">
+        <p>Borrar por completo el array <code>const productos = [...]</code> que está antes de <code>function App()</code> — las 4 tarjetas escritas a mano ya no hacen falta.</p>
+        <div class="callout warn"><span class="callout-icon"><i data-lucide="alert-triangle"></i></span><span>Borra el array completo, desde <code>const productos = [</code> hasta el <code>];</code> que lo cierra — todos los objetos de Mouse, Teclado, Monitor y Audífonos.</span></div>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">3</div><div class="step-body">
+        <p>Dentro de <code>function App()</code>, la línea <code>const [busqueda, setBusqueda] = useState("")</code> del Paso de búsqueda (S23) debe seguir ahí — justo después, agregar el estado de productos y el <code>useEffect</code>:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">agregar</span></div><pre><span class="k">function</span> <span class="f">App</span>() {
+  <span class="k">const</span> [busqueda, setBusqueda] = useState(<span class="s">""</span>); <span class="c">// ya existe, no se toca</span>
+  <span class="edit"><span class="k">const</span> [productos, setProductos] = useState([]);
+
+  useEffect(() =&gt; {
+    <span class="n">fetch</span>(<span class="s">"http://localhost:3000/api/productos"</span>)
+      .then((res) =&gt; res.json())
+      .then((datos) =&gt; setProductos(datos));
+  }, []);</span>
+
+  <span class="k">return</span> (
+    ...</pre></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+            <tbody>
+              <tr><td>useState([])</td><td>productos empieza vacío — se llena cuando el fetch termine</td></tr>
+              <tr><td>useEffect(() =&gt; {...}, [])</td><td>Ejecuta el código adentro una sola vez, al cargar el componente</td></tr>
+              <tr><td>fetch("http://localhost:3000/api/productos")</td><td>Pide los datos reales al backend de la Fase 3</td></tr>
+              <tr><td>.then((res) =&gt; res.json())</td><td>Convierte la respuesta cruda del servidor a un array de JavaScript</td></tr>
+              <tr><td>.then((datos) =&gt; setProductos(datos))</td><td>Guarda esos datos en el estado — React vuelve a dibujar el catálogo con ellos</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout ok"><span class="callout-icon"><i data-lucide="check-circle"></i></span><span><strong>Cómo verificar:</strong> en <code>localhost:5173</code>, el catálogo debe mostrar los productos reales de tu base de datos (los nombres y precios que tengas guardados en Atlas), no ya el Mouse/Teclado/Monitor/Audífonos de prueba.</span></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ════ PASO 3 ════ -->
+  <section class="section" id="paso3" data-step="paso3">
+    <div class="section-header">
+      <span class="step-badge extra">Paso 3 · Estados</span>
+      <h2 class="section-title">Agregar loading y error</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Ahora se agregan los 2 estados que faltan, y se usa el JSX para mostrar algo distinto según el momento.</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body">
+        <p>Junto a <code>const [productos, setProductos] = useState([])</code> (sin tocar la línea de <code>busqueda</code> que va arriba), agregar los 2 estados nuevos:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">agregar</span></div><pre><span class="k">const</span> [busqueda, setBusqueda] = useState(<span class="s">""</span>); <span class="c">// ya existe, no se toca</span>
+<span class="k">const</span> [productos, setProductos] = useState([]);
+<span class="edit"><span class="k">const</span> [cargando, setCargando] = useState(<span class="y">true</span>);
+<span class="k">const</span> [error, setError] = useState(<span class="y">null</span>);</span></pre></div>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">2</div><div class="step-body">
+        <p>Modificar el <code>useEffect</code> del Paso 2 para usar estos estados con <code>.catch()</code> y <code>.finally()</code>:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag yellow">antes</span></div><pre>useEffect(() =&gt; {
+  fetch(<span class="s">"http://localhost:3000/api/productos"</span>)
+    .then((res) =&gt; res.json())
+    .then((datos) =&gt; setProductos(datos));
+}, []);</pre></div>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">después</span></div><pre>useEffect(() =&gt; {
+  fetch(<span class="s">"http://localhost:3000/api/productos"</span>)
+    .then((res) =&gt; res.json())
+    .then((datos) =&gt; setProductos(datos))
+    <span class="edit">.catch(() =&gt; setError(<span class="s">"No se pudo conectar al servidor"</span>))
+    .finally(() =&gt; setCargando(<span class="y">false</span>))</span>;
+}, []);</pre></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+            <tbody>
+              <tr><td>.catch(() =&gt; ...)</td><td>Se ejecuta solo si el fetch falla (servidor apagado, sin red)</td></tr>
+              <tr><td>.finally(() =&gt; ...)</td><td>Se ejecuta siempre al final, haya éxito o error — apaga el estado de carga</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">3</div><div class="step-body">
+        <p>En el <code>return</code> de <code>App.jsx</code>, localizar el <code>&lt;section className="grid ...">&gt;</code> del catálogo y envolverlo con las condiciones de carga y error — antes del <code>&lt;section&gt;</code> van 3 líneas nuevas, y después del <code>&lt;/section&gt;</code> va 1 línea más que cierra la condición:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">agregar antes del section</span></div><pre>{cargando &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-10"</span>&gt;Cargando productos...&lt;/<span class="f">p</span>&gt;}
+{error &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-red-600 py-10"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;}
+{!cargando &amp;&amp; !error &amp;&amp; (</pre></div>
+        <p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Y justo después del <code>&lt;/section&gt;</code> del catálogo, cerrar la condición:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">agregar después del /section</span></div><pre>)}</pre></div>
+
+        <p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;"><code>App.jsx</code> completo debe quedar así en esta parte:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag blue">cómo queda</span></div><pre>  <span class="k">return</span> (
+    &lt;<span class="f">main</span> <span class="n">className</span>=<span class="s">"min-h-screen max-w-6xl mx-auto px-6 py-10 flex flex-col justify-between gap-10"</span>&gt;
+      &lt;<span class="f">Navbar</span> /&gt;
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex items-center gap-3"</span>&gt;
+        &lt;<span class="f">input</span> <span class="n">type</span>=<span class="s">"text"</span> <span class="n">placeholder</span>=<span class="s">"Buscar producto..."</span> <span class="n">value</span>=<span class="s">{busqueda}</span> <span class="n">onChange</span>=<span class="s">{(e) =&gt; setBusqueda(e.target.value)}</span> <span class="n">className</span>=<span class="s">"..."</span> /&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"..."</span>&gt;{productos.filter(...).length} producto(s) encontrado(s)&lt;/<span class="f">p</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+
+      <span class="edit">{cargando &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-10"</span>&gt;Cargando productos...&lt;/<span class="f">p</span>&gt;}
+      {error &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-red-600 py-10"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;}
+      {!cargando &amp;&amp; !error &amp;&amp; (</span>
+        &lt;<span class="f">section</span> <span class="n">className</span>=<span class="s">"grid grid-cols-1 sm:grid md:grid-cols-2 lg:grid-cols-3 gap-6"</span>&gt;
+          {productos
+            .filter((p) =&gt; p.nombre.toLowerCase().includes(busqueda.toLowerCase()))
+            .map((p) =&gt; (
+              &lt;<span class="f">ProductCard</span> <span class="n">key</span>=<span class="s">{p.id}</span> ... /&gt;
+            ))}
+        &lt;/<span class="f">section</span>&gt;
+      <span class="edit">)}</span>
+
+      {productos.filter(...).length === <span class="y">0</span> &amp;&amp; (
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"..."</span>&gt;No se encontraron productos con ese nombre.&lt;/<span class="f">p</span>&gt;
+      )}
+
+      &lt;<span class="f">Footer</span> /&gt;
+    &lt;/<span class="f">main</span>&gt;
+  );</pre></div>
+
+        <div class="callout info"><span class="callout-icon"><i data-lucide="lightbulb"></i></span><span>El mensaje de "sin resultados" de S23 (si lo aplicaste) se queda fuera de la condición <code>!cargando &amp;&amp; !error</code>, como estaba — mientras está cargando o hay error, ese mensaje simplemente no aparece porque <code>productos</code> todavía está vacío.</span></div>
+        <div class="callout ok"><span class="callout-icon"><i data-lucide="check-circle"></i></span><span><strong>Cómo verificar:</strong> al recargar <code>localhost:5173</code>, debe verse brevemente "Cargando productos..." antes de que aparezca el catálogo real.</span></div>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">4</div><div class="step-body">
+        <p><strong>Prueba del error real:</strong> ve a la terminal del backend y deténlo (Ctrl+C). Recarga <code>localhost:5173</code>.</p>
+        <div class="callout ok"><span class="callout-icon"><i data-lucide="check-circle"></i></span><span><strong>Cómo verificar:</strong> debe aparecer el mensaje "No se pudo conectar al servidor" en vez de una pantalla en blanco o un error de consola sin explicación. Vuelve a levantar el backend (<code>npm run dev</code> en la terminal de <code>backend/</code>) y recarga de nuevo — el catálogo real debe volver a aparecer.</span></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ════ PASO 4 ════ -->
+  <section class="section" id="paso4" data-step="paso4">
+    <div class="section-header">
+      <span class="step-badge teal">Paso 4 · Ajuste</span>
+      <h2 class="section-title">ProductCard con los campos reales</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">El backend real no tiene campo <code>stock</code> (era solo del ejercicio de S22) — y sí tiene <code>icono</code>, que nunca se había usado. Se ajusta <code>ProductCard.jsx</code> a los datos reales.</p>
+
+    <div class="step-list">
+      <div class="step-item"><div class="step-num">1</div><div class="step-body">
+        <p>En <code>ProductCard.jsx</code>, quitar la línea del stock y agregar el icono antes del nombre:</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductCard.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">function</span> <span class="f">ProductCard</span>(props) {
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-2 p-4 rounded-xl shadow-md bg-white"</span>&gt;
+      &lt;<span class="f">img</span> <span class="n">src</span>=<span class="s">{props.imagen}</span> <span class="n">className</span>=<span class="s">"rounded-lg"</span> /&gt;
+      &lt;<span class="f">h3</span> <span class="n">className</span>=<span class="s">"font-bold text-lg"</span>&gt;{props.nombre}&lt;/<span class="f">h3</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-texto-dim text-sm"</span>&gt;{props.descripcion}&lt;/<span class="f">p</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-verde font-extrabold"</span>&gt;{props.precio}&lt;/<span class="f">p</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-texto-dim text-xs"</span>&gt;Stock: {props.stock} unidades&lt;/<span class="f">p</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  )
+}</pre></div>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductCard.jsx</span><span class="code-tag green">después</span></div><pre><span class="k">function</span> <span class="f">ProductCard</span>(props) {
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-2 p-4 rounded-xl shadow-md bg-white"</span>&gt;
+      &lt;<span class="f">img</span> <span class="n">src</span>=<span class="s">{props.imagen}</span> <span class="n">className</span>=<span class="s">"rounded-lg"</span> /&gt;
+      <span class="edit">&lt;<span class="f">h3</span> <span class="n">className</span>=<span class="s">"font-bold text-lg"</span>&gt;{props.icono} {props.nombre}&lt;/<span class="f">h3</span>&gt;</span>
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-texto-dim text-sm"</span>&gt;{props.descripcion}&lt;/<span class="f">p</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-verde font-extrabold"</span>&gt;{props.precio}&lt;/<span class="f">p</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  )
+}</pre></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cambio</th><th>Por qué</th></tr></thead>
+            <tbody>
+              <tr><td>Se quitó la línea de Stock</td><td>El backend real no tiene ese campo — mostrarlo daría "undefined unidades"</td></tr>
+              <tr><td>{props.icono} agregado al título</td><td>El backend sí tiene este campo (un emoji) — se aprovecha, nunca se había usado</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div></div>
+
+      <div class="step-item"><div class="step-num">2</div><div class="step-body">
+        <p>En <code>App.jsx</code>, en el <code>.map()</code> dentro del <code>&lt;section&gt;</code>, quitar la prop <code>stock</code> y agregar <code>icono</code> e <code>id</code> (se usará como <code>key</code>, mejor que el nombre):</p>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag yellow">antes</span></div><pre>&lt;<span class="f">ProductCard</span>
+  <span class="n">key</span>=<span class="s">{p.nombre}</span>
+  <span class="n">nombre</span>=<span class="s">{p.nombre}</span>
+  <span class="n">descripcion</span>=<span class="s">{p.descripcion}</span>
+  <span class="n">precio</span>=<span class="s">{p.precio}</span>
+  <span class="n">imagen</span>=<span class="s">{p.imagen}</span>
+  <span class="n">stock</span>=<span class="s">{p.stock}</span>
+/&gt;</pre></div>
+        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">después</span></div><pre>&lt;<span class="f">ProductCard</span>
+  <span class="edit"><span class="n">key</span>=<span class="s">{p.id}</span></span>
+  <span class="n">nombre</span>=<span class="s">{p.nombre}</span>
+  <span class="n">descripcion</span>=<span class="s">{p.descripcion}</span>
+  <span class="n">precio</span>=<span class="s">{p.precio}</span>
+  <span class="n">imagen</span>=<span class="s">{p.imagen}</span>
+  <span class="edit"><span class="n">icono</span>=<span class="s">{p.icono}</span></span>
+/&gt;</pre></div>
+
+        <div class="callout info"><span class="callout-icon"><i data-lucide="lightbulb"></i></span><span><code>key={p.id}</code> es mejor que <code>key={p.nombre}</code> cuando los datos vienen de una base de datos real — el <code>id</code> es único por definición, mientras que dos productos distintos podrían tener nombres parecidos.</span></div>
+        <div class="callout ok"><span class="callout-icon"><i data-lucide="check-circle"></i></span><span><strong>Cómo verificar:</strong> cada tarjeta muestra su emoji junto al nombre, y ya no aparece ningún "Stock: undefined unidades" ni advertencia de key en la consola.</span></div>
+      </div></div>
+    </div>
+
+    <div class="callout teal" style="margin-top:24px;">
+      <span class="callout-icon"><i data-lucide="rocket"></i></span>
+      <span><strong>Próxima sesión — S25:</strong> React Router — instalar react-router-dom, definir rutas para las páginas de TechStore Pro, y navegar con &lt;Link&gt; en vez de &lt;a&gt;.</span>
+    </div>
+  </section>
+
+  <!-- ════ CHECKLIST ════ -->
+  <section class="section" id="checklist" data-step="checklist">
+    <div class="section-header">
+      <span class="step-badge green">Cierre</span>
+      <h2 class="section-title">Checklist final de la sesión</h2>
+    </div>
+    <ul class="checklist" id="checklist-ul">
+      <li data-check="chk1"><span class="check-box"></span><span><strong>Backend corriendo</strong> en localhost:3000, confirmado con GET /api/productos en el navegador</span></li>
+      <li data-check="chk2"><span class="check-box"></span><span>Array productos reemplazado por useState([]) + useEffect con fetch real</span></li>
+      <li data-check="chk3"><span class="check-box"></span><span>Estados cargando y error implementados, con .catch() y .finally()</span></li>
+      <li data-check="chk4"><span class="check-box"></span><span>JSX muestra "Cargando...", el error, o el catálogo según corresponda — probado con el backend apagado y encendido</span></li>
+      <li data-check="chk5"><span class="check-box"></span><span>ProductCard sin stock, con icono, y key={p.id} en vez de key={p.nombre}</span></li>
+    </ul>
+  </section>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="btn-enviar">
+      <span><i data-lucide="upload"></i></span><span>Enviar todo mi progreso</span>
+    </button>
+    <div class="submit-status" id="submit-status"></div>
+  </div>
+
+</main>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['c','x','a','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+
+const STEPS = ['paso1','paso2','paso3','paso4','checklist'];
+const KEY   = 's24-progress';
+
+function getState() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} }
+
+function updateProgress() {
+  const state = getState();
+  const done  = STEPS.filter(s => state[s]).length;
+  const pct   = Math.round((done / STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-txt').textContent  = done + ' / ' + STEPS.length;
+}
+
+function renderButtons() {
+  const state = getState();
+  STEPS.forEach(id => {
+    const section = document.querySelector(`[data-step="${id}"]`);
+    if (!section || section.querySelector('.complete-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'complete-btn' + (state[id] ? ' done' : '');
+    btn.dataset.step = id;
+    btn.innerHTML = `<span class="btn-icon">${state[id] ? '✓' : '✎'}</span>
+      <span class="btn-txt">${state[id] ? '¡Paso completado!' : 'Marcar como completado'}</span>
+      <span class="btn-badge">LISTO</span>`;
+    if (!state[id]) btn.addEventListener('click', () => completeStep(id, btn));
+    section.appendChild(btn);
+    const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+    if (nav && state[id]) nav.classList.add('done');
+  });
+}
+
+function completeStep(id, btn) {
+  const state = getState(); state[id] = true; saveState(state);
+  btn.classList.add('done');
+  btn.querySelector('.btn-icon').textContent = '✓';
+  btn.querySelector('.btn-txt').textContent  = '¡Paso completado!';
+  const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+  if (nav) nav.classList.add('done');
+  updateProgress();
+  launchConfetti(STEPS.filter(s => state[s]).length === STEPS.length);
+}
+
+function launchConfetti(big) {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#3b82f6','#2dd4bf','#22c55e','#f59e0b','#a78bfa','#f87171'];
+  const count  = big ? 180 : 60;
+  const parts  = Array.from({length: count}, () => ({
+    x: canvas.width * (big ? Math.random() : .5 + (Math.random()-.5)*.4),
+    y: big ? -10 : canvas.height * .4,
+    r: Math.random() * 7 + 3, color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: 0, tiltAngle: 0, tiltSpeed: Math.random()*.1+.05,
+    vx: Math.random()*4-2, vy: Math.random()*3+2
+  }));
+  let frame = 0; const total = big ? 160 : 80;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p => {
+      ctx.beginPath(); ctx.fillStyle = p.color;
+      ctx.ellipse(p.x, p.y, p.r, p.r*.4, p.tilt, 0, Math.PI*2); ctx.fill();
+      p.x += p.vx; p.y += p.vy; p.tiltAngle += p.tiltSpeed; p.tilt = Math.sin(p.tiltAngle)*12; p.vy += .08;
+    });
+    if (++frame < total) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+function getChecklistState() { try { return JSON.parse(localStorage.getItem('s24-checklist') || '{}'); } catch { return {}; } }
+function saveChecklistState(s) { try { localStorage.setItem('s24-checklist', JSON.stringify(s)); } catch {} }
+
+function renderChecklist() {
+  const state = getChecklistState();
+  document.querySelectorAll('#checklist-ul li').forEach(li => {
+    const id = li.dataset.check;
+    if (state[id]) { li.classList.add('marcado'); li.querySelector('.check-box').textContent = '✓'; }
+    li.addEventListener('click', () => {
+      const s = getChecklistState();
+      s[id] = !s[id];
+      saveChecklistState(s);
+      li.classList.toggle('marcado', s[id]);
+      li.querySelector('.check-box').textContent = s[id] ? '✓' : '';
+      const allChecked = Array.from(document.querySelectorAll('#checklist-ul li')).every(el => s[el.dataset.check]);
+      if (allChecked) launchConfetti(false);
+    });
+  });
+}
+
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.25 });
+sections.forEach(s => obs.observe(s));
+
+renderButtons();
+updateProgress();
+renderChecklist();
+
+/* ═══ Selector de aprendiz + envío a Google Sheets (Apps Script) ═══ */
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbyhq0L17BN2xp5FnAHuRXugHBYE4P9-4DvdWU4mR-1FnVBGUoBCGIkZw5O2ZEVu7T8P/exec';
+const ARCHIVO_ACTUAL  = '02_GUIA_USEEFFECT_FETCH';
+const APRENDIZ_KEY    = 'sena-aprendiz-nombre';
+
+const selectAprendiz = document.getElementById('aprendiz-select');
+const nombreGuardado = localStorage.getItem(APRENDIZ_KEY);
+if (nombreGuardado) selectAprendiz.value = nombreGuardado;
+selectAprendiz.addEventListener('change', () => {
+  localStorage.setItem(APRENDIZ_KEY, selectAprendiz.value);
+  selectAprendiz.classList.remove('falta');
+});
+
+const btnEnviar = document.getElementById('btn-enviar');
+const statusEl  = document.getElementById('submit-status');
+
+btnEnviar.addEventListener('click', async () => {
+  const aprendiz = selectAprendiz.value;
+  if (!aprendiz) {
+    selectAprendiz.classList.add('falta');
+    statusEl.textContent = 'Selecciona tu nombre arriba antes de enviar.';
+    statusEl.className = 'submit-status err';
+    selectAprendiz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const state = getState();
+  const pasosCompletados = STEPS.filter(s => state[s]);
+
+  btnEnviar.disabled = true;
+  statusEl.textContent = 'Enviando...';
+  statusEl.className = 'submit-status';
+
+  try {
+    await fetch(URL_APPS_SCRIPT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        aprendiz: aprendiz,
+        archivo: ARCHIVO_ACTUAL,
+        completados: pasosCompletados.length,
+        total: STEPS.length,
+        pasos: pasosCompletados
+      })
+    });
+    statusEl.textContent = '✓ Progreso enviado — ' + pasosCompletados.length + '/' + STEPS.length + ' pasos.';
+    statusEl.className = 'submit-status ok';
+  } catch (err) {
+    statusEl.textContent = '✗ No se pudo enviar. Revisa tu conexión e intenta de nuevo.';
+    statusEl.className = 'submit-status err';
+  } finally {
+    btnEnviar.disabled = false;
+  }
+});
+
+if (window.lucide) { lucide.createIcons(); }
+</script>
+</body>
+</html>
