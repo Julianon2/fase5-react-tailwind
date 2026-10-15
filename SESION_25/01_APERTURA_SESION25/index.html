@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 25: React Router — Navegación entre Páginas | SENA ADSO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sena-verde: #39a900;
+  --sena-verde-dark: #2d8400;
+  --sena-verde-glow: rgba(57,169,0,0.10);
+  --sena-verde-border: rgba(57,169,0,0.30);
+  --sena-naranja: #ff6b00;
+  --sena-naranja-glow: rgba(255,107,0,0.10);
+  --sena-naranja-border: rgba(255,107,0,0.30);
+  --texto: #1a1a2e;
+  --texto-dim: rgba(26,26,46,0.62);
+  --texto-dimmer: rgba(26,26,46,0.38);
+  --bg: #f8fafc;
+  --bg-alt: #f4f7f2;
+  --borde: #e2e8f0;
+  --acento-azul: #3b82f6;
+  --acento-azul-glow: rgba(59,130,246,0.10);
+  --acento-purpura: #8b5cf6;
+  --acento-purpura-glow: rgba(139,92,246,0.10);
+  --alerta-amarillo: #f59e0b;
+  --alerta-amarillo-glow: rgba(245,158,11,0.10);
+  --alerta-rojo: #ef4444;
+  --alerta-rojo-glow: rgba(239,68,68,0.10);
+  --acento-teal: #0ea5e9;
+  --acento-teal-glow: rgba(14,165,233,0.10);
+  --acento-teal-border: rgba(14,165,233,0.30);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter',sans-serif; color:var(--texto); background:var(--bg); line-height:1.6; overflow-x:hidden; }
+
+.topbar { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.95); backdrop-filter:blur(16px); border-bottom:2px solid var(--sena-verde); padding:12px 32px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 12px var(--sena-verde-glow); }
+.topbar-left { display:flex; align-items:center; gap:16px; }
+.sena-logo { background:var(--sena-verde); color:#fff; font-weight:900; font-size:18px; padding:8px 16px; border-radius:8px; letter-spacing:1px; }
+.topbar-brand { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--sena-verde-dark); }
+.topbar-sub { font-size:12px; color:var(--texto-dimmer); margin-top:2px; display:none; }
+@media(min-width:600px){ .topbar-sub{display:block;} }
+.topbar-nav { display:none; gap:4px; flex-wrap:wrap; }
+@media(min-width:900px){ .topbar-nav{display:flex;} }
+.topbar-nav a { color:var(--texto-dim); text-decoration:none; font-size:11px; font-weight:600; padding:6px 14px; border-radius:20px; border:1px solid transparent; transition:all .25s; white-space:nowrap; }
+.topbar-nav a:hover { color:var(--sena-verde-dark); border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+
+.slide { min-height:100vh; padding:80px 48px; position:relative; scroll-margin-top:64px; border-bottom:1px solid var(--borde); }
+.slide.bg-alt { background:var(--bg-alt); }
+.slide.bg-verde { background:linear-gradient(135deg, var(--sena-verde-glow) 0%, #ffffff 60%); }
+.slide.bg-azul  { background:linear-gradient(135deg, var(--acento-azul-glow) 0%, #ffffff 60%); }
+.slide.bg-teal  { background:linear-gradient(135deg, var(--acento-teal-glow) 0%, #ffffff 60%); }
+.slide-inner { max-width:1200px; margin:0 auto; }
+.slide-num-badge { position:absolute; top:24px; right:24px; background:var(--sena-verde-glow); color:var(--sena-verde); font-size:11px; font-weight:700; padding:6px 12px; border-radius:20px; letter-spacing:1px; border:1px solid var(--sena-verde-border); }
+
+.bg-dots { position:absolute; inset:0; background-image:radial-gradient(var(--sena-verde-border) 1px, transparent 1px); background-size:28px 28px; pointer-events:none; opacity:0.35; }
+.bg-glow { position:absolute; width:600px; height:600px; border-radius:50%; filter:blur(120px); opacity:0.22; pointer-events:none; z-index:0; }
+.bg-glow.g1 { background:radial-gradient(circle, var(--sena-verde-glow), transparent 70%); top:-200px; left:-200px; }
+.bg-glow.g2 { background:radial-gradient(circle, var(--sena-naranja-glow), transparent 70%); bottom:-200px; right:-200px; }
+
+.portada-tag { display:inline-flex; align-items:center; gap:8px; background:var(--sena-verde-glow); border:1px solid var(--sena-verde-border); padding:10px 20px; border-radius:30px; font-size:12px; font-weight:700; color:var(--sena-verde-dark); letter-spacing:1.5px; margin-bottom:32px; position:relative; z-index:1; }
+.portada-tag .dot { width:6px; height:6px; background:var(--sena-verde); border-radius:50%; animation:blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.portada-titulo { font-family:'Syne',sans-serif; font-size:clamp(40px,7vw,68px); font-weight:800; line-height:1.1; margin-bottom:20px; color:var(--texto); position:relative; z-index:1; }
+.portada-titulo .linea2 { display:block; background:linear-gradient(135deg, var(--acento-teal), var(--acento-azul)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-titulo .linea3 { display:block; background:linear-gradient(135deg, var(--sena-naranja), var(--acento-purpura)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-desc { font-size:clamp(15px,2vw,18px); color:var(--texto-dim); max-width:680px; margin-bottom:40px; position:relative; z-index:1; line-height:1.7; }
+.portada-meta { display:flex; gap:16px; flex-wrap:wrap; position:relative; z-index:1; }
+.portada-meta-item { background:rgba(255,255,255,0.9); border:1px solid var(--borde); padding:10px 20px; border-radius:12px; font-size:14px; font-weight:600; color:var(--texto-dim); display:flex; align-items:center; gap:8px; }
+
+.sec-header { margin-bottom:40px; position:relative; z-index:1; }
+.sec-tag { display:inline-block; font-size:11px; font-weight:700; padding:6px 14px; border-radius:20px; letter-spacing:1.2px; margin-bottom:14px; text-transform:uppercase; border:1px solid transparent; }
+.sec-tag.verde   { background:var(--sena-verde-glow); color:var(--sena-verde); border-color:var(--sena-verde-border); }
+.sec-tag.naranja { background:var(--sena-naranja-glow); color:var(--sena-naranja); border-color:var(--sena-naranja-border); }
+.sec-tag.azul    { background:var(--acento-azul-glow); color:var(--acento-azul); border-color:rgba(59,130,246,0.30); }
+.sec-tag.purpura { background:var(--acento-purpura-glow); color:var(--acento-purpura); border-color:rgba(139,92,246,0.30); }
+.sec-tag.amarillo{ background:var(--alerta-amarillo-glow); color:var(--alerta-amarillo); border-color:rgba(245,158,11,0.30); }
+.sec-tag.teal    { background:var(--acento-teal-glow); color:var(--acento-teal); border-color:var(--acento-teal-border); }
+.sec-tag.rojo    { background:var(--alerta-rojo-glow); color:var(--alerta-rojo); border-color:rgba(239,68,68,0.30); }
+.sec-titulo { font-family:'Syne',sans-serif; font-size:clamp(28px,4vw,42px); font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.sec-desc { font-size:clamp(15px,1.8vw,17px); color:var(--texto-dim); max-width:800px; line-height:1.7; }
+
+.info-box { border-radius:12px; padding:20px 24px; margin:20px 0; border-left:4px solid; position:relative; z-index:1; }
+.info-box.tip     { background:var(--sena-verde-glow); border-color:var(--sena-verde); }
+.info-box.warning { background:var(--alerta-amarillo-glow); border-color:var(--alerta-amarillo); }
+.info-box.danger  { background:var(--alerta-rojo-glow); border-color:var(--alerta-rojo); }
+.info-box.info    { background:var(--acento-azul-glow); border-color:var(--acento-azul); }
+.info-box.teal    { background:var(--acento-teal-glow); border-color:var(--acento-teal); }
+.info-box.purpura { background:var(--acento-purpura-glow); border-color:var(--acento-purpura); }
+.info-box-title   { font-weight:700; font-size:14px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.info-box.tip     .info-box-title { color:var(--sena-verde-dark); }
+.info-box.warning .info-box-title { color:#92400e; }
+.info-box.danger  .info-box-title { color:#991b1b; }
+.info-box.info    .info-box-title { color:#1e40af; }
+.info-box.teal    .info-box-title { color:#0369a1; }
+.info-box.purpura .info-box-title { color:#5b21b6; }
+.info-box-content { font-size:14px; color:var(--texto-dim); line-height:1.7; }
+
+.concepto-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:20px; position:relative; z-index:1; margin-bottom:28px; }
+.concepto-card { background:#fff; border:2px solid var(--borde); border-radius:16px; padding:24px; }
+.concepto-icon  { font-size:36px; margin-bottom:12px; display:flex; }
+.concepto-titulo{ font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--texto); margin-bottom:6px; }
+.concepto-desc  { font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.concepto-card.verde   { border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.concepto-card.azul    { border-color:rgba(59,130,246,0.25); background:var(--acento-azul-glow); }
+.concepto-card.teal    { border-color:var(--acento-teal-border); background:var(--acento-teal-glow); }
+.concepto-card.purpura { border-color:rgba(139,92,246,0.25); background:var(--acento-purpura-glow); }
+.concepto-card.naranja { border-color:var(--sena-naranja-border); background:var(--sena-naranja-glow); }
+.concepto-card.amarillo{ border-color:rgba(245,158,11,0.30); background:var(--alerta-amarillo-glow); }
+
+.tabla-wrap { overflow-x:auto; position:relative; z-index:1; margin:20px 0; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th { background:var(--sena-verde); color:#fff; padding:12px 16px; text-align:left; font-weight:700; }
+th:first-child { border-radius:8px 0 0 0; } th:last-child { border-radius:0 8px 0 0; }
+td { padding:12px 16px; border-bottom:1px solid var(--borde); vertical-align:top; }
+tr:nth-child(even) td { background:var(--bg-alt); }
+tr:hover td { background:var(--sena-verde-glow); }
+
+.entregable-box { background:linear-gradient(135deg, var(--sena-verde-glow), var(--acento-teal-glow)); border:2px solid var(--sena-verde-border); border-radius:16px; padding:28px 32px; position:relative; z-index:1; margin-top:32px; }
+.entregable-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--sena-verde-dark); margin-bottom:16px; }
+.entregable-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.entregable-list li { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:var(--texto); }
+.entregable-list li::before { content:'✓'; color:var(--sena-verde); font-weight:800; flex-shrink:0; }
+
+.roadmap-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){ .roadmap-grid{ grid-template-columns:1fr; } }
+.roadmap-card { background:#fff; border:2px solid var(--borde); border-radius:18px; padding:28px 24px 24px; position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s; }
+.roadmap-card:hover { transform:translateY(-4px); box-shadow:0 16px 32px rgba(14,165,233,.14); border-color:var(--acento-teal-border); }
+.roadmap-num { position:absolute; top:-6px; right:4px; font-family:'Syne',sans-serif; font-size:72px; font-weight:800; color:var(--acento-teal); opacity:.10; line-height:1; pointer-events:none; }
+.roadmap-icon { font-size:34px; margin-bottom:14px; display:flex; }
+.roadmap-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--acento-teal); background:var(--acento-teal-glow); border:1px solid var(--acento-teal-border); padding:4px 10px; border-radius:20px; margin-bottom:12px; }
+.roadmap-titulo { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--texto); margin-bottom:10px; line-height:1.25; }
+.roadmap-desc { font-size:13px; color:var(--texto-dim); line-height:1.65; }
+
+/* ── RAP cards — competencia y resultados de aprendizaje ── */
+.rap-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){ .rap-grid{ grid-template-columns:1fr; } }
+.rap-card { background:#fff; border-radius:18px; padding:0; overflow:hidden; border:2px solid var(--borde); position:relative; transition:transform .2s, box-shadow .2s; }
+.rap-card:hover { transform:translateY(-4px); box-shadow:0 18px 36px rgba(0,0,0,.09); }
+.rap-card-bar { height:6px; width:100%; }
+.rap-card.done .rap-card-bar { background:linear-gradient(90deg, var(--sena-verde), #6bd44e); }
+.rap-card.active .rap-card-bar { background:linear-gradient(90deg, var(--acento-teal), var(--acento-azul)); }
+.rap-card.pending .rap-card-bar { background:linear-gradient(90deg, var(--acento-teal), #7dd3fc); opacity:.6; }
+.rap-card.active { border-color:var(--acento-teal); box-shadow:0 0 0 4px var(--acento-teal-glow), 0 18px 36px rgba(14,165,233,.14); }
+.rap-card-body { padding:28px 26px 26px; }
+.rap-card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+.rap-card-icon { font-size:42px; line-height:1; display:flex; }
+.rap-card-status { font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:5px 12px; border-radius:20px; white-space:nowrap; display:flex; align-items:center; gap:6px; }
+.rap-card.done .rap-card-status { background:var(--sena-verde-glow); color:var(--sena-verde-dark); }
+.rap-card.active .rap-card-status { background:var(--acento-teal-glow); color:#0369a1; }
+.rap-card.pending .rap-card-status { background:var(--acento-teal-glow); color:#0369a1; opacity:.8; }
+.rap-card-id { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--texto-dimmer); margin-bottom:6px; text-transform:uppercase; }
+.rap-card-titulo { font-family:'Syne',sans-serif; font-size:21px; font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.rap-card-desc { font-size:13.5px; color:var(--texto-dim); line-height:1.6; }
+.rap-card.active .rap-card-icon { animation: rapPulse 1.8s ease-in-out infinite; }
+@keyframes rapPulse { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
+
+.footer-nav { position:fixed; bottom:0; left:0; right:0; z-index:90; background:rgba(255,255,255,0.95); backdrop-filter:blur(16px); border-top:2px solid var(--sena-verde); padding:14px 32px; display:flex; align-items:center; justify-content:space-between; }
+.footer-btn { background:var(--sena-verde); color:#fff; border:none; padding:10px 24px; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; transition:all .2s; }
+.footer-btn:hover { background:var(--sena-verde-dark); transform:translateY(-1px); }
+.footer-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.footer-page { font-size:13px; font-weight:600; color:var(--texto-dim); }
+
+.code-editor { background:#1a1a2e; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+.code-editor-header { background:#12121f; padding:10px 16px; display:flex; align-items:center; gap:8px; }
+.term-dot { width:11px; height:11px; border-radius:50%; }
+.term-dot.r { background:#ff5f57; } .term-dot.y { background:#febc2e; } .term-dot.g { background:#28c840; }
+.code-editor-title { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#8892a4; flex:1; }
+.code-editor-body { padding:14px 0; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.85; flex:1; overflow-x:auto; }
+.cl { display:grid; grid-template-columns:24px 1fr; column-gap:10px; padding:0 18px; white-space:pre; }
+.cl .ln { color:#4a5178; user-select:none; text-align:right; }
+.cl .code { color:#e2e8f0; }
+.indent-1 .code { padding-left:18px; }
+.cm { color:#565f89; font-style:italic; }
+.sel { color:#7dcfff; }
+.prop { color:#9ece6a; }
+.val { color:#e2e8f0; }
+.tag { color:#f7768e; }
+.attr { color:#e0af68; }
+.str { color:#9ece6a; }
+.punc { color:#8892a4; }
+
+/* Comparación */
+.dom-compare { display:grid; grid-template-columns:1fr auto 1fr; gap:20px; align-items:center; margin:24px 0; position:relative; z-index:1; }
+@media(max-width:900px){ .dom-compare{ grid-template-columns:1fr; } }
+.dom-box { background:#fff; border:2px solid var(--borde); border-radius:16px; padding:22px; }
+.dom-box.mal { border-color:rgba(239,68,68,.3); background:var(--alerta-rojo-glow); }
+.dom-box.bien { border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.dom-box-title { font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.dom-box-desc { font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.dom-vs { font-family:'Syne',sans-serif; font-weight:800; font-size:16px; color:var(--texto-dimmer); text-align:center; }
+
+/* Desglose didáctico — pares de colores emparejados */
+.par-valor   { color:#0ea5e9; font-weight:800; }
+.par-funcion { color:#d946ef; font-weight:800; }
+.par-inicial { color:#f59e0b; font-weight:800; }
+.par-evento  { color:#22c55e; font-weight:800; }
+.par-handler { color:#f97316; font-weight:800; }
+.par-dato    { color:#a855f7; font-weight:800; }
+
+.useState-split { display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; position:relative; z-index:1; margin-bottom:24px; }
+@media(max-width:900px){ .useState-split{ grid-template-columns:1fr; } }
+.useState-breakdown { background:#fff; border:2px solid var(--borde); border-radius:14px; padding:18px 20px; }
+.useState-breakdown-label { font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--texto-dimmer); text-align:center; margin-bottom:10px; letter-spacing:.04em; }
+.useState-breakdown-line { font-family:'JetBrains Mono',monospace; font-size:13px; text-align:center; margin-bottom:8px; line-height:1.6; }
+.useState-breakdown-arrows { display:flex; justify-content:center; gap:28px; margin:4px 0; font-size:16px; }
+.useState-breakdown-plain { font-family:'JetBrains Mono',monospace; font-size:12.5px; text-align:center; line-height:1.6; }
+
+/* Demo navegador falso — simula navegación SPA */
+.browser-mock { max-width:600px; margin:0 auto 24px; border:2px solid var(--borde); border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.12); position:relative; z-index:1; }
+.browser-mock-bar { background:#e2e8f0; padding:10px 16px; display:flex; align-items:center; gap:10px; }
+.browser-mock-dots { display:flex; gap:6px; }
+.browser-mock-dot { width:10px; height:10px; border-radius:50%; background:#cbd5e1; }
+.browser-mock-url { flex:1; background:#fff; border-radius:6px; padding:6px 12px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--texto-dim); }
+.browser-mock-body { background:#fff; padding:32px; min-height:160px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center; }
+.browser-mock-nav { display:flex; gap:8px; justify-content:center; margin-bottom:8px; flex-wrap:wrap; }
+.browser-mock-nav button { background:var(--bg-alt); border:1px solid var(--borde); padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; color:var(--texto-dim); transition:all .15s; }
+.browser-mock-nav button:hover { background:var(--sena-verde-glow); color:var(--sena-verde-dark); border-color:var(--sena-verde-border); }
+.browser-mock-nav button.active { background:var(--sena-verde); color:#fff; border-color:var(--sena-verde); }
+.browser-mock-flash { animation: flashReload .4s ease; }
+@keyframes flashReload { 0%{ opacity:1; } 40%{ opacity:0.15; } 100%{ opacity:1; } }
+.browser-mock-caption { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--texto-dimmer); text-align:center; margin-top:4px; }
+
+@media(max-width:768px){ .slide{padding:60px 24px;} .topbar{padding:10px 20px;} }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="sena-logo">SENA</div>
+    <div>
+      <div class="topbar-brand">ADSO · Construcción de Software</div>
+      <div class="topbar-sub">Ficha 3229944 · Garzón, Huila</div>
+    </div>
+  </div>
+  <nav class="topbar-nav">
+    <a href="#portada">Inicio</a>
+    <a href="#competencia">Competencia</a>
+    <a href="#plan">Plan</a>
+    <a href="#logros">Logros</a>
+    <a href="#problema-una-pagina">El problema</a>
+    <a href="#router">React Router</a>
+    <a href="#link-vs-a">Link vs a</a>
+    <a href="#parametros">Parámetros</a>
+    <a href="#entregable">Entregable</a>
+  </nav>
+</div>
+
+<!-- ══════════ SLIDE 1 — PORTADA ══════════ -->
+<section class="slide" id="portada">
+  <div class="bg-dots"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="slide-inner" style="position:relative;z-index:1;">
+    <div class="portada-tag"><span class="dot"></span> SESIÓN 25 · FASE 5 REACT Y TAILWIND CSS</div>
+    <h1 class="portada-titulo">
+      TechStore Pro<br>
+      <span class="linea2">React Router:</span>
+      <span class="linea3">Navegación entre Páginas</span>
+    </h1>
+    <p class="portada-desc">
+      Hasta hoy, TechStore Pro en React ha vivido entero dentro de un solo componente: <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">App.jsx</code>. No hay "ir a Productos" ni "ir a Contacto" — solo existe esa única pantalla. Hoy aparecen las páginas de verdad.
+    </p>
+    <div class="portada-meta">
+      <div class="portada-meta-item"><i data-lucide="calendar"></i> Sesión 25 de 44</div>
+      <div class="portada-meta-item"><i data-lucide="signpost"></i> react-router-dom</div>
+      <div class="portada-meta-item"><i data-lucide="link"></i> &lt;Link&gt; y rutas</div>
+      <div class="portada-meta-item"><i data-lucide="folder"></i> Fase 5 — React y Tailwind</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">01 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 2 — COMPETENCIA Y RESULTADOS DE APRENDIZAJE ══════════ -->
+<section class="slide bg-alt" id="competencia">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag purpura">Marco de formación</span>
+      <h2 class="sec-titulo">Competencia 220501096</h2>
+      <p class="sec-desc">Construcción del software de acuerdo con el diseño establecido. Todo lo que hacemos en esta fase construye evidencia real para estos 5 Resultados de Aprendizaje.</p>
+    </div>
+
+    <div class="rap-grid">
+      <div class="rap-card done">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><i data-lucide="map"></i></span>
+            <span class="rap-card-status"><i data-lucide="check-circle"></i> Cerrado</span>
+          </div>
+          <div class="rap-card-id">RAP1</div>
+          <div class="rap-card-titulo">Planear</div>
+          <div class="rap-card-desc">Planear actividades de construcción según el diseño establecido.</div>
+        </div>
+      </div>
+
+      <div class="rap-card done">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><i data-lucide="database"></i></span>
+            <span class="rap-card-status"><i data-lucide="check-circle"></i> Cerrado</span>
+          </div>
+          <div class="rap-card-id">RAP2</div>
+          <div class="rap-card-titulo">Base de datos</div>
+          <div class="rap-card-desc">Construir la base de datos a partir del modelo de datos. Cerrado en Fase 3.</div>
+        </div>
+      </div>
+
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><i data-lucide="puzzle"></i></span>
+            <span class="rap-card-status"><i data-lucide="clock"></i> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP3</div>
+          <div class="rap-card-titulo">Componentes front-end</div>
+          <div class="rap-card-desc">Crear componentes front-end de acuerdo con el diseño. En curso — Fase 5.</div>
+        </div>
+      </div>
+
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><i data-lucide="laptop"></i></span>
+            <span class="rap-card-status"><i data-lucide="clock"></i> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP4</div>
+          <div class="rap-card-titulo">Codificar</div>
+          <div class="rap-card-desc">Codificar el software según el diseño establecido. Hoy se estructura la navegación real del sitio.</div>
+        </div>
+      </div>
+
+      <div class="rap-card pending">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><i data-lucide="flask-conical"></i></span>
+            <span class="rap-card-status"><i data-lucide="clock"></i> En curso</span>
+          </div>
+          <div class="rap-card-id">RAP5</div>
+          <div class="rap-card-titulo">Pruebas</div>
+          <div class="rap-card-desc">Realizar pruebas para verificar la funcionalidad. Evidencia en cada sesión.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box tip" style="margin-top:20px;">
+      <div class="info-box-title"><i data-lucide="map-pin"></i> Dónde estamos hoy</div>
+      <div class="info-box-content">La Sesión 25 aporta evidencia directa a <strong>RAP3</strong> (estructura de páginas/componentes de nivel superior) y <strong>RAP4</strong> (código nuevo aplicado sobre <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">frontend-react/</code>) — hoy TechStore Pro deja de ser una sola pantalla y empieza a tener páginas de verdad, cada una con su propia URL.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">02 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 3 — PLAN ══════════ -->
+<section class="slide" id="plan">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag naranja">Agenda</span>
+      <h2 class="sec-titulo">Plan de la sesión</h2>
+      <p class="sec-desc">240 minutos para instalar React Router, definir las rutas reales de TechStore Pro, y navegar entre ellas sin recargar la página.</p>
+    </div>
+
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">1</div>
+        <div class="roadmap-icon"><i data-lucide="clapperboard"></i></div>
+        <div class="roadmap-tag">0–30 min</div>
+        <div class="roadmap-titulo">Apertura</div>
+        <div class="roadmap-desc">Por qué App.jsx como única pantalla no alcanza, qué es react-router-dom, Link vs a.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">2</div>
+        <div class="roadmap-icon"><i data-lucide="download"></i></div>
+        <div class="roadmap-tag">30–60 min</div>
+        <div class="roadmap-titulo">Instalar react-router-dom</div>
+        <div class="roadmap-desc">npm install react-router-dom, envolver la app en BrowserRouter.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">3</div>
+        <div class="roadmap-icon"><i data-lucide="signpost"></i></div>
+        <div class="roadmap-tag">60–150 min</div>
+        <div class="roadmap-titulo">Definir las rutas reales</div>
+        <div class="roadmap-desc">Crear páginas Home y Productos, configurar Routes/Route, mover el catálogo actual a su propia página.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">4</div>
+        <div class="roadmap-icon"><i data-lucide="link"></i></div>
+        <div class="roadmap-tag">150–220 min</div>
+        <div class="roadmap-titulo">Navbar con Link</div>
+        <div class="roadmap-desc">Reemplazar los &lt;li&gt; sueltos del navbar por &lt;Link&gt; real, navegando sin recargar.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">5</div>
+        <div class="roadmap-icon"><i data-lucide="flag"></i></div>
+        <div class="roadmap-tag">220–240 min</div>
+        <div class="roadmap-titulo">Cierre</div>
+        <div class="roadmap-desc">Revisión de entregables y vista previa de la Sesión 26 — Context API para auth y carrito.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">03 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 4 — LOGROS ══════════ -->
+<section class="slide bg-teal" id="logros">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag teal">Objetivos</span>
+      <h2 class="sec-titulo">¿Qué vamos a lograr?</h2>
+      <p class="sec-desc">Al terminar la sesión, TechStore Pro tiene páginas reales — Home y Productos — navegables desde el navbar, sin recargar el navegador.</p>
+    </div>
+
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">01</div>
+        <div class="roadmap-icon"><i data-lucide="signpost"></i></div>
+        <div class="roadmap-tag">Estructura</div>
+        <div class="roadmap-titulo">react-router-dom instalado y configurado</div>
+        <div class="roadmap-desc">BrowserRouter envolviendo la app, Routes definiendo qué componente va en cada URL.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">02</div>
+        <div class="roadmap-icon"><i data-lucide="layout-dashboard"></i></div>
+        <div class="roadmap-tag">Páginas</div>
+        <div class="roadmap-titulo">Home y Productos separadas</div>
+        <div class="roadmap-desc">El catálogo (buscador + grid) que hoy vive en App.jsx pasa a ser la página Productos, en su propia ruta.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">03</div>
+        <div class="roadmap-icon"><i data-lucide="link"></i></div>
+        <div class="roadmap-tag">Navegación real</div>
+        <div class="roadmap-titulo">Navbar con Link funcional</div>
+        <div class="roadmap-desc">Clic en "Productos" cambia la URL y el contenido, sin el parpadeo de una recarga completa.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">04 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 5 — EL PROBLEMA ══════════ -->
+<section class="slide bg-azul" id="problema-una-pagina">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag rojo">El problema</span>
+      <h2 class="sec-titulo">TechStore Pro no tiene páginas — todavía</h2>
+      <p class="sec-desc">Desde S19, todo (navbar, buscador, catálogo, footer) vive dentro de <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">App.jsx</code>. Los links del navbar (<code style="font-family:'JetBrains Mono',monospace;font-size:14px;">Inicio, Productos, Nosotros, Contacto</code>) son solo texto — no llevan a ningún lado.</p>
+    </div>
+
+    <div class="concepto-grid">
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><i data-lucide="mouse-pointer-click"></i></div>
+        <div class="concepto-titulo">Los links del navbar no hacen nada</div>
+        <div class="concepto-desc">Son <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">&lt;li&gt;</code> sin <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">href</code> ni destino — visualmente parecen navegación, pero no navegan.</div>
+      </div>
+      <div class="concepto-card amarillo">
+        <div class="concepto-icon"><i data-lucide="file-text"></i></div>
+        <div class="concepto-titulo">Un solo archivo, todo el sitio</div>
+        <div class="concepto-desc">Home, Productos, Nosotros y Contacto deberían ser 4 pantallas distintas — hoy solo existe una.</div>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      <div class="info-box-title"><i data-lucide="check-circle"></i> Esto no es un error, es una etapa</div>
+      <div class="info-box-content">En S19-S24 el foco era aprender componentes, props, estado y conexión a datos reales — todo eso funcionaba igual de bien en una sola pantalla. Hoy, con esas bases ya sólidas, toca resolver la navegación real entre páginas.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">05 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 6 — ¿QUÉ ES REACT ROUTER? ══════════ -->
+<section class="slide bg-verde" id="router">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag verde">Concepto</span>
+      <h2 class="sec-titulo">react-router-dom — URLs sin recargar la página</h2>
+      <p class="sec-desc">Es una librería (no viene incluida en React) que conecta la URL del navegador con qué componente se muestra — sin que el navegador recargue nada.</p>
+    </div>
+
+    <div class="browser-mock">
+      <div class="browser-mock-bar">
+        <div class="browser-mock-dots"><div class="browser-mock-dot"></div><div class="browser-mock-dot"></div><div class="browser-mock-dot"></div></div>
+        <div class="browser-mock-url" id="demo-router-url">localhost:5173/</div>
+      </div>
+      <div class="browser-mock-body" id="demo-router-body">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;">🏠 Página Home</div>
+        <div style="font-size:12px;color:var(--texto-dim);">Contenido de la portada</div>
+      </div>
+      <div style="padding:14px 16px;border-top:1px solid var(--borde);background:var(--bg-alt);">
+        <div class="browser-mock-nav">
+          <button class="active" onclick="demoRouterGo('home', this)">Inicio</button>
+          <button onclick="demoRouterGo('productos', this)">Productos</button>
+          <button onclick="demoRouterGo('contacto', this)">Contacto</button>
+        </div>
+      </div>
+    </div>
+    <div class="browser-mock-caption">Prueba los botones — la URL cambia, el contenido cambia, pero la página NUNCA parpadea ni recarga.</div>
+
+    <div class="useState-split" style="margin-top:32px;">
+      <div class="code-editor">
+        <div class="code-editor-header">
+          <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+          <div class="code-editor-title">main.jsx — envolver la app</div>
+        </div>
+        <div class="code-editor-body">
+          <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">import</span> { BrowserRouter } <span class="prop">from</span> <span class="str">'react-router-dom'</span></span></div>
+          <div class="cl"><span class="ln">2</span><span class="code"></span></div>
+          <div class="cl"><span class="ln">3</span><span class="code">&lt;<span class="par-evento">BrowserRouter</span>&gt;</span></div>
+          <div class="cl indent-1"><span class="ln">4</span><span class="code">  &lt;<span class="tag">App</span> /&gt;</span></div>
+          <div class="cl"><span class="ln">5</span><span class="code">&lt;/<span class="par-evento">BrowserRouter</span>&gt;</span></div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="useState-breakdown">
+          <div class="useState-breakdown-label">// en palabras normales</div>
+          <div class="useState-breakdown-line"><span class="par-evento">BrowserRouter</span> = el componente que habilita la navegación</div>
+          <div class="useState-breakdown-arrows">
+            <span class="par-evento">↓</span>
+          </div>
+          <div class="useState-breakdown-plain">"Envuelve toda la app para que pueda <span class="par-evento">leer y cambiar la URL</span> sin recargar — sin esto, &lt;Link&gt; y las rutas no funcionan."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">06 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 7 — ROUTES Y ROUTE ══════════ -->
+<section class="slide bg-teal" id="routes">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag teal">Concepto</span>
+      <h2 class="sec-titulo">Routes y Route — el mapa de páginas</h2>
+      <p class="sec-desc">Dentro de <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">App.jsx</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">&lt;Routes&gt;</code> es la lista de todas las URLs posibles, y cada <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">&lt;Route&gt;</code> dice qué componente mostrar en cada una.</p>
+    </div>
+
+    <div class="code-editor" style="max-width:640px;margin:0 auto 20px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">App.jsx — el mapa de rutas</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">import</span> { Routes, Route } <span class="prop">from</span> <span class="str">'react-router-dom'</span></span></div>
+        <div class="cl"><span class="ln">2</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">&lt;<span class="par-funcion">Routes</span>&gt;</span></div>
+        <div class="cl indent-1"><span class="ln">4</span><span class="code">  &lt;<span class="par-evento">Route</span> <span class="attr">path</span>=<span class="str">"/"</span> <span class="attr">element</span>=<span class="punc">{</span>&lt;<span class="tag">Home</span> /&gt;<span class="punc">}</span> /&gt;</span></div>
+        <div class="cl indent-1"><span class="ln">5</span><span class="code">  &lt;<span class="par-evento">Route</span> <span class="attr">path</span>=<span class="str">"/productos"</span> <span class="attr">element</span>=<span class="punc">{</span>&lt;<span class="tag">Productos</span> /&gt;<span class="punc">}</span> /&gt;</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">&lt;/<span class="par-funcion">Routes</span>&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué es</th></tr></thead>
+        <tbody>
+          <tr><td>&lt;Routes&gt;</td><td>Contenedor — agrupa todas las rutas posibles de la app</td></tr>
+          <tr><td>&lt;Route path="/" ...&gt;</td><td>La URL exacta a la que responde esta ruta — "/" es la raíz del sitio</td></tr>
+          <tr><td>element={&lt;Home /&gt;}</td><td>Qué componente se dibuja cuando la URL coincide con ese path</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box warning">
+      <div class="info-box-title"><i data-lucide="alert-triangle"></i> Solo una Route coincide a la vez</div>
+      <div class="info-box-content">React Router busca de arriba hacia abajo y muestra la primera <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">&lt;Route&gt;</code> cuyo <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">path</code> coincida con la URL actual — nunca dos páginas a la vez.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">07 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 8 — LINK VS A ══════════ -->
+<section class="slide bg-azul" id="link-vs-a">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag azul">Concepto</span>
+      <h2 class="sec-titulo">&lt;Link&gt; vs &lt;a&gt; — la diferencia que importa</h2>
+      <p class="sec-desc">Ambos se ven igual en pantalla y ambos cambian la URL — pero por dentro hacen algo completamente distinto.</p>
+    </div>
+
+    <div class="dom-compare">
+      <div class="dom-box mal">
+        <div class="dom-box-title"><i data-lucide="x-circle"></i> &lt;a href="/productos"&gt;</div>
+        <div class="dom-box-desc">Le dice al navegador "descarga esta página desde cero" — recarga TODO: HTML, CSS, JS, y pierde cualquier estado de React (como lo que había en el buscador).</div>
+      </div>
+      <div class="dom-vs">VS</div>
+      <div class="dom-box bien">
+        <div class="dom-box-title"><i data-lucide="check-circle"></i> &lt;Link to="/productos"&gt;</div>
+        <div class="dom-box-desc">Intercepta el clic, cambia la URL con JavaScript, y le pide a React Router que dibuje el componente nuevo — sin tocar el navegador.</div>
+      </div>
+    </div>
+
+    <div class="code-editor" style="max-width:600px;margin:24px auto;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">Navbar.jsx — reemplazar li por Link</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="cm">// antes</span></span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">&lt;<span class="tag">li</span>&gt;Productos&lt;/<span class="tag">li</span>&gt;</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">4</span><span class="code"><span class="cm">// después</span></span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">&lt;<span class="par-evento">Link</span> <span class="attr">to</span>=<span class="str">"/productos"</span>&gt;Productos&lt;/<span class="par-evento">Link</span>&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      <div class="info-box-title"><i data-lucide="lightbulb"></i> Regla simple</div>
+      <div class="info-box-content">Dentro de una app de React con React Router, usa <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">&lt;Link&gt;</code> para navegar entre páginas internas del sitio. <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">&lt;a&gt;</code> normal se reserva para enlaces externos (otro sitio web, no parte de TechStore Pro).</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">08 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 9 — PARÁMETROS DE RUTA ══════════ -->
+<section class="slide bg-alt" id="parametros">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag purpura">Concepto</span>
+      <h2 class="sec-titulo">Parámetros de ruta — una URL que cambia</h2>
+      <p class="sec-desc">No todas las rutas son fijas. <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">:id</code> en una ruta significa "aquí va un valor variable" — necesario para la página de detalle de cada producto (S29).</p>
+    </div>
+
+    <div class="code-editor" style="max-width:600px;margin:0 auto 20px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">Una ruta con parámetro</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">&lt;<span class="par-evento">Route</span> <span class="attr">path</span>=<span class="str">"/producto/:id"</span> <span class="attr">element</span>=<span class="punc">{</span>&lt;<span class="tag">ProductoDetalle</span> /&gt;<span class="punc">}</span> /&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>URL real</th><th>¿Coincide con /producto/:id?</th></tr>
+        <tbody>
+          <tr><td>/producto/64a1f2</td><td>Sí — :id = "64a1f2"</td></tr>
+          <tr><td>/producto/7</td><td>Sí — :id = "7"</td></tr>
+          <tr><td>/producto</td><td>No — falta la parte después de /producto/</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box info">
+      <div class="info-box-title"><i data-lucide="lightbulb"></i> Esto no se usa todavía, pero ya se entiende</div>
+      <div class="info-box-content">Hoy solo se definen rutas fijas (<code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/productos</code>). Los parámetros de ruta (<code style="font-family:'JetBrains Mono',monospace;font-size:12px;">:id</code>) se usan en la Sesión 29, cuando cada producto tenga su propia página de detalle — por eso se explican hoy, para que no sea nuevo cuando llegue ese momento.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">09 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 10 — RUTAS DE TECHSTORE PRO ══════════ -->
+<section class="slide bg-verde" id="rutas-techstore">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag verde">Referencia</span>
+      <h2 class="sec-titulo">Las 9 rutas que tendrá TechStore Pro</h2>
+      <p class="sec-desc">El sitio completo tiene 9 páginas identificadas desde el plan de la fase. Hoy se crean las primeras 2 (Home, Productos); el resto llega en sesiones futuras de migración.</p>
+    </div>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Ruta</th><th>Página</th><th>¿Cuándo?</th></tr></thead>
+        <tbody>
+          <tr><td>/</td><td>Home</td><td>Hoy — S25</td></tr>
+          <tr><td>/productos</td><td>Productos (catálogo)</td><td>Hoy — S25</td></tr>
+          <tr><td>/producto/:id</td><td>Detalle de producto</td><td>S29</td></tr>
+          <tr><td>/carrito</td><td>Carrito</td><td>S31-S32</td></tr>
+          <tr><td>/login, /registro</td><td>Login / Registro</td><td>S30</td></tr>
+          <tr><td>/mis-pedidos</td><td>Mis Pedidos</td><td>S33</td></tr>
+          <tr><td>/perfil, /admin</td><td>Perfil / Admin</td><td>S34</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <span class="slide-num-badge">10 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 11 — PREREQUISITOS ══════════ -->
+<section class="slide bg-teal" id="prerequisitos">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag amarillo">Antes de empezar</span>
+      <h2 class="sec-titulo">Prerequisitos</h2>
+      <p class="sec-desc">Hoy se instala la primera librería externa de React desde S19.</p>
+    </div>
+
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><i data-lucide="database"></i></div>
+        <div class="concepto-titulo">Backend corriendo</div>
+        <div class="concepto-desc">El servidor de la Fase 3 sigue activo en <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">localhost:3000</code> — el catálogo de la nueva página Productos lo sigue necesitando.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><i data-lucide="laptop"></i></div>
+        <div class="concepto-titulo">Frontend corriendo</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;">npm run dev</code> en <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">frontend-react/</code> — en <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">localhost:5173</code>, como siempre.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><i data-lucide="download"></i></div>
+        <div class="concepto-titulo">Instalación nueva</div>
+        <div class="concepto-desc">Hoy sí hace falta <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">npm install react-router-dom</code> — la primera librería externa desde que se creó el proyecto en S19.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><i data-lucide="folder-plus"></i></div>
+        <div class="concepto-titulo">Páginas como archivos nuevos</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;">src/Home.jsx</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">src/Productos.jsx</code> — primeras páginas propias del proyecto.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">11 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 12 — RESUMEN DE CONCEPTOS NUEVOS ══════════ -->
+<section class="slide" id="resumen-conceptos">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag purpura">Referencia rápida</span>
+      <h2 class="sec-titulo">Los conceptos nuevos de hoy</h2>
+      <p class="sec-desc">Todo lo de S19-S24 (Tailwind, componentes, props, useState, useEffect) sigue funcionando igual — esto es lo que se suma hoy.</p>
+    </div>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Concepto</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><td>react-router-dom</td><td>Librería externa que conecta la URL del navegador con componentes de React</td></tr>
+          <tr><td>BrowserRouter</td><td>Componente que habilita la navegación — envuelve toda la app, una sola vez</td></tr>
+          <tr><td>Routes / Route</td><td>El mapa de URLs posibles y qué componente muestra cada una</td></tr>
+          <tr><td>&lt;Link to="..."&gt;</td><td>Navega sin recargar la página — reemplaza &lt;a href&gt; para rutas internas</td></tr>
+          <tr><td>:id (parámetro de ruta)</td><td>Parte variable de una URL — se usará en S29 para el detalle de cada producto</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <span class="slide-num-badge">12 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 13 — RESUMEN VISUAL ══════════ -->
+<section class="slide bg-teal" id="resumen-visual">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag teal">En resumen</span>
+      <h2 class="sec-titulo">De una pantalla única a páginas reales</h2>
+      <p class="sec-desc">El mismo diseño de siempre — hoy cambia cómo se organiza y se navega entre el contenido.</p>
+    </div>
+
+    <div class="dom-compare" style="grid-template-columns:1fr auto 1fr;">
+      <div class="dom-box mal">
+        <div class="dom-box-title"><i data-lucide="file-text"></i> Antes (S19-S24)</div>
+        <div class="dom-box-desc">Todo en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">App.jsx</code> — navbar, buscador y catálogo juntos, sin navegación real.</div>
+      </div>
+      <div class="dom-vs">→</div>
+      <div class="dom-box bien">
+        <div class="dom-box-title"><i data-lucide="signpost"></i> Después de hoy</div>
+        <div class="dom-box-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Home.jsx</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Productos.jsx</code> — páginas separadas, navegables con &lt;Link&gt;.</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">13 / 14</span>
+</section>
+
+<!-- ══════════ SLIDE 14 — ENTREGABLE ══════════ -->
+<section class="slide bg-azul" id="entregable">
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag azul">Cierre · Sesión 25</span>
+      <h2 class="sec-titulo">¡Empezamos!</h2>
+    </div>
+
+    <div class="entregable-box">
+      <div class="entregable-title">Criterios de evaluación</div>
+      <ul class="entregable-list">
+        <li>react-router-dom instalado, BrowserRouter envolviendo la app en main.jsx</li>
+        <li>src/Home.jsx y src/Productos.jsx creados como páginas separadas</li>
+        <li>El catálogo (buscador + grid + useEffect/fetch) vive ahora en Productos.jsx</li>
+        <li>Routes/Route configuradas para "/" y "/productos"</li>
+        <li>Navbar usa &lt;Link&gt; en vez de &lt;li&gt; sueltos — navega sin recargar</li>
+        <li>Probado haciendo clic entre Inicio y Productos, verificando que la URL cambia y no hay recarga completa</li>
+      </ul>
+    </div>
+
+    <div class="concepto-grid" style="margin-top:24px;">
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><i data-lucide="book-open"></i></div>
+        <div class="concepto-titulo">02 — Guía paso a paso</div>
+        <div class="concepto-desc">La parte <strong>obligatoria</strong> de hoy: instalar react-router-dom, crear las páginas, configurar las rutas.</div>
+        <a href="#" style="display:inline-block;margin-top:10px;color:#1e40af;font-weight:700;text-decoration:underline;font-size:13px;">Abrir guía →</a>
+      </div>
+      <div class="concepto-card teal">
+        <div class="concepto-icon"><i data-lucide="pencil"></i></div>
+        <div class="concepto-titulo">03 — Ejercicios de práctica</div>
+        <div class="concepto-desc"><strong>Opcional</strong> — solo si sobra tiempo después de terminar la guía 02. Refuerzo de rutas.</div>
+        <a href="#" style="display:inline-block;margin-top:10px;color:#0369a1;font-weight:700;text-decoration:underline;font-size:13px;">Abrir ejercicios →</a>
+      </div>
+    </div>
+
+    <div class="info-box teal" style="margin-top:20px;">
+      <div class="info-box-title">Próxima sesión — S26</div>
+      <div class="info-box-content">Context API: estado global para autenticación y carrito. Por qué localStorage + props ya no alcanza cuando hay varias páginas — crear AuthContext y CartContext.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">14 / 14</span>
+</section>
+
+<!-- ── FOOTER NAV FIJO ── -->
+<nav class="footer-nav">
+  <button class="footer-btn" id="btn-prev" onclick="navSlide(-1)" disabled>← Anterior</button>
+  <span class="footer-page" id="footer-page">Slide 1 de 14</span>
+  <button class="footer-btn" id="btn-next" onclick="navSlide(1)">Siguiente →</button>
+</nav>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+const slides = Array.from(document.querySelectorAll('.slide'));
+let current = 0;
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const pageLabel = document.getElementById('footer-page');
+
+function updateNav() {
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = current === slides.length - 1;
+  pageLabel.textContent = 'Slide ' + (current + 1) + ' de ' + slides.length;
+}
+
+function navSlide(dir) {
+  current = Math.max(0, Math.min(slides.length - 1, current + dir));
+  slides[current].scrollIntoView({ behavior: 'smooth' });
+  updateNav();
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      current = slides.indexOf(e.target);
+      updateNav();
+    }
+  });
+}, { threshold: 0.5 });
+slides.forEach(s => observer.observe(s));
+
+updateNav();
+
+/* ─ Demo router (Slide 6) ─ */
+const demoRouterPages = {
+  home: { url: 'localhost:5173/', title: '🏠 Página Home', desc: 'Contenido de la portada' },
+  productos: { url: 'localhost:5173/productos', title: '🛒 Página Productos', desc: 'Catálogo con buscador y grid' },
+  contacto: { url: 'localhost:5173/contacto', title: '✉️ Página Contacto', desc: 'Formulario de contacto' }
+};
+function demoRouterGo(pagina, btn) {
+  const data = demoRouterPages[pagina];
+  document.getElementById('demo-router-url').textContent = data.url;
+  const body = document.getElementById('demo-router-body');
+  body.classList.remove('browser-mock-flash');
+  void body.offsetWidth;
+  body.innerHTML = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;">${data.title}</div><div style="font-size:12px;color:var(--texto-dim);">${data.desc}</div>`;
+  body.classList.add('browser-mock-flash');
+  document.querySelectorAll('.browser-mock-nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+if (window.lucide) { lucide.createIcons(); }
+</script>
+</body>
+</html>
