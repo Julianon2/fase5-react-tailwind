@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión Extra: Identidad Visual Premium | SENA ADSO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&family=Michroma&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sena-verde: #39a900;
+  --sena-verde-dark: #2d8400;
+  --sena-verde-glow: rgba(57,169,0,0.10);
+  --sena-verde-border: rgba(57,169,0,0.30);
+  --sena-naranja: #ff6b00;
+  --sena-naranja-glow: rgba(255,107,0,0.10);
+  --sena-naranja-border: rgba(255,107,0,0.30);
+  --texto: #1a1a2e;
+  --texto-dim: rgba(26,26,46,0.62);
+  --texto-dimmer: rgba(26,26,46,0.38);
+  --bg: #f8fafc;
+  --bg-alt: #f4f7f2;
+  --borde: #e2e8f0;
+  --acento-azul: #3b82f6;
+  --acento-azul-glow: rgba(59,130,246,0.10);
+  --acento-purpura: #8b5cf6;
+  --acento-purpura-glow: rgba(139,92,246,0.10);
+  --alerta-amarillo: #f59e0b;
+  --alerta-amarillo-glow: rgba(245,158,11,0.10);
+  --alerta-rojo: #ef4444;
+  --alerta-rojo-glow: rgba(239,68,68,0.10);
+  --acento-teal: #0ea5e9;
+  --acento-teal-glow: rgba(14,165,233,0.10);
+  --acento-teal-border: rgba(14,165,233,0.30);
+  /* Tokens de la NUEVA identidad TechStore Pro (solo para mostrarlos en esta apertura) */
+  --ts-ink: #0A0A0A;
+  --ts-paper: #FFFFFF;
+  --ts-accent: #FF4B2B;
+  --ts-gray-100: #F2F2F2;
+  --ts-gray-500: #8A8A8A;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter',sans-serif; color:var(--texto); background:var(--bg); line-height:1.6; overflow-x:hidden; }
+
+.topbar { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.95); backdrop-filter:blur(16px); border-bottom:2px solid var(--sena-verde); padding:12px 32px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 12px var(--sena-verde-glow); }
+.topbar-left { display:flex; align-items:center; gap:16px; }
+.sena-logo { background:var(--sena-verde); color:#fff; font-weight:900; font-size:18px; padding:8px 16px; border-radius:8px; letter-spacing:1px; }
+.topbar-brand { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--sena-verde-dark); }
+.topbar-sub { font-size:12px; color:var(--texto-dimmer); margin-top:2px; display:none; }
+@media(min-width:600px){ .topbar-sub{display:block;} }
+.topbar-nav { display:none; gap:4px; flex-wrap:wrap; }
+@media(min-width:900px){ .topbar-nav{display:flex;} }
+.topbar-nav a { color:var(--texto-dim); text-decoration:none; font-size:11px; font-weight:600; padding:6px 14px; border-radius:20px; border:1px solid transparent; transition:all .25s; white-space:nowrap; }
+.topbar-nav a:hover { color:var(--sena-verde-dark); border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+
+.slide { min-height:100vh; padding:80px 48px; position:relative; scroll-margin-top:64px; border-bottom:1px solid var(--borde); }
+.slide.bg-alt { background:var(--bg-alt); }
+.slide.bg-verde { background:linear-gradient(135deg, var(--sena-verde-glow) 0%, #ffffff 60%); }
+.slide.bg-azul  { background:linear-gradient(135deg, var(--acento-azul-glow) 0%, #ffffff 60%); }
+.slide.bg-teal  { background:linear-gradient(135deg, var(--acento-teal-glow) 0%, #ffffff 60%); }
+.slide.bg-dark  { background:var(--ts-ink); color:var(--ts-paper); }
+.slide-inner { max-width:1200px; margin:0 auto; }
+.slide-num-badge { position:absolute; top:24px; right:24px; background:var(--sena-verde-glow); color:var(--sena-verde); font-size:11px; font-weight:700; padding:6px 12px; border-radius:20px; letter-spacing:1px; border:1px solid var(--sena-verde-border); }
+
+.bg-dots { position:absolute; inset:0; background-image:radial-gradient(var(--sena-verde-border) 1px, transparent 1px); background-size:28px 28px; pointer-events:none; opacity:0.35; }
+.bg-glow { position:absolute; width:600px; height:600px; border-radius:50%; filter:blur(120px); opacity:0.22; pointer-events:none; z-index:0; }
+.bg-glow.g1 { background:radial-gradient(circle, var(--sena-verde-glow), transparent 70%); top:-200px; left:-200px; }
+.bg-glow.g2 { background:radial-gradient(circle, var(--sena-naranja-glow), transparent 70%); bottom:-200px; right:-200px; }
+
+.portada-tag { display:inline-flex; align-items:center; gap:8px; background:var(--sena-verde-glow); border:1px solid var(--sena-verde-border); padding:10px 20px; border-radius:30px; font-size:12px; font-weight:700; color:var(--sena-verde-dark); letter-spacing:1.5px; margin-bottom:32px; position:relative; z-index:1; }
+.portada-tag .dot { width:6px; height:6px; background:var(--sena-verde); border-radius:50%; animation:blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.portada-titulo { font-family:'Syne',sans-serif; font-size:clamp(40px,7vw,68px); font-weight:800; line-height:1.1; margin-bottom:20px; color:var(--texto); position:relative; z-index:1; }
+.portada-titulo .linea2 { display:block; background:linear-gradient(135deg, var(--acento-teal), var(--acento-azul)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-titulo .linea3 { display:block; background:linear-gradient(135deg, var(--ts-accent), var(--acento-purpura)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-desc { font-size:clamp(15px,2vw,18px); color:var(--texto-dim); max-width:680px; margin-bottom:40px; position:relative; z-index:1; line-height:1.7; }
+.portada-meta { display:flex; gap:16px; flex-wrap:wrap; position:relative; z-index:1; }
+.portada-meta-item { background:rgba(255,255,255,0.9); border:1px solid var(--borde); padding:10px 20px; border-radius:12px; font-size:14px; font-weight:600; color:var(--texto-dim); display:flex; align-items:center; gap:8px; }
+
+.sec-header { margin-bottom:40px; position:relative; z-index:1; }
+.sec-tag { display:inline-block; font-size:11px; font-weight:700; padding:6px 14px; border-radius:20px; letter-spacing:1.2px; margin-bottom:14px; text-transform:uppercase; border:1px solid transparent; }
+.sec-tag.verde   { background:var(--sena-verde-glow); color:var(--sena-verde); border-color:var(--sena-verde-border); }
+.sec-tag.naranja { background:var(--sena-naranja-glow); color:var(--sena-naranja); border-color:var(--sena-naranja-border); }
+.sec-tag.azul    { background:var(--acento-azul-glow); color:var(--acento-azul); border-color:rgba(59,130,246,0.30); }
+.sec-tag.purpura { background:var(--acento-purpura-glow); color:var(--acento-purpura); border-color:rgba(139,92,246,0.30); }
+.sec-tag.amarillo{ background:var(--alerta-amarillo-glow); color:var(--alerta-amarillo); border-color:rgba(245,158,11,0.30); }
+.sec-tag.teal    { background:var(--acento-teal-glow); color:var(--acento-teal); border-color:var(--acento-teal-border); }
+.sec-tag.rojo    { background:var(--alerta-rojo-glow); color:var(--alerta-rojo); border-color:rgba(239,68,68,0.30); }
+.sec-titulo { font-family:'Syne',sans-serif; font-size:clamp(28px,4vw,42px); font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.sec-desc { font-size:clamp(15px,1.8vw,17px); color:var(--texto-dim); max-width:800px; line-height:1.7; }
+.bg-dark .sec-titulo, .bg-dark .sec-desc { color:var(--ts-paper); }
+.bg-dark .sec-desc { color:rgba(255,255,255,0.65); }
+
+.info-box { border-radius:12px; padding:20px 24px; margin:20px 0; border-left:4px solid; position:relative; z-index:1; }
+.info-box.tip     { background:var(--sena-verde-glow); border-color:var(--sena-verde); }
+.info-box.warning { background:var(--alerta-amarillo-glow); border-color:var(--alerta-amarillo); }
+.info-box.danger  { background:var(--alerta-rojo-glow); border-color:var(--alerta-rojo); }
+.info-box.info    { background:var(--acento-azul-glow); border-color:var(--acento-azul); }
+.info-box.teal    { background:var(--acento-teal-glow); border-color:var(--acento-teal); }
+.info-box.purpura { background:var(--acento-purpura-glow); border-color:var(--acento-purpura); }
+.info-box-title   { font-weight:700; font-size:14px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.info-box.tip     .info-box-title { color:var(--sena-verde-dark); }
+.info-box.warning .info-box-title { color:#92400e; }
+.info-box.danger  .info-box-title { color:#991b1b; }
+.info-box.info    .info-box-title { color:#1e40af; }
+.info-box.teal    .info-box-title { color:#0369a1; }
+.info-box.purpura .info-box-title { color:#5b21b6; }
+.info-box-content { font-size:14px; color:var(--texto-dim); line-height:1.7; }
+
+.roadmap-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){ .roadmap-grid{ grid-template-columns:1fr; } }
+.roadmap-card { background:#fff; border:2px solid var(--borde); border-radius:18px; padding:28px 24px 24px; position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s; }
+.roadmap-card:hover { transform:translateY(-4px); box-shadow:0 16px 32px rgba(14,165,233,.14); border-color:var(--acento-teal-border); }
+.roadmap-num { position:absolute; top:-6px; right:4px; font-family:'Syne',sans-serif; font-size:72px; font-weight:800; color:var(--acento-teal); opacity:.10; line-height:1; pointer-events:none; }
+.roadmap-icon { font-size:34px; margin-bottom:14px; display:flex; }
+.roadmap-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--acento-teal); background:var(--acento-teal-glow); border:1px solid var(--acento-teal-border); padding:4px 10px; border-radius:20px; margin-bottom:12px; }
+.roadmap-titulo { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--texto); margin-bottom:10px; line-height:1.25; }
+.roadmap-desc { font-size:13px; color:var(--texto-dim); line-height:1.65; }
+
+.footer-nav { position:fixed; bottom:0; left:0; right:0; z-index:90; background:rgba(255,255,255,0.95); backdrop-filter:blur(16px); border-top:2px solid var(--sena-verde); padding:14px 32px; display:flex; align-items:center; justify-content:space-between; }
+.footer-btn { background:var(--sena-verde); color:#fff; border:none; padding:10px 24px; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; transition:all .2s; }
+.footer-btn:hover { background:var(--sena-verde-dark); transform:translateY(-1px); }
+.footer-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.footer-page { font-size:13px; font-weight:600; color:var(--texto-dim); }
+
+.code-editor { background:#1a1a2e; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+.code-editor-header { background:#12121f; padding:10px 16px; display:flex; align-items:center; gap:8px; }
+.term-dot { width:11px; height:11px; border-radius:50%; }
+.term-dot.r { background:#ff5f57; } .term-dot.y { background:#febc2e; } .term-dot.g { background:#28c840; }
+.code-editor-title { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#8892a4; flex:1; }
+.code-editor-body { padding:14px 0; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.85; flex:1; overflow-x:auto; }
+.cl { display:grid; grid-template-columns:24px 1fr; column-gap:10px; padding:0 18px; white-space:pre; }
+.cl .ln { color:#4a5178; user-select:none; text-align:right; }
+.cl .code { color:#e2e8f0; }
+.cm { color:#565f89; font-style:italic; }
+.sel { color:#7dcfff; }
+.prop { color:#9ece6a; }
+.val { color:#e2e8f0; }
+.punc { color:#8892a4; }
+
+/* Swatches de color — para mostrar la paleta nueva */
+.swatch-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:16px; position:relative; z-index:1; margin:24px 0; }
+.swatch-card { border-radius:14px; overflow:hidden; border:2px solid var(--borde); }
+.swatch-color { height:80px; }
+.swatch-info { padding:12px 14px; background:#fff; }
+.swatch-name { font-weight:700; font-size:13px; margin-bottom:2px; }
+.swatch-hex { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--texto-dimmer); }
+
+/* Comparación antes/después */
+.dom-compare { display:grid; grid-template-columns:1fr auto 1fr; gap:20px; align-items:center; margin:24px 0; position:relative; z-index:1; }
+@media(max-width:900px){ .dom-compare{ grid-template-columns:1fr; } }
+.dom-box { background:#fff; border:2px solid var(--borde); border-radius:16px; padding:22px; }
+.dom-box.mal { border-color:rgba(239,68,68,.3); background:var(--alerta-rojo-glow); }
+.dom-box.bien { border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.dom-box-title { font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.dom-box-desc { font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.dom-vs { font-family:'Syne',sans-serif; font-weight:800; font-size:16px; color:var(--texto-dimmer); text-align:center; }
+
+/* Referencia cards (Nothing / Wavlux) */
+.ref-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; position:relative; z-index:1; margin:24px 0; }
+@media(max-width:900px){ .ref-grid{ grid-template-columns:1fr; } }
+.ref-card { border-radius:18px; overflow:hidden; border:2px solid var(--borde); background:#fff; }
+.ref-card-visual { height:160px; display:flex; align-items:center; justify-content:center; position:relative; }
+.ref-card-visual.nothing { background:var(--ts-ink); }
+.ref-card-visual.wavlux { background:linear-gradient(135deg, #dbe4f5, #ffffff); }
+.ref-wordmark { font-family:'Michroma',sans-serif; font-size:22px; color:#fff; letter-spacing:.02em; }
+.ref-wordmark-w { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:26px; color:#2c3e6b; }
+.ref-card-body { padding:20px 22px; }
+.ref-card-tag { font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--acento-teal); margin-bottom:8px; display:block; }
+.ref-card-title { font-family:'Syne',sans-serif; font-weight:800; font-size:17px; margin-bottom:8px; }
+.ref-card-desc { font-size:13px; color:var(--texto-dim); line-height:1.65; }
+
+@media(max-width:768px){ .slide{padding:60px 24px;} .topbar{padding:10px 20px;} }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="sena-logo">SENA</div>
+    <div>
+      <div class="topbar-brand">ADSO · Construcción de Software</div>
+      <div class="topbar-sub">Ficha 3229944 · Garzón, Huila</div>
+    </div>
+  </div>
+  <nav class="topbar-nav">
+    <a href="#portada">Inicio</a>
+    <a href="#por-que">Por qué</a>
+    <a href="#referencias">Referencias</a>
+    <a href="#tokens">Tokens</a>
+    <a href="#tipografia">Tipografía</a>
+    <a href="#landing">Landing continuo</a>
+    <a href="#entregable">Entregable</a>
+  </nav>
+</div>
+
+<!-- ══════════ SLIDE 1 — PORTADA ══════════ -->
+<section class="slide" id="portada">
+  <div class="bg-dots"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="slide-inner" style="position:relative;z-index:1;">
+    <div class="portada-tag"><span class="dot"></span> SESIÓN EXTRA · FASE 5 REACT Y TAILWIND CSS</div>
+    <h1 class="portada-titulo">
+      TechStore Pro<br>
+      <span class="linea2">Identidad Visual</span>
+      <span class="linea3">Premium</span>
+    </h1>
+    <p class="portada-desc">
+      Antes de seguir migrando páginas (Bloque C, desde S27), vamos a reemplazar la paleta verde institucional de TechStore Pro por un sistema de diseño propio — inspirado en dos referencias reales del mercado. Esta sesión no cuenta en la numeración oficial del curso: es una preparación puntual antes de retomar S27 tal como estaba planeada.
+    </p>
+    <div class="portada-meta">
+      <div class="portada-meta-item"><i data-lucide="palette"></i> Design tokens</div>
+      <div class="portada-meta-item"><i data-lucide="type"></i> Tipografía</div>
+      <div class="portada-meta-item"><i data-lucide="layout"></i> Landing continuo</div>
+      <div class="portada-meta-item"><i data-lucide="folder"></i> Fase 5 — React y Tailwind</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">01 / 08</span>
+</section>
+
+<!-- ══════════ SLIDE 2 — POR QUÉ CAMBIAR ══════════ -->
+<section class="slide bg-alt" id="por-que">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag naranja">Contexto</span>
+      <h2 class="sec-titulo">¿Por qué cambiar la identidad visual ahora?</h2>
+      <p class="sec-desc">TechStore Pro funciona perfectamente desde el punto de vista técnico — pero su apariencia nunca se diseñó, solo heredó los colores institucionales del SENA. Antes de migrar las páginas reales en el Bloque C, es el momento ideal para definir una identidad propia.</p>
+    </div>
+
+    <div class="dom-compare">
+      <div class="dom-box mal">
+        <div class="dom-box-title"><i data-lucide="x-circle" style="color:#ef4444;"></i> Antes</div>
+        <div class="dom-box-desc">
+          Verde SENA (<code style="font-family:'JetBrains Mono',monospace;">#39a900</code>) como color de marca de la tienda, sin tipografía definida, sin sistema de espaciado — colores puestos directo en cada componente, sin tokens centralizados.
+        </div>
+      </div>
+      <div class="dom-vs">VS</div>
+      <div class="dom-box bien">
+        <div class="dom-box-title"><i data-lucide="check-circle" style="color:#39a900;"></i> Después</div>
+        <div class="dom-box-desc">
+          Paleta propia de marca (negro/blanco + acento coral), tipografía con jerarquía real (wordmark, títulos, cuerpo, datos), y tokens centralizados en <code style="font-family:'JetBrains Mono',monospace;">index.css</code> que todos los componentes reutilizan.
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box info">
+      <div class="info-box-title"><i data-lucide="info"></i> El verde SENA sigue en las presentaciones</div>
+      <div class="info-box-content">Importante: esto <strong>no</strong> cambia el verde institucional del material de clase (aperturas y guías) — ese identifica al SENA y se mantiene igual. Lo que cambia es solo la marca <strong>TechStore Pro</strong> dentro del proyecto React, que es un producto ficticio, no el SENA.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">02 / 08</span>
+</section>
+
+<!-- ══════════ SLIDE 3 — REFERENCIAS ══════════ -->
+<section class="slide" id="referencias">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag azul">Inspiración</span>
+      <h2 class="sec-titulo">Dos referencias, una fusión</h2>
+      <p class="sec-desc">No partimos de cero: se analizaron dos marcas reales de e-commerce premium y se combinó lo mejor de cada una.</p>
+    </div>
+
+    <div class="ref-grid">
+      <div class="ref-card">
+        <div class="ref-card-visual nothing">
+          <span class="ref-wordmark">Nothing<span style="color:#FF4B2B;">.</span></span>
+        </div>
+        <div class="ref-card-body">
+          <span class="ref-card-tag">co.nothing.tech</span>
+          <div class="ref-card-title">Minimalismo técnico</div>
+          <div class="ref-card-desc">Blanco/negro puro, tipografía angulosa, un solo acento de color usado con muchísima moderación, fotografía de producto limpia y protagonista.</div>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-card-visual wavlux">
+          <span class="ref-wordmark-w">Wavlux</span>
+        </div>
+        <div class="ref-card-body">
+          <span class="ref-card-tag">Landing de e-commerce</span>
+          <div class="ref-card-title">Calidez y jerarquía</div>
+          <div class="ref-card-desc">Mucho whitespace, tarjeta flotante con info del producto superpuesta a la imagen, radios de borde moderados, CTA primario sólido vs secundario outline.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      <div class="info-box-title"><i data-lucide="sparkles"></i> La fusión elegida</div>
+      <div class="info-box-content">TechStore Pro toma de Nothing el fondo blanco/negro puro y la tipografía técnica; y de Wavlux, el whitespace amplio y la tarjeta flotante de producto. El resultado: minimalista pero no frío, técnico pero no duro.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">03 / 08</span>
+</section>
+
+<!-- ══════════ SLIDE 4 — TOKENS DE COLOR ══════════ -->
+<section class="slide bg-alt" id="tokens">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag purpura">Design tokens</span>
+      <h2 class="sec-titulo">La nueva paleta de TechStore Pro</h2>
+      <p class="sec-desc">Un token es un valor de diseño con nombre — en vez de escribir <code style="font-family:'JetBrains Mono',monospace;">#FF4B2B</code> en 20 archivos distintos, se define una vez y todos los componentes lo reutilizan.</p>
+    </div>
+
+    <div class="swatch-grid">
+      <div class="swatch-card">
+        <div class="swatch-color" style="background:#0A0A0A;"></div>
+        <div class="swatch-info"><div class="swatch-name">Ink</div><div class="swatch-hex">--ink: #0A0A0A</div></div>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-color" style="background:#FFFFFF;border-bottom:1px solid #e2e8f0;"></div>
+        <div class="swatch-info"><div class="swatch-name">Paper</div><div class="swatch-hex">--paper: #FFFFFF</div></div>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-color" style="background:#FF4B2B;"></div>
+        <div class="swatch-info"><div class="swatch-name">Accent</div><div class="swatch-hex">--accent: #FF4B2B</div></div>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-color" style="background:#F2F2F2;"></div>
+        <div class="swatch-info"><div class="swatch-name">Gray 100</div><div class="swatch-hex">--gray-100: #F2F2F2</div></div>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-color" style="background:#8A8A8A;"></div>
+        <div class="swatch-info"><div class="swatch-name">Gray 500</div><div class="swatch-hex">--gray-500: #8A8A8A</div></div>
+      </div>
+    </div>
+
+    <div class="info-box warning">
+      <div class="info-box-title"><i data-lucide="alert-triangle"></i> El acento se usa con moderación</div>
+      <div class="info-box-content"><code style="font-family:'JetBrains Mono',monospace;">--accent</code> (coral) nunca es un fondo grande — se reserva para: badges, precios, el punto del wordmark, y el hover de botones. El protagonista visual siempre es el blanco/negro.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">04 / 08</span>
+</section>
+
+<!-- ══════════ SLIDE 5 — TIPOGRAFÍA ══════════ -->
+<section class="slide" id="tipografia">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag teal">Jerarquía tipográfica</span>
+      <h2 class="sec-titulo">4 fuentes, 4 trabajos distintos</h2>
+      <p class="sec-desc">Cada fuente tiene un rol específico — nunca se mezclan para el mismo tipo de texto.</p>
+    </div>
+
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-icon" style="font-family:'Michroma',sans-serif;font-size:20px;">TS</div>
+        <div class="roadmap-tag">Wordmark</div>
+        <div class="roadmap-titulo" style="font-family:'Michroma',sans-serif;font-size:14px;">Michroma</div>
+        <div class="roadmap-desc">Solo para el logo "TECHSTORE" en el navbar y footer — geométrica, técnica, mayúsculas.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-icon" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;">Aa</div>
+        <div class="roadmap-tag">Títulos</div>
+        <div class="roadmap-titulo" style="font-family:'Space Grotesk',sans-serif;">Space Grotesk</div>
+        <div class="roadmap-desc">H1, H2 y titulares — peso 600-700, tracking ajustado (letter-spacing negativo).</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-icon" style="font-family:'Inter',sans-serif;font-size:22px;">Aa</div>
+        <div class="roadmap-tag">Cuerpo</div>
+        <div class="roadmap-titulo">Inter</div>
+        <div class="roadmap-desc">Párrafos, descripciones, menú de navegación — la que ya usa el proyecto por defecto.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-icon" style="font-family:'JetBrains Mono',monospace;font-size:20px;">12</div>
+        <div class="roadmap-tag">Datos</div>
+        <div class="roadmap-titulo" style="font-family:'JetBrains Mono',monospace;">JetBrains Mono</div>
+        <div class="roadmap-desc">Precios, contadores, códigos — da sensación técnica a los números.</div>
+      </div>
+    </div>
+
+  </div>
+  <span class="slide-num-badge">05 / 08</span>
+</section>
+
+<!-- ══════════ SLIDE 6 — LANDING CONTINUO ══════════ -->
+<section class="slide bg-alt" id="landing">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag amarillo">Regla de layout</span>
+      <h2 class="sec-titulo">La Home es un flujo continuo, sin cortes</h2>
+      <p class="sec-desc">Decisión clave: el scroll de la página principal no debe sentirse "por secciones" — nada de bordes duros ni cambios abruptos de fondo entre bloques.</p>
+    </div>
+
+    <div class="dom-compare">
+      <div class="dom-box mal">
+        <div class="dom-box-title"><i data-lucide="x-circle" style="color:#ef4444;"></i> Evitar</div>
+        <div class="dom-box-desc">
+          <code style="font-family:'JetBrains Mono',monospace;">border-bottom</code> separando navbar del hero. Bloques de fondo que cambian de blanco a negro de golpe, como si fueran páginas distintas pegadas.
+        </div>
+      </div>
+      <div class="dom-vs">VS</div>
+      <div class="dom-box bien">
+        <div class="dom-box-title"><i data-lucide="check-circle" style="color:#39a900;"></i> Aplicar</div>
+        <div class="dom-box-desc">
+          Separar bloques solo con <strong>espacio</strong> (whitespace). Si hay que pasar a un fondo oscuro (ej. footer), usar un <code style="font-family:'JetBrains Mono',monospace;">linear-gradient</code> largo que empieza varias secciones antes.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-editor" style="margin-top:20px;">
+      <div class="code-editor-header">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="code-editor-title">ejemplo — degradado continuo hacia el footer</span>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="sel">background</span><span class="punc">:</span> <span class="prop">linear-gradient</span><span class="punc">(</span></span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  <span class="val">to bottom</span><span class="punc">,</span></span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">  <span class="val">var(--paper) 0%</span><span class="punc">,</span> <span class="cm">/* blanco arriba */</span></span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">  <span class="val">var(--paper) 78%</span><span class="punc">,</span> <span class="cm">/* sigue blanco hasta el 78% */</span></span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">  <span class="val">var(--ink) 96%</span><span class="punc">,</span> <span class="cm">/* transición suave a negro */</span></span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">  <span class="val">var(--ink) 100%</span></span></div>
+        <div class="cl"><span class="ln">7</span><span class="code"><span class="punc">);</span></span></div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num-badge">06 / 08</span>
+</section>
+
+<!-- ══════════ SLIDE 7 — QUÉ SE VA A HACER ══════════ -->
+<section class="slide" id="plan-sesion">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag naranja">Agenda</span>
+      <h2 class="sec-titulo">Qué se hace hoy</h2>
+      <p class="sec-desc">Una sesión corta: no hay concepto nuevo de React, solo se instalan los tokens definidos en el proyecto real.</p>
+    </div>
+
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">1</div>
+        <div class="roadmap-icon"><i data-lucide="palette"></i></div>
+        <div class="roadmap-tag">Paso 1</div>
+        <div class="roadmap-titulo">Reemplazar tokens en index.css</div>
+        <div class="roadmap-desc">Sustituir --color-verde, --color-naranja, etc. por los nuevos tokens de la identidad premium.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">2</div>
+        <div class="roadmap-icon"><i data-lucide="type"></i></div>
+        <div class="roadmap-tag">Paso 2</div>
+        <div class="roadmap-titulo">Cargar las fuentes nuevas</div>
+        <div class="roadmap-desc">Agregar los <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">&lt;link&gt;</code> de Google Fonts (Michroma, Space Grotesk, JetBrains Mono) en index.html.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">3</div>
+        <div class="roadmap-icon"><i data-lucide="eye"></i></div>
+        <div class="roadmap-tag">Paso 3</div>
+        <div class="roadmap-titulo">Verificar en el navegador</div>
+        <div class="roadmap-desc">Confirmar que los componentes existentes ya leen los nuevos colores (aunque todavía no se hayan rediseñado visualmente).</div>
+      </div>
+    </div>
+
+    <div class="info-box tip" style="margin-top:20px;">
+      <div class="info-box-title"><i data-lucide="arrow-right"></i> Después de esta sesión</div>
+      <div class="info-box-content">S27 retoma el plan oficial (Migrar Home y Nosotros/Contacto) — pero las páginas que se construyan desde ahora ya usarán esta nueva identidad visual, en vez de la paleta verde SENA original.</div>
+    </div>
+  </div>
+  <span class="slide-num-badge">07 / 08</span>
+</section>
+
+<!-- ══════════ SLIDE 8 — ENTREGABLE / CIERRE ══════════ -->
+<section class="slide bg-dark" id="entregable">
+  <div class="slide-inner">
+    <div class="sec-header">
+      <span class="sec-tag teal">Entregable</span>
+      <h2 class="sec-titulo">Al final de esta sesión</h2>
+      <p class="sec-desc">index.css con los tokens nuevos instalados, fuentes cargadas, y el proyecto listo para que S27 migre Home/Nosotros/Contacto con la identidad definitiva.</p>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;z-index:1;">
+      <span class="wordmark" style="font-family:'Michroma',sans-serif;font-size:18px;">TECH<span style="color:#FF4B2B;">STORE</span></span>
+      <span style="color:rgba(255,255,255,0.4);">→</span>
+      <a href="#" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0A0A0A;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;">
+        <i data-lucide="file-code"></i> Abrir guía →
+      </a>
+    </div>
+  </div>
+  <span class="slide-num-badge" style="background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.2);">08 / 08</span>
+</section>
+
+<div class="footer-nav">
+  <button class="footer-btn" id="btn-prev" onclick="irSlide(-1)">← Anterior</button>
+  <span class="footer-page" id="footer-page">Slide 1 de 8</span>
+  <button class="footer-btn" id="btn-next" onclick="irSlide(1)">Siguiente →</button>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script>
+if (window.lucide) lucide.createIcons();
+
+const slides = Array.from(document.querySelectorAll('.slide'));
+let actual = 0;
+
+function irSlide(delta) {
+  actual = Math.max(0, Math.min(slides.length - 1, actual + delta));
+  slides[actual].scrollIntoView({ behavior: 'smooth' });
+}
+
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      actual = slides.indexOf(e.target);
+      document.getElementById('footer-page').textContent = `Slide ${actual + 1} de ${slides.length}`;
+      document.getElementById('btn-prev').disabled = actual === 0;
+      document.getElementById('btn-next').disabled = actual === slides.length - 1;
+    }
+  });
+}, { threshold: 0.5 });
+slides.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
