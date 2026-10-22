@@ -91,6 +91,8 @@ pre .edit{color:#fbbf24;background:rgba(245,158,11,.12);border-radius:3px;paddin
 pre .del{color:#f87171;background:rgba(248,113,113,.10);border-radius:3px;padding:0 2px;text-decoration:line-through;}
 
 .callout{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:8px;font-size:13px;margin:14px 0;line-height:1.5;}
+.callout.err{background:rgba(248,113,113,.10);border:1px solid rgba(248,113,113,.2);color:#f87171;}
+.callout-icon svg{width:16px;height:16px;stroke-width:2.5;}
 .callout.ok{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
 .callout.warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.2);color:var(--yellow);}
 .callout.info{background:var(--accent-glow);border:1px solid rgba(59,130,246,.2);color:#93c5fd;}
@@ -144,6 +146,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surf
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.code-wrap.scroll{width:0;min-width:100%;}
+.code-wrap.scroll pre{scrollbar-width:thin;scrollbar-color:#5b6a94 #0d1117;}
+.code-wrap.scroll pre::-webkit-scrollbar{height:10px;}
+.code-wrap.scroll pre::-webkit-scrollbar-track{background:#0d1117;}
+.code-wrap.scroll pre::-webkit-scrollbar-thumb{background:#5b6a94;border-radius:5px;}
 </style>
 <canvas class="confetti-wrap" id="confetti-canvas"></canvas>
 </head>
@@ -329,7 +336,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surf
 &lt;/<span class="f">html</span>&gt;</pre></div>
 
         <p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Reemplazar <strong>todo el archivo</strong> por esto (título real + enlaces de Google Fonts agregados dentro de <code>&lt;head&gt;</code>):</p>
-        <div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/index.html</span><span class="code-tag green">después</span></div><pre>&lt;<span class="f">!doctype html</span>&gt;
+        <div class="code-wrap scroll"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/index.html</span><span class="code-tag green">después</span></div><pre>&lt;<span class="f">!doctype html</span>&gt;
 &lt;<span class="f">html</span> <span class="n">lang</span>=<span class="s">"es"</span>&gt;
   &lt;<span class="f">head</span>&gt;
     &lt;<span class="f">meta</span> <span class="n">charset</span>=<span class="s">"UTF-8"</span> /&gt;
@@ -338,15 +345,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surf
     &lt;<span class="f">title</span>&gt;TechStore Pro&lt;/<span class="f">title</span>&gt;
     <span class="edit">&lt;<span class="f">link</span> <span class="n">rel</span>=<span class="s">"preconnect"</span> <span class="n">href</span>=<span class="s">"https://fonts.googleapis.com"</span>&gt;
     &lt;<span class="f">link</span> <span class="n">rel</span>=<span class="s">"preconnect"</span> <span class="n">href</span>=<span class="s">"https://fonts.gstatic.com"</span> <span class="n">crossorigin</span>&gt;
-    &lt;<span class="f">link</span>
-      <span class="n">rel</span>=<span class="s">"stylesheet"</span>
-      <span class="n">href</span>=<span class="s">"https://fonts.googleapis.com/css2?
-        family=Michroma&amp;
-        family=Space+Grotesk:wght@500;600;700&amp;
-        family=Inter:wght@400;500;600;700&amp;
-        family=JetBrains+Mono:wght@400;500;700&amp;
-        display=swap"</span>
-    &gt;</span>
+    &lt;<span class="f">link</span> <span class="n">rel</span>=<span class="s">"stylesheet"</span> <span class="n">href</span>=<span class="s">"https://fonts.googleapis.com/css2?family=Michroma&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap"</span> /&gt;</span>
   &lt;/<span class="f">head</span>&gt;
   &lt;<span class="f">body</span>&gt;
     &lt;<span class="f">div</span> <span class="n">id</span>=<span class="s">"root"</span>&gt;&lt;/<span class="f">div</span>&gt;
@@ -361,11 +360,14 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surf
               <tr><td>lang="es"</td><td>Corrige el idioma del documento (estaba en inglés por defecto de Vite)</td></tr>
               <tr><td>&lt;title&gt;</td><td>Cambia la pestaña del navegador de "frontend-react" a "TechStore Pro"</td></tr>
               <tr><td>rel="preconnect"</td><td>Le dice al navegador que se prepare para conectar a Google Fonts antes de necesitarlo — carga más rápida</td></tr>
-              <tr><td>family=Michroma&amp;family=...</td><td>Una sola URL pide las 4 familias de una vez, separadas por &amp;family=. Aquí se partió en varias líneas solo para que se lea mejor — es un único valor, los saltos de línea dentro de un atributo HTML no rompen nada</td></tr>
+              <tr><td>family=Michroma&amp;family=...</td><td>Una sola URL pide las 4 familias de una vez, separadas por &amp;family=. <strong>Debe ir completa en una sola línea, sin saltos de línea ni espacios dentro de la URL</strong></td></tr>
               <tr><td>display=swap</td><td>Mientras la fuente carga, muestra texto con una fuente del sistema en vez de dejarlo invisible</td></tr>
             </tbody>
           </table>
         </div>
+
+        <div class="callout err"><span class="callout-icon"><i data-lucide="x-circle"></i></span><span><strong>La URL de Google Fonts NO puede estar partida en varias líneas.</strong> El <code>&lt;link rel="stylesheet" ...&gt;</code> de las fuentes debe ir completo en <strong>una sola línea</strong>. Si el editor (o el formateador con <code>Shift + Alt + F</code>) la parte en varias líneas, quedan espacios dentro de la URL y Google Fonts responde <strong>error 400</strong>: las fuentes no cargan y el navegador usa otras del sistema sin avisar, sin mostrar ningún error en pantalla. Si ya la tienes partida, reemplázala por la línea completa del bloque "después".</span></div>
+        <div class="callout ok"><span class="callout-icon"><i data-lucide="check-circle"></i></span><span><strong>Cómo verificar:</strong> abre <code>F12</code> → pestaña <strong>Network</strong>, escribe <code>css2</code> en el filtro y recarga con <code>Ctrl + Shift + R</code>. La petición a <code>fonts.googleapis.com</code> debe decir <strong>200</strong>, no 400.</span></div>
       </div></div>
     </div>
 
