@@ -5,15 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Referencia Rápida — Clases Viejas vs Nuevas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 :root {
-  --bg:#0f1117; --surface:#1a1f2e; --surface2:#222840; --border:#2a3352;
-  --txt:#e2e8f0; --txt-dim:#8892a4;
-  --accent:#FF4B2B; --accent-glow:rgba(255,75,43,.12);
-  --teal:#2dd4bf; --teal-bg:rgba(45,212,191,.10);
-  --yellow:#f59e0b; --yellow-bg:rgba(245,158,11,.10);
-  --green:#22c55e; --green-bg:rgba(34,197,94,.10);
+  --bg:#F4F2EC; --surface:#ffffff; --surface2:#ECE9DF; --border:#e5e1d4;
+  --txt:#0f172a; --txt-dim:#64748b;
+  --accent:#0284c7; --accent-glow:rgba(2,132,199,.10);
+  --green:#16a34a; --green-bg:rgba(22,163,74,.10);
+  --red:#dc2626; --red-bg:rgba(220,38,38,.08);
+  --yellow:#d97706; --yellow-bg:rgba(217,119,6,.10);
+  --purple:#7c3aed; --purple-bg:rgba(124,58,237,.08);
+  --teal:#018751; --teal-bg:rgba(1,135,81,.09);
+  --code-bg:#0d1117; --sidebar-w:260px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.6;padding:40px 24px 80px;user-select:none;}
@@ -28,15 +31,32 @@ table{width:100%;border-collapse:collapse;font-size:14px;}
 th{background:var(--surface2);color:var(--txt-dim);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);}
 td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:middle;background:var(--surface);}
 tr:last-child td{border-bottom:none;}
-code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--surface2);padding:2px 8px;border-radius:5px;color:#fca5a5;}
-td.nueva code{color:#86efac;}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--surface2);padding:2px 8px;border-radius:5px;color:#b91c1c;}
+td.nueva code{color:#15803d;}
 .arrow{color:var(--txt-dim);text-align:center;width:36px;}
 
 .swatch-row{display:flex;align-items:center;gap:8px;}
-.swatch-dot{width:14px;height:14px;border-radius:4px;flex-shrink:0;border:1px solid rgba(255,255,255,.15);}
+.swatch-dot{width:14px;height:14px;border-radius:4px;flex-shrink:0;border:1px solid rgba(15,23,42,.15);}
 
 .footer-note{font-size:13px;color:var(--txt-dim);text-align:center;margin-top:40px;line-height:1.7;}
 .footer-note a{color:var(--teal);text-decoration:none;}
+
+.sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border);}
+.sidebar-hub-link{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-size:12.5px;font-weight:700;padding:8px 10px;border-radius:8px;transition:background .15s;}
+.sidebar-hub-link:hover{background:var(--accent-glow);}
+
+/* ── Identidad del portal ADSO: tipografías y código oscuro sobre fondo claro ── */
+h1,h2,.page-title,.sidebar-brand h1{font-family:'Syne','Inter',sans-serif;}
+pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
+.sidebar{box-shadow:0 10px 30px -10px rgba(15,23,42,.07);}
+
+/* Texto sobre fondos tintados: tonos mas oscuros para que se lea en tema claro */
+.callout.ok,.callout.tip,.step-badge.green{color:#166534;}
+.callout.warn,.page-warning,.step-badge.yellow,.pin{color:#92400e;}
+.callout.err{color:#b91c1c;}
+
+/* Iconos Lucide en línea (reemplazan a los emojis) */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
 </style>
 </head>
 <body>
@@ -45,7 +65,7 @@ td.nueva code{color:#86efac;}
   <h1>Clases viejas → clases nuevas</h1>
   <p class="sub">Tabla de consulta para cuando edites componentes en la Sesión 27 en adelante. Las clases de la izquierda ya no existen — Tailwind las ignora silenciosamente (sin error, pero sin color).</p>
 
-  <div class="pin">📌 Mantén esta página abierta en una pestaña aparte mientras trabajas — no necesitas volver a la guía completa para consultar esto.</div>
+  <div class="pin"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5" /> <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" /></svg> Mantén esta página abierta en una pestaña aparte mientras trabajas — no necesitas volver a la guía completa para consultar esto.</div>
 
   <div class="table-wrap">
     <table>
@@ -108,7 +128,7 @@ td.nueva code{color:#86efac;}
     </table>
   </div>
 
-  <p class="footer-note">SENA ADSO · Ficha 3229944 · Parte de la sesión extra de identidad visual premium<br>Ver también: <a href="../02_GUIA_REBRANDING/">02_GUIA_REBRANDING.html</a></p>
+  <p class="footer-note">SENA ADSO · Ficha 3229944 · Parte de la sesión extra de identidad visual premium<br>Ver también: <a href="../02_GUIA_REBRANDING/index.html">02_GUIA_REBRANDING.html</a></p>
 </div>
 <script>
 document.addEventListener('contextmenu', e => e.preventDefault());
