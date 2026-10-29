@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Paso a Paso S28 — Migrar Productos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#F4F2EC; --surface:#ffffff; --surface2:#ECE9DF; --border:#e5e1d4;
+  --txt:#0f172a; --txt-dim:#64748b;
+  --accent:#0284c7; --accent-glow:rgba(2,132,199,.10);
+  --green:#16a34a; --green-bg:rgba(22,163,74,.10);
+  --red:#dc2626; --red-bg:rgba(220,38,38,.08);
+  --yellow:#d97706; --yellow-bg:rgba(217,119,6,.10);
+  --purple:#7c3aed; --purple-bg:rgba(124,58,237,.08);
+  --teal:#018751; --teal-bg:rgba(1,135,81,.09);
+  --code-bg:#0d1117; --sidebar-w:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;display:flex;min-height:100vh;user-select:none;}
+
+.sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:0;left:0;bottom:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:24px 0 40px;display:flex;flex-direction:column;}
+.sidebar-brand{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-brand .curso{font-size:11px;color:var(--teal);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.sidebar-brand h1{font-size:14px;font-weight:700;color:var(--txt);margin-top:4px;line-height:1.3;}
+.sidebar-brand .ficha{font-size:11px;color:var(--txt-dim);margin-top:2px;}
+.progress-wrap{padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-dim);margin-bottom:8px;}
+.progress-label span:last-child{color:var(--teal);font-weight:700;}
+.progress-bar-bg{height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--teal);border-radius:10px;transition:width .4s ease;width:0%;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--txt-dim);font-size:13px;font-weight:500;text-decoration:none;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--accent-glow);color:var(--txt);}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);}
+.nav-item.active .nav-dot{background:var(--accent);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .15s;}
+.nav-item:hover .nav-dot{background:var(--txt-dim);}
+.nav-item.done{color:var(--teal);}
+.nav-item.done .nav-dot{background:var(--teal);}
+
+.main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px 80px;max-width:820px;}
+
+.page-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+.page-tag{font-size:11px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.page-title{font-size:28px;font-weight:700;color:var(--txt);line-height:1.2;text-wrap:balance;}
+.page-subtitle{font-size:14px;color:var(--txt-dim);margin-top:8px;}
+.page-warning{margin-top:20px;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--yellow);font-weight:500;}
+
+.intro-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px 36px;margin-bottom:52px;}
+.intro-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+.intro-title{font-size:20px;font-weight:800;color:var(--txt);line-height:1.25;margin-bottom:10px;}
+.intro-sub{font-size:14px;color:var(--txt-dim);margin-bottom:20px;line-height:1.6;}
+.intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.intro-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.intro-item-icon{font-size:22px;margin-bottom:8px;display:flex;}
+.intro-item-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-dim);margin-bottom:4px;}
+.intro-item-desc{font-size:13px;color:var(--txt);font-weight:500;line-height:1.4;}
+
+.section{margin-bottom:56px;scroll-margin-top:32px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.step-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.3);border-radius:6px;padding:3px 10px;white-space:nowrap;letter-spacing:.04em;flex-shrink:0;}
+.step-badge.green{background:var(--green-bg);color:var(--green);border-color:rgba(34,197,94,.3);}
+.step-badge.yellow{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,158,11,.3);}
+.step-badge.extra{background:var(--purple-bg);color:var(--purple);border-color:rgba(167,139,250,.3);}
+.step-badge.teal{background:var(--teal-bg);color:var(--teal);border-color:rgba(45,212,191,.3);}
+.section-title{font-size:20px;font-weight:700;color:var(--txt);text-wrap:balance;}
+
+.step-list{display:flex;flex-direction:column;gap:20px;}
+.step-item{display:flex;gap:16px;}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-body p{color:var(--txt);font-size:14px;}
+.step-body strong{color:var(--txt);font-weight:600;}
+
+.code-wrap{margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.code-header{display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 14px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-dot.r{background:#ff5f57;} .code-dot.y{background:#febc2e;} .code-dot.g{background:#28c840;}
+.code-filename{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-dim);flex:1;}
+.code-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.code-tag.blue{background:rgba(59,130,246,.15);color:var(--accent);}
+.code-tag.green{background:var(--green-bg);color:var(--green);}
+.code-tag.yellow{background:var(--yellow-bg);color:var(--yellow);}
+.code-tag.purple{background:var(--purple-bg);color:var(--purple);}
+pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;color:#abb2bf;}
+pre .c{color:#5c6370;} pre .k{color:#c678dd;} pre .s{color:#98c379;}
+pre .f{color:#61afef;} pre .n{color:#e5c07b;} pre .y{color:#d19a66;}
+pre .edit{color:#fbbf24;background:rgba(245,158,11,.12);border-radius:3px;padding:0 2px;}
+
+.callout{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:8px;font-size:13px;margin:14px 0;line-height:1.5;}
+.callout.ok{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout.err{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);color:var(--red);}
+.callout.warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.2);color:var(--yellow);}
+.callout.info{background:var(--accent-glow);border:1px solid rgba(59,130,246,.2);color:#0369a1;}
+.callout.teal{background:var(--teal-bg);border:1px solid rgba(45,212,191,.2);color:var(--teal);}
+.callout.tip{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;display:flex;}
+.callout strong{color:inherit;font-weight:600;}
+
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--surface2);color:var(--txt-dim);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:top;}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);}
+tr:last-child td{border-bottom:none;}
+
+.checklist{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.checklist li{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--txt-dim);cursor:pointer;transition:all .15s;}
+.checklist li:hover{border-color:var(--teal);}
+.checklist li.marcado{background:var(--teal-bg);border-color:rgba(45,212,191,.35);color:var(--txt);}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--teal);}
+.checklist li.marcado .check-box{border-color:var(--teal);background:var(--teal-bg);}
+.checklist li strong{color:var(--txt);font-weight:600;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:1px 6px;border-radius:4px;color:#0369a1;}
+
+.subsec{margin:28px 0 16px;}
+.subsec-title{font-size:15px;font-weight:700;color:var(--txt);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+
+.complete-btn{display:flex;align-items:center;gap:10px;margin-top:28px;padding:14px 20px;background:var(--teal-bg);border:1px solid rgba(45,212,191,.3);border-radius:10px;color:var(--teal);font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:all .2s;font-family:'Inter',sans-serif;}
+.complete-btn:hover{border-color:var(--teal);}
+.complete-btn.done{cursor:default;}
+.complete-btn .btn-icon{font-size:18px;}
+.complete-btn .btn-txt{flex:1;text-align:left;}
+.complete-btn .btn-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(45,212,191,.15);color:var(--teal);opacity:0;}
+.complete-btn.done .btn-badge{opacity:1;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+
+.submit-wrap{margin-top:28px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+.submit-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 20px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.submit-btn:hover{background:#2f6fe0;transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.submit-status{margin-top:10px;font-size:12.5px;text-align:center;color:var(--txt-dim);}
+.submit-status.ok{color:var(--green);}
+.submit-status.err{color:var(--red);}
+
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+.callout-icon svg{width:16px;height:16px;stroke-width:2.5;}
+.intro-item-icon svg{width:22px;height:22px;stroke-width:2;}
+.page-warning{display:flex;align-items:center;gap:8px;}
+.page-warning svg{width:16px;height:16px;stroke-width:2.5;flex-shrink:0;}
+.submit-btn svg{width:18px;height:18px;stroke-width:2.5;}
+.nav-ref{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;color:var(--yellow);font-size:12.5px;font-weight:600;text-decoration:none;border:1px dashed rgba(245,158,11,.4);}
+.nav-ref:hover{background:var(--yellow-bg);}
+.nav-ref svg{width:14px;height:14px;stroke-width:2.5;flex-shrink:0;}
+pre .edit-line{display:inline-block;width:calc(100% + 40px);box-sizing:border-box;margin:0 -20px;padding:0 20px;background:rgba(250,204,21,.18);box-shadow:inset 3px 0 0 #facc15;}
+.leyenda-edit{margin:8px 0 0;font-size:12.5px;color:var(--txt-dim);display:flex;align-items:center;gap:8px;}
+.leyenda-muestra{display:inline-block;width:22px;height:12px;border-radius:2px;background:rgba(250,204,21,.35);box-shadow:inset 3px 0 0 #facc15;}
+.cambios{margin:16px 0;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:16px 18px;}
+.cambios-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt);}
+.cambios-sub{font-size:13px;color:var(--txt-dim);margin:4px 0 6px;}
+.cambio{display:flex;gap:12px;margin-top:14px;align-items:flex-start;}
+.cambio-n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--accent-glow);color:var(--accent);font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.cambio-body{flex:1;min-width:0;}
+.cambio-titulo{font-size:13px;font-weight:600;color:var(--txt);}
+.cambio-titulo code{font-weight:500;}
+.cambio-por{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-dim);margin:6px 0 0;}
+.cambio pre.ctx{background:#1a2132;margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0;}
+.cambio pre.ctx span{opacity:.55;}
+.cambio pre.ctx + pre{margin-top:0;border-top-left-radius:0;border-top-right-radius:0;box-shadow:inset 3px 0 0 #facc15;}
+.cambio pre{margin:6px 0 0;border-radius:8px;padding:10px 14px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;} td,th{overflow-wrap:anywhere;} .step-body{min-width:0;}
+
+.sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border);}
+.sidebar-hub-link{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-size:12.5px;font-weight:700;padding:8px 10px;border-radius:8px;transition:background .15s;}
+.sidebar-hub-link:hover{background:var(--accent-glow);}
+
+/* ── Identidad del portal ADSO: tipografías y código oscuro sobre fondo claro ── */
+h1,h2,.page-title,.sidebar-brand h1{font-family:'Syne','Inter',sans-serif;}
+pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
+.sidebar{box-shadow:0 10px 30px -10px rgba(15,23,42,.07);}
+
+/* Texto sobre fondos tintados: tonos mas oscuros para que se lea en tema claro */
+.callout.ok,.callout.tip,.step-badge.green{color:#166534;}
+.callout.warn,.page-warning,.step-badge.yellow,.pin{color:#92400e;}
+.callout.err{color:#b91c1c;}
+
+/* Iconos Lucide en línea (reemplazan a los emojis) */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
+
+/* ── Selector de aprendiz (lista propia, mismo estilo del portal) ── */
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+.aprendiz-trigger{width:100%;display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;color:var(--txt);font:600 12.5px 'Inter',sans-serif;cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s;}
+.aprendiz-trigger:hover{border-color:var(--teal);}
+.aprendiz-trigger:focus-visible,.aprendiz-trigger[aria-expanded="true"]{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg);}
+.aprendiz-trigger.falta{border-color:var(--yellow);box-shadow:0 0 0 3px var(--yellow-bg);}
+.aprendiz-trigger svg{flex-shrink:0;color:var(--teal);}
+.aprendiz-trigger .aprendiz-chev{margin-left:auto;color:var(--txt-dim);transition:transform .2s;}
+.aprendiz-trigger[aria-expanded="true"] .aprendiz-chev{transform:rotate(180deg);}
+.aprendiz-trigger-text{flex:1;min-width:0;line-height:1.3;word-break:break-word;}
+.aprendiz-trigger-text.placeholder{color:var(--txt-dim);font-weight:500;}
+.aprendiz-panel{position:fixed;z-index:60;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;box-shadow:0 18px 40px -12px rgba(15,23,42,.25);overflow:hidden;}
+.aprendiz-panel[hidden]{display:none;}
+.aprendiz-search{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--txt-dim);}
+.aprendiz-search input{flex:1;min-width:0;border:0;background:transparent;font:500 12.5px 'Inter',sans-serif;color:var(--txt);outline:none;user-select:text;}
+.aprendiz-list{list-style:none;max-height:224px;overflow-y:auto;padding:4px;}
+.aprendiz-list li{display:flex;white-space:nowrap;line-height:1.35;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;font-size:12px;font-weight:500;color:var(--txt);cursor:pointer;}
+.aprendiz-list li[hidden]{display:none;}
+.aprendiz-list li:hover,.aprendiz-list li.activo{background:var(--surface2);}
+.aprendiz-list li[aria-selected="true"]{background:var(--teal-bg);color:var(--teal);font-weight:700;}
+.aprendiz-list li svg{margin-left:auto;flex-shrink:0;opacity:0;}
+.aprendiz-list li[aria-selected="true"] svg{opacity:1;}
+.aprendiz-empty{padding:12px;font-size:12px;color:var(--txt-dim);text-align:center;}
+.aprendiz-empty[hidden]{display:none;}
+</style>
+<canvas class="confetti-wrap" id="confetti-canvas"></canvas>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="curso">SENA ADSO · S28</div>
+    <h1>Migrar Productos — Guía Paso a Paso</h1>
+    <div class="ficha">Ficha 3229944 · Oct 2026</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 6</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="aprendiz-wrap">
+    <span class="aprendiz-label" id="aprendiz-label">Aprendiz</span>
+    <button type="button" class="aprendiz-trigger" id="aprendiz-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="aprendiz-label aprendiz-trigger-text">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="aprendiz-trigger-text placeholder" id="aprendiz-trigger-text">Selecciona tu nombre</span>
+      <svg class="aprendiz-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="aprendiz-panel" id="aprendiz-panel" hidden>
+      <div class="aprendiz-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="aprendiz-search" placeholder="Buscar mi nombre..." autocomplete="off" aria-label="Buscar mi nombre"></div>
+      <ul class="aprendiz-list" id="aprendiz-list" role="listbox" aria-labelledby="aprendiz-label">
+      <li role="option" aria-selected="false" data-nombre="ANDRES STEVEN LOPEZ SCARPETTA">Andres Steven Lopez Scarpetta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="EDGAR STICK LOPEZ MURCIA">Edgar Stick Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="HEYDER IVAN VELASCO DELGADO">Heyder Ivan Velasco Delgado<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JESUS DAVID ORTIZ MUÑOZ">Jesus David Ortiz Muñoz<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHOJAN STEVEN SERRANO PATIÑO">Jhojan Steven Serrano Patiño<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHON EDGARDO LUGO VILLANUEVA">Jhon Edgardo Lugo Villanueva<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JONIER STIVEN GUTIERREZ SALCEDO">Jonier Stiven Gutierrez Salcedo<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JUAN PABLO PORRAS LOZANO">Juan Pablo Porras Lozano<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="KEVIN MIGUEL ORTIZ TELLEZ">Kevin Miguel Ortiz Tellez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LAURA FERNANDA SOSA CEDIEL">Laura Fernanda Sosa Cediel<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LEIDY VIVIANA SANCHEZ ACOSTA">Leidy Viviana Sanchez Acosta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LUIS CARLOS CADENA VALENCIA">Luis Carlos Cadena Valencia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MARTIN SMITH LOPEZ MURCIA">Martin Smith Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MICHAEL FERMAN HERNANDEZ BERMUDEZ">Michael Ferman Hernandez Bermudez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="NITSON ESTIVEN LOPEZ YUSTES">Nitson Estiven Lopez Yustes<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      </ul>
+      <div class="aprendiz-empty" id="aprendiz-empty" hidden>Sin coincidencias</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Componente</div>
+    <a class="nav-item active" href="#paso1"><span class="nav-dot"></span>Paso 1 — ProductoModal</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Conexión</div>
+    <a class="nav-item" href="#paso2"><span class="nav-dot"></span>Paso 2 — Estado y apertura</a>
+    <a class="nav-item" href="#paso3"><span class="nav-dot"></span>Paso 3 — Eventos que burbujean</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Efectos y datos</div>
+    <a class="nav-item" href="#paso4"><span class="nav-dot"></span>Paso 4 — Escape y scroll</a>
+    <a class="nav-item" href="#paso5"><span class="nav-dot"></span>Paso 5 — Ordenar por precio</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#checklist"><span class="nav-dot"></span>Checklist final</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="../../explorar.html" class="sidebar-hub-link">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      Volver al Hub
+    </a>
+  </div>
+</div>
+
+<main class="main">
+
+  <div class="page-header">
+    <div class="page-tag">Sesión 28 · Fase 5 React y Tailwind</div>
+    <h1 class="page-title">TechStore Pro gana su modal de vista rápida</h1>
+    <p class="page-subtitle">SENA ADSO · Ficha 3229944 · Octubre 2026</p>
+    <div class="page-warning"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg><span>Sigue cada paso en orden. No avances al siguiente hasta que el anterior funcione y hayas marcado el check.</span></div>
+  </div>
+
+  <div class="intro-card">
+    <div class="intro-tag">¿Qué construimos hoy?</div>
+    <div class="intro-title">El modal de vista rápida + orden por precio</div>
+    <p class="intro-sub">Un componente nuevo que se abre desde cada tarjeta, se comunica con el padre y se cierra de tres formas, y un control para ordenar el catálogo por precio. Aparecen dos ideas nuevas de React: el estado que sube al padre y la limpieza de <code>useEffect</code>.</p>
+    <div class="intro-grid">
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /> <path d="M10 4v4" /> <path d="M2 8h20" /> <path d="M6 4v4" /></svg></div><div class="intro-item-label">Pasos 1-2</div><div class="intro-item-desc">ProductoModal y el estado seleccionado</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 8h.01" /> <path d="M12 12h.01" /> <path d="M14 8h.01" /> <path d="M16 12h.01" /> <path d="M18 8h.01" /> <path d="M6 8h.01" /> <path d="M7 16h10" /> <path d="M8 12h.01" /> <rect width="20" height="16" x="2" y="4" rx="2" /></svg></div><div class="intro-item-label">Pasos 3-4</div><div class="intro-item-desc">stopPropagation, Escape y scroll bloqueado</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 16 4 4 4-4" /> <path d="M7 20V4" /> <path d="m21 8-4-4-4 4" /> <path d="M17 4v16" /></svg></div><div class="intro-item-label">Paso 5</div><div class="intro-item-desc">Ordenar por precio con una copia de la lista</div></div>
+    </div>
+  </div>
+
+  <!-- ════ PASO1 ════ -->
+  <section class="section" id="paso1" data-step="paso1">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 1 · Componente</span>
+      <h2 class="section-title">Crear ProductoModal.jsx</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">El modal es un componente más: recibe el producto que debe mostrar y una función para avisar que quiere cerrarse. Se escribe en un archivo propio, igual que <code>ProductCard</code>. Todavía no se conecta a nada: primero la ficha, después la conexión.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Levantar los 2 servidores, cada uno en su propia terminal (si ya estaban corriendo, no hace falta reiniciarlos):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal 1 — dentro de backend/</span></div><pre>npm run dev</pre></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal 2 — dentro de frontend-react/</span></div><pre>npm run dev</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> <code>localhost:5173/productos</code> muestra las tarjetas con foto a sangre, el buscador y el botón "Agregar +", como quedó en S27.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Crear <code>src/ProductoModal.jsx</code> con este contenido completo:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoModal.jsx</span><span class="code-tag green">archivo nuevo — contenido completo</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductoModal</span>({ producto, onCerrar }) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+    });
+    <span class="f">onCerrar</span>();
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"</span>&gt;
+      &lt;<span class="f">div</span>
+        <span class="n">role</span>=<span class="s">"dialog"</span>
+        <span class="n">aria-modal</span>=<span class="s">"true"</span>
+        <span class="n">aria-label</span>={producto.nombre}
+        <span class="n">className</span>=<span class="s">"relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-paper shadow-float md:grid md:grid-cols-2"</span>
+      &gt;
+        &lt;<span class="f">button</span>
+          <span class="n">onClick</span>={onCerrar}
+          <span class="n">aria-label</span>=<span class="s">"Cerrar"</span>
+          <span class="n">className</span>=<span class="s">"absolute top-4 right-4 z-10 size-10 rounded-full bg-paper/90 text-xl leading-none flex items-center justify-center hover:bg-accent hover:text-paper transition-colors"</span>
+        &gt;
+          ×
+        &lt;/<span class="f">button</span>&gt;
+
+        &lt;<span class="f">img</span>
+          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+          <span class="n">alt</span>={producto.nombre}
+          <span class="n">className</span>=<span class="s">"w-full h-64 md:h-full object-cover"</span>
+        /&gt;
+
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-4 p-6 md:p-8"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+          &lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">h2</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight leading-tight"</span>&gt;
+            {producto.nombre}
+          &lt;/<span class="f">h2</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 leading-relaxed"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-2xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">className</span>=<span class="s">"mt-auto bg-ink text-paper rounded-card py-3.5 text-sm font-semibold hover:bg-accent transition-colors"</span>
+          &gt;
+            Agregar al carrito
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoModal;</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>function ProductoModal({ producto, onCerrar })</td><td>Recibe sus dos props <strong>desestructuradas</strong> directamente en los paréntesis, en lugar de escribir <code>props.producto</code> y <code>props.onCerrar</code>. Es la misma idea de S22 con una sintaxis más corta</td></tr><tr><td>producto</td><td>Un objeto completo del producto: <code>id</code>, <code>nombre</code>, <code>descripcion</code>, <code>precio</code>, <code>imagen</code>. El modal solo lo lee y lo dibuja</td></tr><tr><td>onCerrar</td><td>Una <strong>función</strong> que el padre le presta. El modal no sabe qué hace por dentro; solo la llama cuando el usuario quiere cerrarlo</td></tr><tr><td>useContext(CartContext)</td><td>Igual que en <code>ProductCard</code> y en el Navbar: el modal lee <code>agregarAlCarrito</code> del carrito global de S26</td></tr><tr><td>function agregar() { ...; onCerrar(); }</td><td>Agrega el producto al carrito y después cierra el modal. Así se ve de inmediato cómo sube el contador del Navbar</td></tr><tr><td>fixed inset-0 z-50</td><td><code>fixed</code> saca el elemento del flujo y lo fija a la ventana, <code>inset-0</code> lo estira a los 4 bordes (cubre toda la pantalla) y <code>z-50</code> lo coloca por encima de todo lo demás</td></tr><tr><td>flex items-center justify-center</td><td>Centra la ficha en la pantalla, vertical y horizontalmente</td></tr><tr><td>bg-ink/60</td><td>Negro al 60% de opacidad: el fondo oscurecido detrás de la ficha. <code>/60</code> es la forma de Tailwind de bajar la opacidad de un color</td></tr><tr><td>p-4</td><td>16px de margen interior, para que la ficha nunca toque los bordes en pantallas pequeñas</td></tr><tr><td>role="dialog" aria-modal="true" aria-label={...}</td><td>Le dicen a los lectores de pantalla que esto es un cuadro de diálogo y cómo se llama</td></tr><tr><td>relative w-full max-w-3xl max-h-[90vh] overflow-y-auto</td><td>El panel blanco: ocupa todo el ancho disponible hasta un máximo (<code>max-w-3xl</code>), nunca pasa del 90% de la altura de la pantalla (<code>max-h-[90vh]</code>) y, si el contenido es más alto, hace scroll por dentro (<code>overflow-y-auto</code>). <code>relative</code> permite colocar el botón X encima con <code>absolute</code></td></tr><tr><td>rounded-3xl bg-paper shadow-float</td><td>Esquinas de 24px, fondo blanco y la sombra suave del tema (S27)</td></tr><tr><td>md:grid md:grid-cols-2</td><td>En celular la foto va arriba y el texto abajo. Desde <code>md</code> (768px) se ponen lado a lado, en dos columnas iguales</td></tr><tr><td>&lt;button onClick={onCerrar}&gt; ×</td><td>La X para cerrar, pegada arriba a la derecha (<code>absolute top-4 right-4</code>). Llama a <code>onCerrar</code> al hacer clic</td></tr><tr><td>producto.imagen.replace("w=400&amp;h=250", "w=800&amp;h=1000")</td><td>El mismo arreglo de <code>ProductCard</code>: pide a Unsplash la foto en grande y en vertical para que no se vea borrosa</td></tr><tr><td>h-64 md:h-full object-cover</td><td>En celular la foto mide 256px de alto; en pantalla ancha ocupa toda la altura de su columna. <code>object-cover</code> la recorta sin deformarla</td></tr><tr><td>String(producto.id).padStart(2, "0")</td><td>La referencia con dos cifras ("REF 01"), igual que en la tarjeta</td></tr><tr><td>{producto.descripcion}</td><td>Aquí sí se muestra la descripción <strong>completa</strong>: la tarjeta la recortaba a 2 renglones</td></tr><tr><td>mt-auto</td><td>Empuja el botón "Agregar al carrito" al fondo de la columna, aunque el texto sea corto</td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>El archivo se queda <strong>sin importarse en ningún lado</strong> hasta el Paso 2. Es normal que todavía no se vea nada en pantalla.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> sin líneas rojas de sintaxis en VS Code dentro de <code>ProductoModal.jsx</code>, y ningún error nuevo en la terminal de Vite.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO2 ════ -->
+  <section class="section" id="paso2" data-step="paso2">
+    <div class="section-header">
+      <span class="step-badge ">Paso 2 · Estado</span>
+      <h2 class="section-title">Abrir el modal con un clic en la tarjeta</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Dos componentes hermanos necesitan el mismo dato: la tarjeta lo cambia (al hacer clic) y el modal lo lee (para dibujarse). Por eso el estado <code>seleccionado</code> vive en el padre común, <code>Productos</code>. Se cambian 2 archivos: <code>ProductCard.jsx</code> y <code>Productos.jsx</code>.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Este es tu <code>ProductCard.jsx</code> real, tal como está hoy:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductCard.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductCard</span>(props) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: props.id,
+      nombre: props.nombre,
+      precio: props.precio,
+      imagen: props.imagen,
+    });
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">article</span> <span class="n">className</span>=<span class="s">"group relative aspect-4/5 overflow-hidden rounded-3xl bg-ink"</span>&gt;
+      &lt;<span class="f">img</span>
+        <span class="n">src</span>={props.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+        <span class="n">alt</span>={props.nombre}
+        <span class="n">className</span>=<span class="s">"absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"</span>
+      /&gt;
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"absolute inset-0 bg-linear-to-t from-ink/90 via-ink/60 via-30% to-transparent to-60%"</span>&gt;&lt;/<span class="f">div</span>&gt;
+
+      &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"absolute top-4 left-4 bg-paper/90 text-ink rounded-full px-3 py-1.5 font-mono text-[11px] font-bold tracking-wider"</span>&gt;
+        REF {<span class="f">String</span>(props.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+      &lt;/<span class="f">span</span>&gt;
+
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"absolute inset-x-5 bottom-5 flex flex-col gap-2.5 text-paper"</span>&gt;
+        &lt;<span class="f">h3</span> <span class="n">className</span>=<span class="s">"font-display font-semibold text-xl leading-tight"</span>&gt;
+          {props.nombre}
+        &lt;/<span class="f">h3</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-[13px] leading-relaxed text-paper/75 line-clamp-2"</span>&gt;
+          {props.descripcion}
+        &lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex items-center justify-between gap-3 mt-1.5"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[15px] font-bold"</span>&gt;{props.precio}&lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">aria-label</span>={<span class="s">"Agregar "</span> + props.nombre + <span class="s">" al carrito"</span>}
+            <span class="n">className</span>=<span class="s">"bg-paper text-ink rounded-full px-4 py-2.5 text-[13px] font-semibold hover:bg-accent hover:text-paper transition-colors"</span>
+          &gt;
+            Agregar +
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">article</span>&gt;
+  );
+}
+<span class="k">export</span> <span class="k">default</span> ProductCard;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">La tarjeta ahora recibe una prop nueva, <code>onVer</code>, y la conecta al clic de todo el <code>&lt;article&gt;</code>. También gana <code>cursor-pointer</code> para que el cursor sea una manita:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductCard.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductCard</span>(props) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: props.id,
+      nombre: props.nombre,
+      precio: props.precio,
+      imagen: props.imagen,
+    });
+  }
+
+  <span class="k">return</span> (
+<span class="edit-line">    &lt;<span class="f">article</span></span>
+<span class="edit-line">      <span class="n">onClick</span>={props.onVer}</span>
+<span class="edit-line">      <span class="n">className</span>=<span class="s">"group relative aspect-4/5 cursor-pointer overflow-hidden rounded-3xl bg-ink"</span></span>
+    &gt;
+      &lt;<span class="f">img</span>
+        <span class="n">src</span>={props.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+        <span class="n">alt</span>={props.nombre}
+        <span class="n">className</span>=<span class="s">"absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"</span>
+      /&gt;
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"absolute inset-0 bg-linear-to-t from-ink/90 via-ink/60 via-30% to-transparent to-60%"</span>&gt;&lt;/<span class="f">div</span>&gt;
+
+      &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"absolute top-4 left-4 bg-paper/90 text-ink rounded-full px-3 py-1.5 font-mono text-[11px] font-bold tracking-wider"</span>&gt;
+        REF {<span class="f">String</span>(props.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+      &lt;/<span class="f">span</span>&gt;
+
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"absolute inset-x-5 bottom-5 flex flex-col gap-2.5 text-paper"</span>&gt;
+        &lt;<span class="f">h3</span> <span class="n">className</span>=<span class="s">"font-display font-semibold text-xl leading-tight"</span>&gt;
+          {props.nombre}
+        &lt;/<span class="f">h3</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-[13px] leading-relaxed text-paper/75 line-clamp-2"</span>&gt;
+          {props.descripcion}
+        &lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex items-center justify-between gap-3 mt-1.5"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[15px] font-bold"</span>&gt;{props.precio}&lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">aria-label</span>={<span class="s">"Agregar "</span> + props.nombre + <span class="s">" al carrito"</span>}
+            <span class="n">className</span>=<span class="s">"bg-paper text-ink rounded-full px-4 py-2.5 text-[13px] font-semibold hover:bg-accent hover:text-paper transition-colors"</span>
+<span class="edit-line">          &gt;</span>
+            Agregar +
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">article</span>&gt;
+  );
+}
+<span class="k">export</span> <span class="k">default</span> ProductCard;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre>&lt;<span class="f">article</span> <span class="n">className</span>=<span class="s">"group relative aspect-4/5 overflow-hidden rounded-3xl bg-ink"</span>&gt;</pre><div class="cambio-por">por</div><pre>&lt;<span class="f">article</span>
+  <span class="n">onClick</span>={props.onVer}
+  <span class="n">className</span>=<span class="s">"group relative aspect-4/5 cursor-pointer overflow-hidden rounded-3xl bg-ink"</span>
+&gt;</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>onClick={props.onVer}</td><td>Conecta el clic en la tarjeta con la función <code>onVer</code> que le prestan desde <code>Productos</code>. La tarjeta no sabe qué hace esa función: solo la llama</td></tr><tr><td>cursor-pointer</td><td>Cambia el cursor a una manita: avisa que la tarjeta se puede pulsar</td></tr><tr><td>El &lt;article&gt; ahora se escribe en varias líneas</td><td>Con dos atributos (<code>onClick</code> y <code>className</code>) el elemento ya no cabe cómodo en una línea. VS Code lo formatea así con <code>Shift + Alt + F</code></td></tr></tbody></table></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Este es tu <code>Productos.jsx</code> real, tal como está hoy:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/Productos.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"./ProductCard.jsx"</span>;
+
+<span class="k">function</span> <span class="f">Productos</span>() {
+  <span class="k">const</span> [busqueda, setBusqueda] = <span class="f">useState</span>(<span class="s">""</span>);
+  <span class="k">const</span> [productos, setProductos] = <span class="f">useState</span>([]);
+  <span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);
+  <span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);
+
+  <span class="k">function</span> <span class="f">cargarProductos</span>() {
+    <span class="f">setCargando</span>(<span class="y">true</span>);
+    <span class="f">setError</span>(<span class="y">null</span>);
+    <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos"</span>)
+      .<span class="f">then</span>((res) =&gt; res.<span class="f">json</span>())
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setProductos</span>(datos))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"No se pudo conectar al servidor"</span>))
+      .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));
+  }
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">cargarProductos</span>();
+  }, []);
+
+  <span class="k">const</span> filtrados = productos.<span class="f">filter</span>((p) =&gt;
+    p.nombre.<span class="f">toLowerCase</span>().<span class="f">includes</span>(busqueda.<span class="f">toLowerCase</span>()),
+  );
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-10"</span>&gt;
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-wrap items-center gap-3"</span>&gt;
+        &lt;<span class="f">input</span>
+          <span class="n">type</span>=<span class="s">"text"</span>
+          <span class="n">placeholder</span>=<span class="s">"Buscar producto..."</span>
+          <span class="n">value</span>={busqueda}
+          <span class="n">onChange</span>={(e) =&gt; <span class="f">setBusqueda</span>(e.target.value)}
+          <span class="n">className</span>=<span class="s">"w-full max-w-md px-4 py-2 border border-gray-300 rounded-card focus:outline-none focus:border-ink"</span>
+        /&gt;
+        {busqueda &amp;&amp; (
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-sm text-gray-500 whitespace-nowrap"</span>&gt;
+            {filtrados.length} {filtrados.length === <span class="y">1</span> ? <span class="s">"resultado"</span> : <span class="s">"resultados"</span>}
+          &lt;/<span class="f">p</span>&gt;
+        )}
+      &lt;/<span class="f">div</span>&gt;
+      {cargando &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-10"</span>&gt;Cargando productos...&lt;/<span class="f">p</span>&gt;}
+      {error &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-accent-dark py-10"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;}
+      {!cargando &amp;&amp; !error &amp;&amp; (
+        &lt;<span class="f">section</span> <span class="n">className</span>=<span class="s">"grid grid-cols-1 sm:grid md:grid-cols-2 lg:grid-cols-3 gap-6"</span>&gt;
+          {filtrados.<span class="f">map</span>((p) =&gt; (
+            &lt;<span class="f">ProductCard</span>
+              <span class="n">key</span>={p.id}
+              <span class="n">nombre</span>={p.nombre}
+              <span class="n">descripcion</span>={p.descripcion}
+              <span class="n">precio</span>={p.precio}
+              <span class="n">imagen</span>={p.imagen}
+              <span class="n">id</span>={p.id}
+            /&gt;
+          ))}
+        &lt;/<span class="f">section</span>&gt;
+      )}
+      {!cargando &amp;&amp; !error &amp;&amp; filtrados.length === <span class="y">0</span> &amp;&amp; (
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-gray-500 py-10"</span>&gt;
+          No se encontraron productos con ese nombre.
+        &lt;/<span class="f">p</span>&gt;
+      )}
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> Productos;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Se agregan el import del modal, el estado <code>seleccionado</code>, la prop <code>onVer</code> en cada tarjeta y, al final, el modal con su condición. Las líneas amarillas son las nuevas:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/Productos.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"./ProductCard.jsx"</span>;
+<span class="edit-line"><span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"./ProductoModal.jsx"</span>;</span>
+
+<span class="k">function</span> <span class="f">Productos</span>() {
+  <span class="k">const</span> [busqueda, setBusqueda] = <span class="f">useState</span>(<span class="s">""</span>);
+  <span class="k">const</span> [productos, setProductos] = <span class="f">useState</span>([]);
+  <span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);
+  <span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);
+<span class="edit-line">  <span class="k">const</span> [seleccionado, setSeleccionado] = <span class="f">useState</span>(<span class="y">null</span>);</span>
+
+  <span class="k">function</span> <span class="f">cargarProductos</span>() {
+    <span class="f">setCargando</span>(<span class="y">true</span>);
+    <span class="f">setError</span>(<span class="y">null</span>);
+    <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos"</span>)
+      .<span class="f">then</span>((res) =&gt; res.<span class="f">json</span>())
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setProductos</span>(datos))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"No se pudo conectar al servidor"</span>))
+      .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));
+  }
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">cargarProductos</span>();
+  }, []);
+
+  <span class="k">const</span> filtrados = productos.<span class="f">filter</span>((p) =&gt;
+    p.nombre.<span class="f">toLowerCase</span>().<span class="f">includes</span>(busqueda.<span class="f">toLowerCase</span>()),
+  );
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-10"</span>&gt;
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-wrap items-center gap-3"</span>&gt;
+        &lt;<span class="f">input</span>
+          <span class="n">type</span>=<span class="s">"text"</span>
+          <span class="n">placeholder</span>=<span class="s">"Buscar producto..."</span>
+          <span class="n">value</span>={busqueda}
+          <span class="n">onChange</span>={(e) =&gt; <span class="f">setBusqueda</span>(e.target.value)}
+          <span class="n">className</span>=<span class="s">"w-full max-w-md px-4 py-2 border border-gray-300 rounded-card focus:outline-none focus:border-ink"</span>
+        /&gt;
+        {busqueda &amp;&amp; (
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-sm text-gray-500 whitespace-nowrap"</span>&gt;
+            {filtrados.length} {filtrados.length === <span class="y">1</span> ? <span class="s">"resultado"</span> : <span class="s">"resultados"</span>}
+          &lt;/<span class="f">p</span>&gt;
+        )}
+      &lt;/<span class="f">div</span>&gt;
+      {cargando &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-10"</span>&gt;Cargando productos...&lt;/<span class="f">p</span>&gt;}
+      {error &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-accent-dark py-10"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;}
+      {!cargando &amp;&amp; !error &amp;&amp; (
+        &lt;<span class="f">section</span> <span class="n">className</span>=<span class="s">"grid grid-cols-1 sm:grid md:grid-cols-2 lg:grid-cols-3 gap-6"</span>&gt;
+          {filtrados.<span class="f">map</span>((p) =&gt; (
+            &lt;<span class="f">ProductCard</span>
+              <span class="n">key</span>={p.id}
+              <span class="n">nombre</span>={p.nombre}
+              <span class="n">descripcion</span>={p.descripcion}
+              <span class="n">precio</span>={p.precio}
+              <span class="n">imagen</span>={p.imagen}
+              <span class="n">id</span>={p.id}
+<span class="edit-line">              <span class="n">onVer</span>={() =&gt; <span class="f">setSeleccionado</span>(p)}</span>
+            /&gt;
+          ))}
+        &lt;/<span class="f">section</span>&gt;
+      )}
+      {!cargando &amp;&amp; !error &amp;&amp; filtrados.length === <span class="y">0</span> &amp;&amp; (
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-gray-500 py-10"</span>&gt;
+          No se encontraron productos con ese nombre.
+        &lt;/<span class="f">p</span>&gt;
+      )}
+
+<span class="edit-line">      {seleccionado &amp;&amp; (</span>
+<span class="edit-line">        &lt;<span class="f">ProductoModal</span></span>
+<span class="edit-line">          <span class="n">producto</span>={seleccionado}</span>
+<span class="edit-line">          <span class="n">onCerrar</span>={() =&gt; <span class="f">setSeleccionado</span>(<span class="y">null</span>)}</span>
+<span class="edit-line">        /&gt;</span>
+<span class="edit-line">      )}</span>
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> Productos;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 4 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>import ProductCard from "./ProductCard.jsx";</code>, agrega:</div><pre><span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"./ProductoModal.jsx"</span>;</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>const [error, setError] = useState(null);</code>, agrega:</div><pre><span class="k">const</span> [seleccionado, setSeleccionado] = <span class="f">useState</span>(<span class="y">null</span>);</pre></div></div><div class="cambio"><span class="cambio-n">3</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>id={p.id}</code>, agrega:</div><pre><span class="n">onVer</span>={() =&gt; <span class="f">setSeleccionado</span>(p)}</pre></div></div><div class="cambio"><span class="cambio-n">4</span><div class="cambio-body"><div class="cambio-titulo">Después de estas líneas, agrega:</div><pre class="ctx">    No se encontraron productos con ese nombre.
+  &lt;/<span class="f">p</span>&gt;
+)}</pre><pre>
+{seleccionado &amp;&amp; (
+  &lt;<span class="f">ProductoModal</span>
+    <span class="n">producto</span>={seleccionado}
+    <span class="n">onCerrar</span>={() =&gt; <span class="f">setSeleccionado</span>(<span class="y">null</span>)}
+  /&gt;
+)}</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>import ProductoModal from "./ProductoModal.jsx"</td><td>Trae el componente que creaste en el Paso 1</td></tr><tr><td>const [seleccionado, setSeleccionado] = useState(null)</td><td>El estado: qué producto está abierto. Empieza en <code>null</code>, que significa "ninguno". Al hacer clic pasará a ser el objeto completo del producto</td></tr><tr><td>onVer={() =&gt; setSeleccionado(p)}</td><td>Una función nueva por cada tarjeta, que recuerda cuál es su <code>p</code>. Se le presta a la tarjeta como cualquier otra prop. Cuando la tarjeta la llame, <code>seleccionado</code> pasa a ser ese producto</td></tr><tr><td>{seleccionado &amp;&amp; ( &lt;ProductoModal ... /&gt; )}</td><td><strong>Renderizado condicional</strong>, el mismo <code>&amp;&amp;</code> del buscador. Si <code>seleccionado</code> es <code>null</code>, no se dibuja nada. Si tiene un producto, aparece el modal</td></tr><tr><td>producto={seleccionado}</td><td>Le entrega al modal el producto que debe dibujar</td></tr><tr><td>onCerrar={() =&gt; setSeleccionado(null)}</td><td>La función que el modal llamará para cerrarse: vuelve el estado a <code>null</code>, la condición deja de cumplirse y el modal desaparece solo</td></tr><tr><td>El modal va al final, dentro del &lt;div&gt; raíz</td><td>Como es <code>fixed</code>, se dibuja sobre toda la pantalla sin importar dónde se escriba. Va al final por orden, no por necesidad</td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Este es el patrón de <strong>levantar el estado</strong>: cuando dos componentes hermanos necesitan el mismo dato, el estado se sube al padre que los contiene. La tarjeta <strong>avisa hacia arriba</strong> (con <code>onVer</code>) y el modal <strong>recibe hacia abajo</strong> (con <code>producto</code>).</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en <code>localhost:5173/productos</code>, al hacer clic en una tarjeta aparece el modal con la foto grande, el nombre, la descripción completa y el precio. La <strong>X</strong> lo cierra. <strong>Prueba también "Agregar +" en una tarjeta:</strong> el producto entra al carrito (el contador del Navbar sube) <strong>y además se abre el modal</strong>. Es un defecto esperado por ahora: se corrige en el Paso 3.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO3 ════ -->
+  <section class="section" id="paso3" data-step="paso3">
+    <div class="section-header">
+      <span class="step-badge extra">Paso 3 · Eventos</span>
+      <h2 class="section-title">Frenar los clics que burbujean</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Un clic en un elemento también cuenta como clic para todos los que lo contienen: el evento "burbujea" hacia arriba. Por eso "Agregar +", que está dentro de la tarjeta, también abría el modal. Se arregla en dos sitios con la misma herramienta: <code>e.stopPropagation()</code>.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Este es tu <code>ProductCard.jsx</code> como quedó en el Paso 2:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductCard.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductCard</span>(props) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: props.id,
+      nombre: props.nombre,
+      precio: props.precio,
+      imagen: props.imagen,
+    });
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">article</span>
+      <span class="n">onClick</span>={props.onVer}
+      <span class="n">className</span>=<span class="s">"group relative aspect-4/5 cursor-pointer overflow-hidden rounded-3xl bg-ink"</span>
+    &gt;
+      &lt;<span class="f">img</span>
+        <span class="n">src</span>={props.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+        <span class="n">alt</span>={props.nombre}
+        <span class="n">className</span>=<span class="s">"absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"</span>
+      /&gt;
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"absolute inset-0 bg-linear-to-t from-ink/90 via-ink/60 via-30% to-transparent to-60%"</span>&gt;&lt;/<span class="f">div</span>&gt;
+
+      &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"absolute top-4 left-4 bg-paper/90 text-ink rounded-full px-3 py-1.5 font-mono text-[11px] font-bold tracking-wider"</span>&gt;
+        REF {<span class="f">String</span>(props.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+      &lt;/<span class="f">span</span>&gt;
+
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"absolute inset-x-5 bottom-5 flex flex-col gap-2.5 text-paper"</span>&gt;
+        &lt;<span class="f">h3</span> <span class="n">className</span>=<span class="s">"font-display font-semibold text-xl leading-tight"</span>&gt;
+          {props.nombre}
+        &lt;/<span class="f">h3</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-[13px] leading-relaxed text-paper/75 line-clamp-2"</span>&gt;
+          {props.descripcion}
+        &lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex items-center justify-between gap-3 mt-1.5"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[15px] font-bold"</span>&gt;{props.precio}&lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">aria-label</span>={<span class="s">"Agregar "</span> + props.nombre + <span class="s">" al carrito"</span>}
+            <span class="n">className</span>=<span class="s">"bg-paper text-ink rounded-full px-4 py-2.5 text-[13px] font-semibold hover:bg-accent hover:text-paper transition-colors"</span>
+          &gt;
+            Agregar +
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">article</span>&gt;
+  );
+}
+<span class="k">export</span> <span class="k">default</span> ProductCard;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">La función <code>agregar</code> ahora recibe el evento del clic y le pide que no siga subiendo hacia la tarjeta:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductCard.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductCard</span>(props) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+<span class="edit-line">  <span class="k">function</span> <span class="f">agregar</span>(e) {</span>
+<span class="edit-line">    e.<span class="f">stopPropagation</span>();</span>
+    <span class="f">agregarAlCarrito</span>({
+      id: props.id,
+      nombre: props.nombre,
+      precio: props.precio,
+      imagen: props.imagen,
+    });
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">article</span>
+      <span class="n">onClick</span>={props.onVer}
+      <span class="n">className</span>=<span class="s">"group relative aspect-4/5 cursor-pointer overflow-hidden rounded-3xl bg-ink"</span>
+    &gt;
+      &lt;<span class="f">img</span>
+        <span class="n">src</span>={props.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+        <span class="n">alt</span>={props.nombre}
+        <span class="n">className</span>=<span class="s">"absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"</span>
+      /&gt;
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"absolute inset-0 bg-linear-to-t from-ink/90 via-ink/60 via-30% to-transparent to-60%"</span>&gt;&lt;/<span class="f">div</span>&gt;
+
+      &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"absolute top-4 left-4 bg-paper/90 text-ink rounded-full px-3 py-1.5 font-mono text-[11px] font-bold tracking-wider"</span>&gt;
+        REF {<span class="f">String</span>(props.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+      &lt;/<span class="f">span</span>&gt;
+
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"absolute inset-x-5 bottom-5 flex flex-col gap-2.5 text-paper"</span>&gt;
+        &lt;<span class="f">h3</span> <span class="n">className</span>=<span class="s">"font-display font-semibold text-xl leading-tight"</span>&gt;
+          {props.nombre}
+        &lt;/<span class="f">h3</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-[13px] leading-relaxed text-paper/75 line-clamp-2"</span>&gt;
+          {props.descripcion}
+        &lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex items-center justify-between gap-3 mt-1.5"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[15px] font-bold"</span>&gt;{props.precio}&lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">aria-label</span>={<span class="s">"Agregar "</span> + props.nombre + <span class="s">" al carrito"</span>}
+            <span class="n">className</span>=<span class="s">"bg-paper text-ink rounded-full px-4 py-2.5 text-[13px] font-semibold hover:bg-accent hover:text-paper transition-colors"</span>
+          &gt;
+            Agregar +
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">article</span>&gt;
+  );
+}
+<span class="k">export</span> <span class="k">default</span> ProductCard;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">function</span> <span class="f">agregar</span>() {</pre><div class="cambio-por">por</div><pre><span class="k">function</span> <span class="f">agregar</span>(e) {
+  e.<span class="f">stopPropagation</span>();</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>function agregar(e)</td><td>React le entrega a la función el <strong>evento</strong> del clic en el parámetro <code>e</code>, sin que tengas que pedirlo. Antes <code>agregar</code> no lo usaba y por eso no lo recibía</td></tr><tr><td>e.stopPropagation()</td><td>Detiene el recorrido del clic hacia arriba. El botón hace su trabajo (agregar al carrito) y la tarjeta ni se entera, así que no abre el modal</td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> pulsa "Agregar +" en una tarjeta: el contador del Navbar sube y <strong>el modal ya no se abre</strong>. Pulsar en cualquier otra parte de la tarjeta sí lo abre.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Este es tu <code>ProductoModal.jsx</code> como quedó en el Paso 1:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoModal.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductoModal</span>({ producto, onCerrar }) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+    });
+    <span class="f">onCerrar</span>();
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"</span>&gt;
+      &lt;<span class="f">div</span>
+        <span class="n">role</span>=<span class="s">"dialog"</span>
+        <span class="n">aria-modal</span>=<span class="s">"true"</span>
+        <span class="n">aria-label</span>={producto.nombre}
+        <span class="n">className</span>=<span class="s">"relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-paper shadow-float md:grid md:grid-cols-2"</span>
+      &gt;
+        &lt;<span class="f">button</span>
+          <span class="n">onClick</span>={onCerrar}
+          <span class="n">aria-label</span>=<span class="s">"Cerrar"</span>
+          <span class="n">className</span>=<span class="s">"absolute top-4 right-4 z-10 size-10 rounded-full bg-paper/90 text-xl leading-none flex items-center justify-center hover:bg-accent hover:text-paper transition-colors"</span>
+        &gt;
+          ×
+        &lt;/<span class="f">button</span>&gt;
+
+        &lt;<span class="f">img</span>
+          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+          <span class="n">alt</span>={producto.nombre}
+          <span class="n">className</span>=<span class="s">"w-full h-64 md:h-full object-cover"</span>
+        /&gt;
+
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-4 p-6 md:p-8"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+          &lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">h2</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight leading-tight"</span>&gt;
+            {producto.nombre}
+          &lt;/<span class="f">h2</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 leading-relaxed"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-2xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">className</span>=<span class="s">"mt-auto bg-ink text-paper rounded-card py-3.5 text-sm font-semibold hover:bg-accent transition-colors"</span>
+          &gt;
+            Agregar al carrito
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoModal;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">El modal pide cerrarse al hacer clic en el fondo oscuro, pero el panel blanco lleva el mismo freno para que un clic <strong>dentro</strong> de la ficha no la cierre:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoModal.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductoModal</span>({ producto, onCerrar }) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+    });
+    <span class="f">onCerrar</span>();
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span>
+<span class="edit-line">      <span class="n">className</span>=<span class="s">"fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"</span></span>
+      <span class="n">onClick</span>={onCerrar}
+    &gt;
+<span class="edit-line">      &lt;<span class="f">div</span></span>
+        <span class="n">role</span>=<span class="s">"dialog"</span>
+        <span class="n">aria-modal</span>=<span class="s">"true"</span>
+        <span class="n">aria-label</span>={producto.nombre}
+        <span class="n">className</span>=<span class="s">"relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-paper shadow-float md:grid md:grid-cols-2"</span>
+<span class="edit-line">        <span class="n">onClick</span>={(e) =&gt; e.<span class="f">stopPropagation</span>()}</span>
+      &gt;
+        &lt;<span class="f">button</span>
+<span class="edit-line">          <span class="n">onClick</span>={onCerrar}</span>
+          <span class="n">aria-label</span>=<span class="s">"Cerrar"</span>
+          <span class="n">className</span>=<span class="s">"absolute top-4 right-4 z-10 size-10 rounded-full bg-paper/90 text-xl leading-none flex items-center justify-center hover:bg-accent hover:text-paper transition-colors"</span>
+        &gt;
+          ×
+        &lt;/<span class="f">button</span>&gt;
+
+        &lt;<span class="f">img</span>
+          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+          <span class="n">alt</span>={producto.nombre}
+          <span class="n">className</span>=<span class="s">"w-full h-64 md:h-full object-cover"</span>
+        /&gt;
+
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-4 p-6 md:p-8"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+          &lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">h2</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight leading-tight"</span>&gt;
+            {producto.nombre}
+          &lt;/<span class="f">h2</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 leading-relaxed"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-2xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">className</span>=<span class="s">"mt-auto bg-ink text-paper rounded-card py-3.5 text-sm font-semibold hover:bg-accent transition-colors"</span>
+<span class="edit-line">          &gt;</span>
+            Agregar al carrito
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoModal;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 2 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre>&lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"</span>&gt;</pre><div class="cambio-por">por</div><pre>&lt;<span class="f">div</span>
+  <span class="n">className</span>=<span class="s">"fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"</span>
+  <span class="n">onClick</span>={onCerrar}
+&gt;</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto r...</code>, agrega:</div><pre><span class="n">onClick</span>={(e) =&gt; e.<span class="f">stopPropagation</span>()}</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>onClick={onCerrar} en el fondo oscuro</td><td>Hacer clic fuera de la ficha cierra el modal</td></tr><tr><td>onClick={(e) =&gt; e.stopPropagation()} en el panel</td><td>El panel blanco está <strong>dentro</strong> del fondo oscuro, así que un clic sobre la ficha subiría al fondo y la cerraría. El freno evita que el clic suba y la ficha se quede abierta</td></tr><tr><td>El &lt;div&gt; del fondo ahora se escribe en varias líneas</td><td>Con dos atributos (<code>className</code> y <code>onClick</code>) ya no cabe en una línea</td></tr></tbody></table></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Fíjate en el patrón: <strong>un mismo clic, dos comportamientos según dónde caiga</strong>. Es la razón de usar <code>stopPropagation</code>: separar lo que pasa en el panel de lo que pasa en el fondo.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> con el modal abierto: un clic <strong>en el fondo oscuro</strong> lo cierra; un clic <strong>sobre la ficha</strong> (en el texto o en la foto) no lo cierra; la X lo cierra; y "Agregar al carrito" agrega el producto, cierra el modal y sube el contador.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO4 ════ -->
+  <section class="section" id="paso4" data-step="paso4">
+    <div class="section-header">
+      <span class="step-badge teal">Paso 4 · Efectos</span>
+      <h2 class="section-title">Escape y scroll bloqueado con useEffect</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Cerrar con la tecla Escape y bloquear el scroll de la página de atrás son cosas del navegador, fuera de React: por eso van en <code>useEffect</code> (S24). Lo nuevo es la <strong>limpieza</strong>: lo que se enciende al abrir el modal hay que apagarlo al cerrarlo.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Este es tu <code>ProductoModal.jsx</code> como quedó en el Paso 3:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoModal.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductoModal</span>({ producto, onCerrar }) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+    });
+    <span class="f">onCerrar</span>();
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span>
+      <span class="n">className</span>=<span class="s">"fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"</span>
+      <span class="n">onClick</span>={onCerrar}
+    &gt;
+      &lt;<span class="f">div</span>
+        <span class="n">role</span>=<span class="s">"dialog"</span>
+        <span class="n">aria-modal</span>=<span class="s">"true"</span>
+        <span class="n">aria-label</span>={producto.nombre}
+        <span class="n">className</span>=<span class="s">"relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-paper shadow-float md:grid md:grid-cols-2"</span>
+        <span class="n">onClick</span>={(e) =&gt; e.<span class="f">stopPropagation</span>()}
+      &gt;
+        &lt;<span class="f">button</span>
+          <span class="n">onClick</span>={onCerrar}
+          <span class="n">aria-label</span>=<span class="s">"Cerrar"</span>
+          <span class="n">className</span>=<span class="s">"absolute top-4 right-4 z-10 size-10 rounded-full bg-paper/90 text-xl leading-none flex items-center justify-center hover:bg-accent hover:text-paper transition-colors"</span>
+        &gt;
+          ×
+        &lt;/<span class="f">button</span>&gt;
+
+        &lt;<span class="f">img</span>
+          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+          <span class="n">alt</span>={producto.nombre}
+          <span class="n">className</span>=<span class="s">"w-full h-64 md:h-full object-cover"</span>
+        /&gt;
+
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-4 p-6 md:p-8"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+          &lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">h2</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight leading-tight"</span>&gt;
+            {producto.nombre}
+          &lt;/<span class="f">h2</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 leading-relaxed"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-2xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">className</span>=<span class="s">"mt-auto bg-ink text-paper rounded-card py-3.5 text-sm font-semibold hover:bg-accent transition-colors"</span>
+          &gt;
+            Agregar al carrito
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoModal;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Se agrega <code>useEffect</code> al import y, justo debajo de <code>useContext</code>, el efecto con su limpieza:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoModal.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="edit-line"><span class="k">import</span> { useContext, useEffect } <span class="k">from</span> <span class="s">"react"</span>;</span>
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductoModal</span>({ producto, onCerrar }) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+<span class="edit-line">  <span class="f">useEffect</span>(() =&gt; {</span>
+<span class="edit-line">    <span class="k">function</span> <span class="f">alPulsar</span>(e) {</span>
+<span class="edit-line">      <span class="k">if</span> (e.key === <span class="s">"Escape"</span>) <span class="f">onCerrar</span>();</span>
+    }
+<span class="edit-line">    document.<span class="f">addEventListener</span>(<span class="s">"keydown"</span>, alPulsar);</span>
+<span class="edit-line">    document.body.style.overflow = <span class="s">"hidden"</span>;</span>
+
+<span class="edit-line">    <span class="k">return</span> () =&gt; {</span>
+<span class="edit-line">      document.<span class="f">removeEventListener</span>(<span class="s">"keydown"</span>, alPulsar);</span>
+<span class="edit-line">      document.body.style.overflow = <span class="s">""</span>;</span>
+<span class="edit-line">    };</span>
+<span class="edit-line">  }, [onCerrar]);</span>
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+    });
+    <span class="f">onCerrar</span>();
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span>
+      <span class="n">className</span>=<span class="s">"fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"</span>
+      <span class="n">onClick</span>={onCerrar}
+    &gt;
+      &lt;<span class="f">div</span>
+        <span class="n">role</span>=<span class="s">"dialog"</span>
+        <span class="n">aria-modal</span>=<span class="s">"true"</span>
+        <span class="n">aria-label</span>={producto.nombre}
+        <span class="n">className</span>=<span class="s">"relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-paper shadow-float md:grid md:grid-cols-2"</span>
+        <span class="n">onClick</span>={(e) =&gt; e.<span class="f">stopPropagation</span>()}
+      &gt;
+        &lt;<span class="f">button</span>
+          <span class="n">onClick</span>={onCerrar}
+          <span class="n">aria-label</span>=<span class="s">"Cerrar"</span>
+          <span class="n">className</span>=<span class="s">"absolute top-4 right-4 z-10 size-10 rounded-full bg-paper/90 text-xl leading-none flex items-center justify-center hover:bg-accent hover:text-paper transition-colors"</span>
+        &gt;
+          ×
+        &lt;/<span class="f">button</span>&gt;
+
+        &lt;<span class="f">img</span>
+          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+          <span class="n">alt</span>={producto.nombre}
+          <span class="n">className</span>=<span class="s">"w-full h-64 md:h-full object-cover"</span>
+        /&gt;
+
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-4 p-6 md:p-8"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+          &lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">h2</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight leading-tight"</span>&gt;
+            {producto.nombre}
+          &lt;/<span class="f">h2</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 leading-relaxed"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-2xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">className</span>=<span class="s">"mt-auto bg-ink text-paper rounded-card py-3.5 text-sm font-semibold hover:bg-accent transition-colors"</span>
+          &gt;
+            Agregar al carrito
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+<span class="edit-line">}</span>
+
+<span class="k">export</span> <span class="k">default</span> ProductoModal;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 2 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { useContext, useEffect } <span class="k">from</span> <span class="s">"react"</span>;</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>const { agregarAlCarrito } = useContext(CartContext);</code>, agrega:</div><pre><span class="f">useEffect</span>(() =&gt; {
+  <span class="k">function</span> <span class="f">alPulsar</span>(e) {
+    <span class="k">if</span> (e.key === <span class="s">"Escape"</span>) <span class="f">onCerrar</span>();
+  }
+  document.<span class="f">addEventListener</span>(<span class="s">"keydown"</span>, alPulsar);
+  document.body.style.overflow = <span class="s">"hidden"</span>;
+
+  <span class="k">return</span> () =&gt; {
+    document.<span class="f">removeEventListener</span>(<span class="s">"keydown"</span>, alPulsar);
+    document.body.style.overflow = <span class="s">""</span>;
+  };
+}, [onCerrar]);
+</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>import { useContext, useEffect }</td><td>Se suma <code>useEffect</code> al import de React</td></tr><tr><td>useEffect(() =&gt; { ... }, [onCerrar])</td><td>Un efecto que corre <strong>cuando el modal aparece</strong>, porque el componente se crea justo en ese momento</td></tr><tr><td>function alPulsar(e)</td><td>Se ejecuta con cada tecla. <code>e.key</code> dice cuál se pulsó</td></tr><tr><td>if (e.key === "Escape") onCerrar()</td><td>Solo actúa si la tecla fue Escape: llama a la misma función que usa la X</td></tr><tr><td>document.addEventListener("keydown", alPulsar)</td><td>Empieza a escuchar el teclado en toda la página. Es trabajo con el navegador, no con React: por eso va en un efecto</td></tr><tr><td>document.body.style.overflow = "hidden"</td><td>Bloquea el scroll del cuerpo de la página mientras el modal está abierto</td></tr><tr><td>return () =&gt; { ... }</td><td>La <strong>limpieza</strong>: la función que devuelve el efecto. React la ejecuta cuando el modal <strong>desaparece</strong></td></tr><tr><td>document.removeEventListener("keydown", alPulsar)</td><td>Deja de escuchar el teclado. Se le pasa la misma función <code>alPulsar</code> que se registró</td></tr><tr><td>document.body.style.overflow = ""</td><td>Devuelve el scroll al comportamiento normal. Un texto vacío quita el bloqueo</td></tr><tr><td>[onCerrar]</td><td>La lista de dependencias: el efecto se vuelve a armar si cambia <code>onCerrar</code>, para no usar una versión vieja de esa función</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Sin la limpieza, la página se quedaría <strong>sin scroll para siempre</strong> después de cerrar el modal, y cada vez que lo abrieras se sumaría otro oyente de teclado. Lo que un efecto enciende, la limpieza lo apaga.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>En desarrollo, React ejecuta el efecto, su limpieza y otra vez el efecto la primera vez que aparece el componente (modo estricto). Es a propósito: sirve para comprobar que la limpieza deshace <strong>todo</strong> bien. Si algo quedara encendido, lo notarías enseguida.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> abre un modal y pulsa <strong>Escape</strong>: se cierra. Con el modal abierto, intenta bajar con la rueda del mouse: <strong>la página de atrás no se mueve</strong>. Cierra el modal: el scroll vuelve a funcionar. Repite abrir y cerrar 3 o 4 veces: el scroll siempre debe volver.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO5 ════ -->
+  <section class="section" id="paso5" data-step="paso5">
+    <div class="section-header">
+      <span class="step-badge green">Paso 5 · Orden</span>
+      <h2 class="section-title">Ordenar los productos por precio</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">El backend entrega el precio como texto (<code>"$8.999.000"</code>). Para ordenar hay que convertirlo a número, y para no dañar la lista original hay que ordenar una <strong>copia</strong>. El orden elegido vive en un estado, igual que el buscador (S23).</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Este es tu <code>Productos.jsx</code> como quedó en el Paso 2:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/Productos.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"./ProductCard.jsx"</span>;
+<span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"./ProductoModal.jsx"</span>;
+
+<span class="k">function</span> <span class="f">Productos</span>() {
+  <span class="k">const</span> [busqueda, setBusqueda] = <span class="f">useState</span>(<span class="s">""</span>);
+  <span class="k">const</span> [productos, setProductos] = <span class="f">useState</span>([]);
+  <span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);
+  <span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);
+  <span class="k">const</span> [seleccionado, setSeleccionado] = <span class="f">useState</span>(<span class="y">null</span>);
+
+  <span class="k">function</span> <span class="f">cargarProductos</span>() {
+    <span class="f">setCargando</span>(<span class="y">true</span>);
+    <span class="f">setError</span>(<span class="y">null</span>);
+    <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos"</span>)
+      .<span class="f">then</span>((res) =&gt; res.<span class="f">json</span>())
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setProductos</span>(datos))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"No se pudo conectar al servidor"</span>))
+      .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));
+  }
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">cargarProductos</span>();
+  }, []);
+
+  <span class="k">const</span> filtrados = productos.<span class="f">filter</span>((p) =&gt;
+    p.nombre.<span class="f">toLowerCase</span>().<span class="f">includes</span>(busqueda.<span class="f">toLowerCase</span>()),
+  );
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-10"</span>&gt;
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-wrap items-center gap-3"</span>&gt;
+        &lt;<span class="f">input</span>
+          <span class="n">type</span>=<span class="s">"text"</span>
+          <span class="n">placeholder</span>=<span class="s">"Buscar producto..."</span>
+          <span class="n">value</span>={busqueda}
+          <span class="n">onChange</span>={(e) =&gt; <span class="f">setBusqueda</span>(e.target.value)}
+          <span class="n">className</span>=<span class="s">"w-full max-w-md px-4 py-2 border border-gray-300 rounded-card focus:outline-none focus:border-ink"</span>
+        /&gt;
+        {busqueda &amp;&amp; (
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-sm text-gray-500 whitespace-nowrap"</span>&gt;
+            {filtrados.length} {filtrados.length === <span class="y">1</span> ? <span class="s">"resultado"</span> : <span class="s">"resultados"</span>}
+          &lt;/<span class="f">p</span>&gt;
+        )}
+      &lt;/<span class="f">div</span>&gt;
+      {cargando &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-10"</span>&gt;Cargando productos...&lt;/<span class="f">p</span>&gt;}
+      {error &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-accent-dark py-10"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;}
+      {!cargando &amp;&amp; !error &amp;&amp; (
+        &lt;<span class="f">section</span> <span class="n">className</span>=<span class="s">"grid grid-cols-1 sm:grid md:grid-cols-2 lg:grid-cols-3 gap-6"</span>&gt;
+          {filtrados.<span class="f">map</span>((p) =&gt; (
+            &lt;<span class="f">ProductCard</span>
+              <span class="n">key</span>={p.id}
+              <span class="n">nombre</span>={p.nombre}
+              <span class="n">descripcion</span>={p.descripcion}
+              <span class="n">precio</span>={p.precio}
+              <span class="n">imagen</span>={p.imagen}
+              <span class="n">id</span>={p.id}
+              <span class="n">onVer</span>={() =&gt; <span class="f">setSeleccionado</span>(p)}
+            /&gt;
+          ))}
+        &lt;/<span class="f">section</span>&gt;
+      )}
+      {!cargando &amp;&amp; !error &amp;&amp; filtrados.length === <span class="y">0</span> &amp;&amp; (
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-gray-500 py-10"</span>&gt;
+          No se encontraron productos con ese nombre.
+        &lt;/<span class="f">p</span>&gt;
+      )}
+
+      {seleccionado &amp;&amp; (
+        &lt;<span class="f">ProductoModal</span>
+          <span class="n">producto</span>={seleccionado}
+          <span class="n">onCerrar</span>={() =&gt; <span class="f">setSeleccionado</span>(<span class="y">null</span>)}
+        /&gt;
+      )}
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> Productos;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Se agregan la función <code>precioNumero</code>, el estado <code>orden</code>, la lista <code>ordenados</code>, un <code>select</code> junto al buscador y la grilla pasa a recorrer <code>ordenados</code>:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/Productos.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"./ProductCard.jsx"</span>;
+<span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"./ProductoModal.jsx"</span>;
+
+<span class="edit-line"><span class="k">function</span> <span class="f">precioNumero</span>(p) {</span>
+<span class="edit-line">  <span class="k">return</span> <span class="f">Number</span>(p.precio.<span class="f">replace</span>(/\D/g, <span class="s">""</span>));</span>
+}
+
+<span class="k">function</span> <span class="f">Productos</span>() {
+  <span class="k">const</span> [busqueda, setBusqueda] = <span class="f">useState</span>(<span class="s">""</span>);
+  <span class="k">const</span> [productos, setProductos] = <span class="f">useState</span>([]);
+  <span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);
+  <span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);
+  <span class="k">const</span> [seleccionado, setSeleccionado] = <span class="f">useState</span>(<span class="y">null</span>);
+<span class="edit-line">  <span class="k">const</span> [orden, setOrden] = <span class="f">useState</span>(<span class="s">"original"</span>);</span>
+
+  <span class="k">function</span> <span class="f">cargarProductos</span>() {
+    <span class="f">setCargando</span>(<span class="y">true</span>);
+    <span class="f">setError</span>(<span class="y">null</span>);
+    <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos"</span>)
+      .<span class="f">then</span>((res) =&gt; res.<span class="f">json</span>())
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setProductos</span>(datos))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"No se pudo conectar al servidor"</span>))
+      .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));
+  }
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">cargarProductos</span>();
+  }, []);
+
+  <span class="k">const</span> filtrados = productos.<span class="f">filter</span>((p) =&gt;
+    p.nombre.<span class="f">toLowerCase</span>().<span class="f">includes</span>(busqueda.<span class="f">toLowerCase</span>()),
+  );
+
+<span class="edit-line">  <span class="k">const</span> ordenados = [...filtrados];</span>
+<span class="edit-line">  <span class="k">if</span> (orden === <span class="s">"menor"</span>) {</span>
+<span class="edit-line">    ordenados.<span class="f">sort</span>((a, b) =&gt; <span class="f">precioNumero</span>(a) - <span class="f">precioNumero</span>(b));</span>
+<span class="edit-line">  }</span>
+<span class="edit-line">  <span class="k">if</span> (orden === <span class="s">"mayor"</span>) {</span>
+<span class="edit-line">    ordenados.<span class="f">sort</span>((a, b) =&gt; <span class="f">precioNumero</span>(b) - <span class="f">precioNumero</span>(a));</span>
+<span class="edit-line">  }</span>
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-10"</span>&gt;
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-wrap items-center gap-3"</span>&gt;
+        &lt;<span class="f">input</span>
+          <span class="n">type</span>=<span class="s">"text"</span>
+          <span class="n">placeholder</span>=<span class="s">"Buscar producto..."</span>
+          <span class="n">value</span>={busqueda}
+          <span class="n">onChange</span>={(e) =&gt; <span class="f">setBusqueda</span>(e.target.value)}
+          <span class="n">className</span>=<span class="s">"w-full max-w-md px-4 py-2 border border-gray-300 rounded-card focus:outline-none focus:border-ink"</span>
+        /&gt;
+<span class="edit-line">        &lt;<span class="f">select</span></span>
+<span class="edit-line">          <span class="n">value</span>={orden}</span>
+<span class="edit-line">          <span class="n">onChange</span>={(e) =&gt; <span class="f">setOrden</span>(e.target.value)}</span>
+<span class="edit-line">          <span class="n">className</span>=<span class="s">"px-4 py-2 border border-gray-300 rounded-card bg-paper text-sm focus:outline-none focus:border-ink"</span></span>
+<span class="edit-line">        &gt;</span>
+<span class="edit-line">          &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">"original"</span>&gt;Orden original&lt;/<span class="f">option</span>&gt;</span>
+<span class="edit-line">          &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">"menor"</span>&gt;Menor precio&lt;/<span class="f">option</span>&gt;</span>
+<span class="edit-line">          &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">"mayor"</span>&gt;Mayor precio&lt;/<span class="f">option</span>&gt;</span>
+<span class="edit-line">        &lt;/<span class="f">select</span>&gt;</span>
+        {busqueda &amp;&amp; (
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-sm text-gray-500 whitespace-nowrap"</span>&gt;
+            {filtrados.length} {filtrados.length === <span class="y">1</span> ? <span class="s">"resultado"</span> : <span class="s">"resultados"</span>}
+          &lt;/<span class="f">p</span>&gt;
+        )}
+      &lt;/<span class="f">div</span>&gt;
+      {cargando &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-10"</span>&gt;Cargando productos...&lt;/<span class="f">p</span>&gt;}
+      {error &amp;&amp; &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-accent-dark py-10"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;}
+      {!cargando &amp;&amp; !error &amp;&amp; (
+        &lt;<span class="f">section</span> <span class="n">className</span>=<span class="s">"grid grid-cols-1 sm:grid md:grid-cols-2 lg:grid-cols-3 gap-6"</span>&gt;
+<span class="edit-line">          {ordenados.<span class="f">map</span>((p) =&gt; (</span>
+            &lt;<span class="f">ProductCard</span>
+              <span class="n">key</span>={p.id}
+              <span class="n">nombre</span>={p.nombre}
+              <span class="n">descripcion</span>={p.descripcion}
+              <span class="n">precio</span>={p.precio}
+              <span class="n">imagen</span>={p.imagen}
+              <span class="n">id</span>={p.id}
+              <span class="n">onVer</span>={() =&gt; <span class="f">setSeleccionado</span>(p)}
+            /&gt;
+          ))}
+        &lt;/<span class="f">section</span>&gt;
+      )}
+      {!cargando &amp;&amp; !error &amp;&amp; filtrados.length === <span class="y">0</span> &amp;&amp; (
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center text-gray-500 py-10"</span>&gt;
+          No se encontraron productos con ese nombre.
+        &lt;/<span class="f">p</span>&gt;
+      )}
+
+      {seleccionado &amp;&amp; (
+        &lt;<span class="f">ProductoModal</span>
+          <span class="n">producto</span>={seleccionado}
+          <span class="n">onCerrar</span>={() =&gt; <span class="f">setSeleccionado</span>(<span class="y">null</span>)}
+        /&gt;
+      )}
+    &lt;/<span class="f">div</span>&gt;
+  );
+<span class="edit-line">}</span>
+
+<span class="k">export</span> <span class="k">default</span> Productos;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 5 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>import ProductoModal from "./ProductoModal.jsx";</code>, agrega:</div><pre><span class="k">function</span> <span class="f">precioNumero</span>(p) {
+  <span class="k">return</span> <span class="f">Number</span>(p.precio.<span class="f">replace</span>(/\D/g, <span class="s">""</span>));
+}
+</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>const [seleccionado, setSeleccionado] = useState(null);</code>, agrega:</div><pre><span class="k">const</span> [orden, setOrden] = <span class="f">useState</span>(<span class="s">"original"</span>);</pre></div></div><div class="cambio"><span class="cambio-n">3</span><div class="cambio-body"><div class="cambio-titulo">Después de estas líneas, agrega:</div><pre class="ctx"><span class="k">const</span> filtrados = productos.<span class="f">filter</span>((p) =&gt;
+  p.nombre.<span class="f">toLowerCase</span>().<span class="f">includes</span>(busqueda.<span class="f">toLowerCase</span>()),
+);</pre><pre><span class="k">const</span> ordenados = [...filtrados];
+<span class="k">if</span> (orden === <span class="s">"menor"</span>) {
+  ordenados.<span class="f">sort</span>((a, b) =&gt; <span class="f">precioNumero</span>(a) - <span class="f">precioNumero</span>(b));
+}
+<span class="k">if</span> (orden === <span class="s">"mayor"</span>) {
+  ordenados.<span class="f">sort</span>((a, b) =&gt; <span class="f">precioNumero</span>(b) - <span class="f">precioNumero</span>(a));
+}
+</pre></div></div><div class="cambio"><span class="cambio-n">4</span><div class="cambio-body"><div class="cambio-titulo">Después de estas líneas, agrega:</div><pre class="ctx">  <span class="n">onChange</span>={(e) =&gt; <span class="f">setBusqueda</span>(e.target.value)}
+  <span class="n">className</span>=<span class="s">"w-full max-w-md px-4 py-2 border border-gray-300 rounded-card focus:outline-none focus:border-ink"</span>
+/&gt;</pre><pre>&lt;<span class="f">select</span>
+  <span class="n">value</span>={orden}
+  <span class="n">onChange</span>={(e) =&gt; <span class="f">setOrden</span>(e.target.value)}
+  <span class="n">className</span>=<span class="s">"px-4 py-2 border border-gray-300 rounded-card bg-paper text-sm focus:outline-none focus:border-ink"</span>
+&gt;
+  &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">"original"</span>&gt;Orden original&lt;/<span class="f">option</span>&gt;
+  &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">"menor"</span>&gt;Menor precio&lt;/<span class="f">option</span>&gt;
+  &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">"mayor"</span>&gt;Mayor precio&lt;/<span class="f">option</span>&gt;
+&lt;/<span class="f">select</span>&gt;</pre></div></div><div class="cambio"><span class="cambio-n">5</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre>{filtrados.<span class="f">map</span>((p) =&gt; (</pre><div class="cambio-por">por</div><pre>{ordenados.<span class="f">map</span>((p) =&gt; (</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>function precioNumero(p) { ... }</td><td>Está <strong>fuera</strong> del componente porque no usa estado ni props: solo convierte. Recibe un producto y devuelve su precio como número</td></tr><tr><td>p.precio.replace(/\D/g, "")</td><td><code>\D</code> significa "cualquier carácter que no sea un dígito" y <code>g</code> "en todo el texto". Quita el <code>$</code> y los puntos: de <code>"$8.999.000"</code> queda <code>"8999000"</code></td></tr><tr><td>Number(...)</td><td>Convierte el texto <code>"8999000"</code> en el número <code>8999000</code>, que sí se puede comparar y restar</td></tr><tr><td>const [orden, setOrden] = useState("original")</td><td>El orden elegido. Tres valores posibles: <code>"original"</code>, <code>"menor"</code> y <code>"mayor"</code></td></tr><tr><td>const ordenados = [...filtrados]</td><td>Una <strong>copia</strong> de la lista filtrada (<code>...</code> esparce sus elementos en un arreglo nuevo). Ordenar la copia deja <code>filtrados</code> intacta</td></tr><tr><td>ordenados.sort((a, b) =&gt; precioNumero(a) - precioNumero(b))</td><td><code>.sort()</code> compara de a dos productos. Si la resta es negativa, <code>a</code> va primero. Así el menor precio queda arriba</td></tr><tr><td>precioNumero(b) - precioNumero(a)</td><td>Se invierte el orden de la resta: el mayor precio queda arriba</td></tr><tr><td>if (orden === "menor") { ... }</td><td>Solo se ordena si el usuario eligió un orden. Con <code>"original"</code> la copia queda tal como llegó del backend</td></tr><tr><td>&lt;select value={orden} onChange={...}&gt;</td><td>Un campo <strong>controlado</strong>, igual que el buscador: su valor vive en el estado <code>orden</code>, y cada cambio lo actualiza</td></tr><tr><td>&lt;option value="menor"&gt;</td><td>El <code>value</code> es lo que se guarda en el estado; el texto entre las etiquetas es lo que ve el usuario</td></tr><tr><td>{ordenados.map((p) =&gt; ( ... ))}</td><td>La grilla ahora recorre <code>ordenados</code> en lugar de <code>filtrados</code>: respeta a la vez el buscador y el orden</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span><code>.sort()</code> <strong>modifica</strong> el arreglo sobre el que se llama. Si se escribiera <code>filtrados.sort(...)</code>, se cambiaría la lista original. Por eso se ordena una copia, creada con <code>[...filtrados]</code>.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en <code>/productos</code> aparece un menú "Orden original" junto al buscador. Con "Menor precio" la primera tarjeta es la más barata y con "Mayor precio" la primera es la más cara. Escribe algo en el buscador: el orden se mantiene sobre los resultados. Con "Orden original" vuelven al orden del backend. <strong>Prueba en celular</strong> (<code>F12</code> y el ícono de dispositivos, a 390px): el buscador, el menú de orden y el modal se ven completos, el modal hace scroll por dentro si es alto y no hay scroll horizontal en la página.</span></div>
+</div></div>
+<div class="callout teal" style="margin-top:24px;"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg></span><span><strong>Próxima sesión S29 — Migrar el detalle de producto:</strong> una página propia en <code>/productos/:id</code> que lee el producto del backend con <code>GET /api/productos/:id</code>. El modal de hoy es la vista rápida; S29 es la ficha completa.</span></div>
+    </div>
+  </section>
+
+
+  <!-- ════ CHECKLIST ════ -->
+  <section class="section" id="checklist" data-step="checklist">
+    <div class="section-header">
+      <span class="step-badge green">Cierre</span>
+      <h2 class="section-title">Checklist final de la sesión</h2>
+    </div>
+    <ul class="checklist" id="checklist-ul">
+      <li data-check="chk1"><span class="check-box"></span><span><strong>ProductoModal.jsx</strong> creado: recibe <code>producto</code> y <code>onCerrar</code> y muestra foto, nombre, descripción completa y precio</span></li>
+      <li data-check="chk2"><span class="check-box"></span><span><strong>Productos.jsx</strong> guarda el producto en el estado <code>seleccionado</code>, y la tarjeta (<code>onVer</code>) abre el modal con un clic</span></li>
+      <li data-check="chk3"><span class="check-box"></span><span>"Agregar +" agrega al carrito <strong>sin</strong> abrir el modal; un clic fuera de la ficha lo cierra y un clic sobre la ficha no</span></li>
+      <li data-check="chk4"><span class="check-box"></span><span>Escape cierra el modal; con el modal abierto la página de atrás no se desplaza, y al cerrar el scroll vuelve siempre</span></li>
+      <li data-check="chk5"><span class="check-box"></span><span>El menú de orden ordena de menor a mayor y de mayor a menor, y respeta lo escrito en el buscador</span></li>
+      <li data-check="chk6"><span class="check-box"></span><span>Probado a 390px de ancho: modal usable, sin scroll horizontal en la página</span></li>
+      <li data-check="chk7"><span class="check-box"></span><span>Sin errores en consola ni en la terminal de Vite</span></li>
+    </ul>
+  </section>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="btn-enviar">
+      <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12" /> <path d="m17 8-5-5-5 5" /> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg><span>Enviar todo mi progreso</span>
+    </button>
+    <div class="submit-status" id="submit-status"></div>
+  </div>
+
+</main>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['c','x','a','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+
+
+const STEPS = ['paso1','paso2','paso3','paso4','paso5','checklist'];
+const KEY   = 's28-progress';
+
+function getState() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} }
+
+function updateProgress() {
+  const state = getState();
+  const done  = STEPS.filter(s => state[s]).length;
+  const pct   = Math.round((done / STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-txt').textContent  = done + ' / ' + STEPS.length;
+}
+
+function renderButtons() {
+  const state = getState();
+  STEPS.forEach(id => {
+    const section = document.querySelector(`[data-step="${id}"]`);
+    if (!section || section.querySelector('.complete-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'complete-btn' + (state[id] ? ' done' : '');
+    btn.dataset.step = id;
+    btn.innerHTML = `<span class="btn-icon">${state[id] ? '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>' : '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>'}</span>
+      <span class="btn-txt">${state[id] ? '¡Paso completado!' : 'Marcar como completado'}</span>
+      <span class="btn-badge">LISTO</span>`;
+    if (!state[id]) btn.addEventListener('click', () => completeStep(id, btn));
+    section.appendChild(btn);
+    const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+    if (nav && state[id]) nav.classList.add('done');
+  });
+}
+
+function completeStep(id, btn) {
+  const state = getState(); state[id] = true; saveState(state);
+  btn.classList.add('done');
+  btn.querySelector('.btn-icon').innerHTML = '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+  btn.querySelector('.btn-txt').textContent  = '¡Paso completado!';
+  const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+  if (nav) nav.classList.add('done');
+  updateProgress();
+  launchConfetti(STEPS.filter(s => state[s]).length === STEPS.length);
+}
+
+function launchConfetti(big) {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#3b82f6','#2dd4bf','#22c55e','#f59e0b','#a78bfa','#f87171'];
+  const count  = big ? 180 : 60;
+  const parts  = Array.from({length: count}, () => ({
+    x: canvas.width * (big ? Math.random() : .5 + (Math.random()-.5)*.4),
+    y: big ? -10 : canvas.height * .4,
+    r: Math.random() * 7 + 3, color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: 0, tiltAngle: 0, tiltSpeed: Math.random()*.1+.05,
+    vx: Math.random()*4-2, vy: Math.random()*3+2
+  }));
+  let frame = 0; const total = big ? 160 : 80;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p => {
+      ctx.beginPath(); ctx.fillStyle = p.color;
+      ctx.ellipse(p.x, p.y, p.r, p.r*.4, p.tilt, 0, Math.PI*2); ctx.fill();
+      p.x += p.vx; p.y += p.vy; p.tiltAngle += p.tiltSpeed; p.tilt = Math.sin(p.tiltAngle)*12; p.vy += .08;
+    });
+    if (++frame < total) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+function getChecklistState() { try { return JSON.parse(localStorage.getItem('s28-checklist') || '{}'); } catch { return {}; } }
+function saveChecklistState(s) { try { localStorage.setItem('s28-checklist', JSON.stringify(s)); } catch {} }
+
+function renderChecklist() {
+  const state = getChecklistState();
+  document.querySelectorAll('#checklist-ul li').forEach(li => {
+    const id = li.dataset.check;
+    if (state[id]) { li.classList.add('marcado'); li.querySelector('.check-box').textContent = '✓'; }
+    li.addEventListener('click', () => {
+      const s = getChecklistState();
+      s[id] = !s[id];
+      saveChecklistState(s);
+      li.classList.toggle('marcado', s[id]);
+      li.querySelector('.check-box').textContent = s[id] ? '✓' : '';
+      const allChecked = Array.from(document.querySelectorAll('#checklist-ul li')).every(el => s[el.dataset.check]);
+      if (allChecked) launchConfetti(false);
+    });
+  });
+}
+
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+sections.forEach(s => obs.observe(s));
+
+renderButtons();
+updateProgress();
+renderChecklist();
+
+/* ═══ Selector de aprendiz + envío a Google Sheets (Apps Script) ═══ */
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbyhq0L17BN2xp5FnAHuRXugHBYE4P9-4DvdWU4mR-1FnVBGUoBCGIkZw5O2ZEVu7T8P/exec';
+const ARCHIVO_ACTUAL  = '02_GUIA_MIGRAR_PRODUCTOS';
+const APRENDIZ_KEY    = 'sena-aprendiz-nombre';
+
+const APRENDIZ_TRIGGER = document.getElementById('aprendiz-trigger');
+const APRENDIZ_PANEL   = document.getElementById('aprendiz-panel');
+const APRENDIZ_BUSCAR  = document.getElementById('aprendiz-search');
+const APRENDIZ_TEXTO   = document.getElementById('aprendiz-trigger-text');
+const APRENDIZ_ITEMS   = Array.from(document.querySelectorAll('#aprendiz-list li'));
+const APRENDIZ_VACIO   = document.getElementById('aprendiz-empty');
+const APRENDIZ_LISTA   = document.getElementById('aprendiz-list');
+const selectAprendiz = { value: '', classList: APRENDIZ_TRIGGER.classList,
+  scrollIntoView: (o) => APRENDIZ_TRIGGER.scrollIntoView(o) };
+
+function tituloAprendiz(n) {
+  return n.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
+}
+function marcarAprendiz(nombre) {
+  selectAprendiz.value = nombre;
+  APRENDIZ_TEXTO.textContent = nombre ? tituloAprendiz(nombre) : 'Selecciona tu nombre';
+  APRENDIZ_TEXTO.classList.toggle('placeholder', !nombre);
+  APRENDIZ_ITEMS.forEach((li) => li.setAttribute('aria-selected', li.dataset.nombre === nombre ? 'true' : 'false'));
+}
+function posicionarAprendiz() {
+  const r = APRENDIZ_TRIGGER.getBoundingClientRect();
+  const ancho = Math.min(Math.max(r.width, 320), window.innerWidth - 16);
+  APRENDIZ_PANEL.style.width = ancho + 'px';
+  APRENDIZ_PANEL.style.left = Math.max(8, Math.min(r.left, window.innerWidth - ancho - 8)) + 'px';
+  APRENDIZ_PANEL.style.top = (r.bottom + 6) + 'px';
+  APRENDIZ_LISTA.style.maxHeight = Math.max(140, Math.min(260, window.innerHeight - r.bottom - 90)) + 'px';
+}
+function abrirAprendiz(abrir) {
+  APRENDIZ_PANEL.hidden = !abrir;
+  if (abrir) posicionarAprendiz();
+  APRENDIZ_TRIGGER.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+  if (abrir) { APRENDIZ_BUSCAR.value = ''; filtrarAprendices(); APRENDIZ_BUSCAR.focus(); }
+}
+function filtrarAprendices() {
+  const q = APRENDIZ_BUSCAR.value.toLowerCase().trim();
+  let visibles = 0;
+  APRENDIZ_ITEMS.forEach((li) => {
+    const ok = !q || li.dataset.nombre.toLowerCase().includes(q);
+    li.hidden = !ok;
+    if (ok) visibles++;
+  });
+  APRENDIZ_VACIO.hidden = visibles > 0;
+}
+function elegirAprendiz(nombre) {
+  marcarAprendiz(nombre);
+  try { localStorage.setItem(APRENDIZ_KEY, nombre); } catch {}
+  selectAprendiz.classList.remove('falta');
+  abrirAprendiz(false);
+  APRENDIZ_TRIGGER.focus();
+}
+APRENDIZ_TRIGGER.addEventListener('click', () => abrirAprendiz(APRENDIZ_PANEL.hidden));
+APRENDIZ_BUSCAR.addEventListener('input', filtrarAprendices);
+APRENDIZ_BUSCAR.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { abrirAprendiz(false); APRENDIZ_TRIGGER.focus(); }
+  if (e.key === 'Enter') {
+    const primero = APRENDIZ_ITEMS.find((li) => !li.hidden);
+    if (primero) elegirAprendiz(primero.dataset.nombre);
+  }
+});
+APRENDIZ_ITEMS.forEach((li) => li.addEventListener('click', () => elegirAprendiz(li.dataset.nombre)));
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.aprendiz-wrap')) abrirAprendiz(false);
+});
+window.addEventListener('resize', () => { if (!APRENDIZ_PANEL.hidden) posicionarAprendiz(); });
+APRENDIZ_TRIGGER.closest('.sidebar').addEventListener('scroll', () => { if (!APRENDIZ_PANEL.hidden) abrirAprendiz(false); });
+let nombreGuardado = '';
+try { nombreGuardado = localStorage.getItem(APRENDIZ_KEY) || ''; } catch {}
+if (APRENDIZ_ITEMS.some((li) => li.dataset.nombre === nombreGuardado)) marcarAprendiz(nombreGuardado);
+
+const btnEnviar = document.getElementById('btn-enviar');
+const statusEl  = document.getElementById('submit-status');
+
+btnEnviar.addEventListener('click', async () => {
+  const aprendiz = selectAprendiz.value;
+  if (!aprendiz) {
+    selectAprendiz.classList.add('falta');
+    statusEl.textContent = 'Selecciona tu nombre arriba antes de enviar.';
+    statusEl.className = 'submit-status err';
+    selectAprendiz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const state = getState();
+  const pasosCompletados = STEPS.filter(s => state[s]);
+
+  btnEnviar.disabled = true;
+  statusEl.textContent = 'Enviando...';
+  statusEl.className = 'submit-status';
+
+  try {
+    await fetch(URL_APPS_SCRIPT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        aprendiz: aprendiz,
+        archivo: ARCHIVO_ACTUAL,
+        completados: pasosCompletados.length,
+        total: STEPS.length,
+        pasos: pasosCompletados
+      })
+    });
+    statusEl.textContent = 'Progreso enviado — ' + pasosCompletados.length + '/' + STEPS.length + ' pasos.';
+    statusEl.className = 'submit-status ok';
+  } catch (err) {
+    statusEl.textContent = 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.';
+    statusEl.className = 'submit-status err';
+  } finally {
+    btnEnviar.disabled = false;
+  }
+});
+
+</script>
+</body>
+</html>
