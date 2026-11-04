@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Paso a Paso S29 — Migrar Producto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#F4F2EC; --surface:#ffffff; --surface2:#ECE9DF; --border:#e5e1d4;
+  --txt:#0f172a; --txt-dim:#64748b;
+  --accent:#0284c7; --accent-glow:rgba(2,132,199,.10);
+  --green:#16a34a; --green-bg:rgba(22,163,74,.10);
+  --red:#dc2626; --red-bg:rgba(220,38,38,.08);
+  --yellow:#d97706; --yellow-bg:rgba(217,119,6,.10);
+  --purple:#7c3aed; --purple-bg:rgba(124,58,237,.08);
+  --teal:#018751; --teal-bg:rgba(1,135,81,.09);
+  --code-bg:#0d1117; --sidebar-w:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;display:flex;min-height:100vh;user-select:none;}
+
+.sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:0;left:0;bottom:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:24px 0 40px;display:flex;flex-direction:column;}
+.sidebar-brand{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-brand .curso{font-size:11px;color:var(--teal);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.sidebar-brand h1{font-size:14px;font-weight:700;color:var(--txt);margin-top:4px;line-height:1.3;}
+.sidebar-brand .ficha{font-size:11px;color:var(--txt-dim);margin-top:2px;}
+.progress-wrap{padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-dim);margin-bottom:8px;}
+.progress-label span:last-child{color:var(--teal);font-weight:700;}
+.progress-bar-bg{height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--teal);border-radius:10px;transition:width .4s ease;width:0%;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--txt-dim);font-size:13px;font-weight:500;text-decoration:none;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--accent-glow);color:var(--txt);}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);}
+.nav-item.active .nav-dot{background:var(--accent);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .15s;}
+.nav-item:hover .nav-dot{background:var(--txt-dim);}
+.nav-item.done{color:var(--teal);}
+.nav-item.done .nav-dot{background:var(--teal);}
+
+.main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px 80px;max-width:820px;}
+
+.page-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+.page-tag{font-size:11px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.page-title{font-size:28px;font-weight:700;color:var(--txt);line-height:1.2;text-wrap:balance;}
+.page-subtitle{font-size:14px;color:var(--txt-dim);margin-top:8px;}
+.page-warning{margin-top:20px;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--yellow);font-weight:500;}
+
+.intro-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px 36px;margin-bottom:52px;}
+.intro-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+.intro-title{font-size:20px;font-weight:800;color:var(--txt);line-height:1.25;margin-bottom:10px;}
+.intro-sub{font-size:14px;color:var(--txt-dim);margin-bottom:20px;line-height:1.6;}
+.intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.intro-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.intro-item-icon{font-size:22px;margin-bottom:8px;display:flex;}
+.intro-item-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-dim);margin-bottom:4px;}
+.intro-item-desc{font-size:13px;color:var(--txt);font-weight:500;line-height:1.4;}
+
+.section{margin-bottom:56px;scroll-margin-top:32px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.step-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.3);border-radius:6px;padding:3px 10px;white-space:nowrap;letter-spacing:.04em;flex-shrink:0;}
+.step-badge.green{background:var(--green-bg);color:var(--green);border-color:rgba(34,197,94,.3);}
+.step-badge.yellow{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,158,11,.3);}
+.step-badge.extra{background:var(--purple-bg);color:var(--purple);border-color:rgba(167,139,250,.3);}
+.step-badge.teal{background:var(--teal-bg);color:var(--teal);border-color:rgba(45,212,191,.3);}
+.section-title{font-size:20px;font-weight:700;color:var(--txt);text-wrap:balance;}
+
+.step-list{display:flex;flex-direction:column;gap:20px;}
+.step-item{display:flex;gap:16px;}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-body p{color:var(--txt);font-size:14px;}
+.step-body strong{color:var(--txt);font-weight:600;}
+
+.code-wrap{margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.code-header{display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 14px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-dot.r{background:#ff5f57;} .code-dot.y{background:#febc2e;} .code-dot.g{background:#28c840;}
+.code-filename{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-dim);flex:1;}
+.code-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.code-tag.blue{background:rgba(59,130,246,.15);color:var(--accent);}
+.code-tag.green{background:var(--green-bg);color:var(--green);}
+.code-tag.yellow{background:var(--yellow-bg);color:var(--yellow);}
+.code-tag.purple{background:var(--purple-bg);color:var(--purple);}
+pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;color:#abb2bf;}
+pre .c{color:#5c6370;} pre .k{color:#c678dd;} pre .s{color:#98c379;}
+pre .f{color:#61afef;} pre .n{color:#e5c07b;} pre .y{color:#d19a66;}
+pre .edit{color:#fbbf24;background:rgba(245,158,11,.12);border-radius:3px;padding:0 2px;}
+
+.callout{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:8px;font-size:13px;margin:14px 0;line-height:1.5;}
+.callout.ok{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout.err{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);color:var(--red);}
+.callout.warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.2);color:var(--yellow);}
+.callout.info{background:var(--accent-glow);border:1px solid rgba(59,130,246,.2);color:#0369a1;}
+.callout.teal{background:var(--teal-bg);border:1px solid rgba(45,212,191,.2);color:var(--teal);}
+.callout.tip{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;display:flex;}
+.callout strong{color:inherit;font-weight:600;}
+
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--surface2);color:var(--txt-dim);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:top;}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);}
+tr:last-child td{border-bottom:none;}
+
+.checklist{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.checklist li{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--txt-dim);cursor:pointer;transition:all .15s;}
+.checklist li:hover{border-color:var(--teal);}
+.checklist li.marcado{background:var(--teal-bg);border-color:rgba(45,212,191,.35);color:var(--txt);}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--teal);}
+.checklist li.marcado .check-box{border-color:var(--teal);background:var(--teal-bg);}
+.checklist li strong{color:var(--txt);font-weight:600;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:1px 6px;border-radius:4px;color:#0369a1;}
+
+.subsec{margin:28px 0 16px;}
+.subsec-title{font-size:15px;font-weight:700;color:var(--txt);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+
+.complete-btn{display:flex;align-items:center;gap:10px;margin-top:28px;padding:14px 20px;background:var(--teal-bg);border:1px solid rgba(45,212,191,.3);border-radius:10px;color:var(--teal);font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:all .2s;font-family:'Inter',sans-serif;}
+.complete-btn:hover{border-color:var(--teal);}
+.complete-btn.done{cursor:default;}
+.complete-btn .btn-icon{font-size:18px;}
+.complete-btn .btn-txt{flex:1;text-align:left;}
+.complete-btn .btn-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(45,212,191,.15);color:var(--teal);opacity:0;}
+.complete-btn.done .btn-badge{opacity:1;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+
+.submit-wrap{margin-top:28px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+.submit-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 20px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.submit-btn:hover{background:#2f6fe0;transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.submit-status{margin-top:10px;font-size:12.5px;text-align:center;color:var(--txt-dim);}
+.submit-status.ok{color:var(--green);}
+.submit-status.err{color:var(--red);}
+
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+.callout-icon svg{width:16px;height:16px;stroke-width:2.5;}
+.intro-item-icon svg{width:22px;height:22px;stroke-width:2;}
+.page-warning{display:flex;align-items:center;gap:8px;}
+.page-warning svg{width:16px;height:16px;stroke-width:2.5;flex-shrink:0;}
+.submit-btn svg{width:18px;height:18px;stroke-width:2.5;}
+.nav-ref{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;color:var(--yellow);font-size:12.5px;font-weight:600;text-decoration:none;border:1px dashed rgba(245,158,11,.4);}
+.nav-ref:hover{background:var(--yellow-bg);}
+.nav-ref svg{width:14px;height:14px;stroke-width:2.5;flex-shrink:0;}
+pre .edit-line{display:inline-block;width:calc(100% + 40px);box-sizing:border-box;margin:0 -20px;padding:0 20px;background:rgba(250,204,21,.18);box-shadow:inset 3px 0 0 #facc15;}
+.leyenda-edit{margin:8px 0 0;font-size:12.5px;color:var(--txt-dim);display:flex;align-items:center;gap:8px;}
+.leyenda-muestra{display:inline-block;width:22px;height:12px;border-radius:2px;background:rgba(250,204,21,.35);box-shadow:inset 3px 0 0 #facc15;}
+.cambios{margin:16px 0;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:16px 18px;}
+.cambios-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt);}
+.cambios-sub{font-size:13px;color:var(--txt-dim);margin:4px 0 6px;}
+.cambio{display:flex;gap:12px;margin-top:14px;align-items:flex-start;}
+.cambio-n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--accent-glow);color:var(--accent);font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.cambio-body{flex:1;min-width:0;}
+.cambio-titulo{font-size:13px;font-weight:600;color:var(--txt);}
+.cambio-titulo code{font-weight:500;}
+.cambio-por{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-dim);margin:6px 0 0;}
+.cambio pre.ctx{background:#1a2132;margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0;}
+.cambio pre.ctx span{opacity:.55;}
+.cambio pre.ctx + pre{margin-top:0;border-top-left-radius:0;border-top-right-radius:0;box-shadow:inset 3px 0 0 #facc15;}
+.cambio pre{margin:6px 0 0;border-radius:8px;padding:10px 14px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;} td,th{overflow-wrap:anywhere;} .step-body{min-width:0;}
+
+.sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border);}
+.sidebar-hub-link{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-size:12.5px;font-weight:700;padding:8px 10px;border-radius:8px;transition:background .15s;}
+.sidebar-hub-link:hover{background:var(--accent-glow);}
+
+/* ── Identidad del portal ADSO: tipografías y código oscuro sobre fondo claro ── */
+h1,h2,.page-title,.sidebar-brand h1{font-family:'Syne','Inter',sans-serif;}
+pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
+.sidebar{box-shadow:0 10px 30px -10px rgba(15,23,42,.07);}
+
+/* Texto sobre fondos tintados: tonos mas oscuros para que se lea en tema claro */
+.callout.ok,.callout.tip,.step-badge.green{color:#166534;}
+.callout.warn,.page-warning,.step-badge.yellow,.pin{color:#92400e;}
+.callout.err{color:#b91c1c;}
+
+/* Iconos Lucide en línea (reemplazan a los emojis) */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
+
+/* ── Selector de aprendiz (lista propia, mismo estilo del portal) ── */
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+.aprendiz-trigger{width:100%;display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;color:var(--txt);font:600 12.5px 'Inter',sans-serif;cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s;}
+.aprendiz-trigger:hover{border-color:var(--teal);}
+.aprendiz-trigger:focus-visible,.aprendiz-trigger[aria-expanded="true"]{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg);}
+.aprendiz-trigger.falta{border-color:var(--yellow);box-shadow:0 0 0 3px var(--yellow-bg);}
+.aprendiz-trigger svg{flex-shrink:0;color:var(--teal);}
+.aprendiz-trigger .aprendiz-chev{margin-left:auto;color:var(--txt-dim);transition:transform .2s;}
+.aprendiz-trigger[aria-expanded="true"] .aprendiz-chev{transform:rotate(180deg);}
+.aprendiz-trigger-text{flex:1;min-width:0;line-height:1.3;word-break:break-word;}
+.aprendiz-trigger-text.placeholder{color:var(--txt-dim);font-weight:500;}
+.aprendiz-panel{position:fixed;z-index:60;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;box-shadow:0 18px 40px -12px rgba(15,23,42,.25);overflow:hidden;}
+.aprendiz-panel[hidden]{display:none;}
+.aprendiz-search{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--txt-dim);}
+.aprendiz-search input{flex:1;min-width:0;border:0;background:transparent;font:500 12.5px 'Inter',sans-serif;color:var(--txt);outline:none;user-select:text;}
+.aprendiz-list{list-style:none;max-height:224px;overflow-y:auto;padding:4px;}
+.aprendiz-list li{display:flex;white-space:nowrap;line-height:1.35;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;font-size:12px;font-weight:500;color:var(--txt);cursor:pointer;}
+.aprendiz-list li[hidden]{display:none;}
+.aprendiz-list li:hover,.aprendiz-list li.activo{background:var(--surface2);}
+.aprendiz-list li[aria-selected="true"]{background:var(--teal-bg);color:var(--teal);font-weight:700;}
+.aprendiz-list li svg{margin-left:auto;flex-shrink:0;opacity:0;}
+.aprendiz-list li[aria-selected="true"] svg{opacity:1;}
+.aprendiz-empty{padding:12px;font-size:12px;color:var(--txt-dim);text-align:center;}
+.aprendiz-empty[hidden]{display:none;}
+</style>
+<canvas class="confetti-wrap" id="confetti-canvas"></canvas>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="curso">SENA ADSO · S29</div>
+    <h1>Migrar Producto — Guía Paso a Paso</h1>
+    <div class="ficha">Ficha 3229944 · Oct 2026</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 6</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="aprendiz-wrap">
+    <span class="aprendiz-label" id="aprendiz-label">Aprendiz</span>
+    <button type="button" class="aprendiz-trigger" id="aprendiz-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="aprendiz-label aprendiz-trigger-text">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="aprendiz-trigger-text placeholder" id="aprendiz-trigger-text">Selecciona tu nombre</span>
+      <svg class="aprendiz-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="aprendiz-panel" id="aprendiz-panel" hidden>
+      <div class="aprendiz-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="aprendiz-search" placeholder="Buscar mi nombre..." autocomplete="off" aria-label="Buscar mi nombre"></div>
+      <ul class="aprendiz-list" id="aprendiz-list" role="listbox" aria-labelledby="aprendiz-label">
+      <li role="option" aria-selected="false" data-nombre="ANDRES STEVEN LOPEZ SCARPETTA">Andres Steven Lopez Scarpetta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="EDGAR STICK LOPEZ MURCIA">Edgar Stick Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="HEYDER IVAN VELASCO DELGADO">Heyder Ivan Velasco Delgado<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JESUS DAVID ORTIZ MUÑOZ">Jesus David Ortiz Muñoz<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHOJAN STEVEN SERRANO PATIÑO">Jhojan Steven Serrano Patiño<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHON EDGARDO LUGO VILLANUEVA">Jhon Edgardo Lugo Villanueva<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JONIER STIVEN GUTIERREZ SALCEDO">Jonier Stiven Gutierrez Salcedo<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JUAN PABLO PORRAS LOZANO">Juan Pablo Porras Lozano<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="KEVIN MIGUEL ORTIZ TELLEZ">Kevin Miguel Ortiz Tellez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LAURA FERNANDA SOSA CEDIEL">Laura Fernanda Sosa Cediel<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LEIDY VIVIANA SANCHEZ ACOSTA">Leidy Viviana Sanchez Acosta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LUIS CARLOS CADENA VALENCIA">Luis Carlos Cadena Valencia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MARTIN SMITH LOPEZ MURCIA">Martin Smith Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MICHAEL FERMAN HERNANDEZ BERMUDEZ">Michael Ferman Hernandez Bermudez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="NITSON ESTIVEN LOPEZ YUSTES">Nitson Estiven Lopez Yustes<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      </ul>
+      <div class="aprendiz-empty" id="aprendiz-empty" hidden>Sin coincidencias</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Navegación</div>
+    <a class="nav-item active" href="#paso1"><span class="nav-dot"></span>Paso 1 — Ruta con parámetro</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Datos</div>
+    <a class="nav-item" href="#paso2"><span class="nav-dot"></span>Paso 2 — Pedir el producto</a>
+    <a class="nav-item" href="#paso3"><span class="nav-dot"></span>Paso 3 — La ficha completa</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Conexión y pulido</div>
+    <a class="nav-item" href="#paso4"><span class="nav-dot"></span>Paso 4 — Del modal a la ficha</a>
+    <a class="nav-item" href="#paso5"><span class="nav-dot"></span>Paso 5 — Título de la pestaña</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#checklist"><span class="nav-dot"></span>Checklist final</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="../../explorar.html" class="sidebar-hub-link">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      Volver al Hub
+    </a>
+  </div>
+</div>
+
+<main class="main">
+
+  <div class="page-header">
+    <div class="page-tag">Sesión 29 · Fase 5 React y Tailwind</div>
+    <h1 class="page-title">TechStore Pro gana la ficha de cada producto</h1>
+    <p class="page-subtitle">SENA ADSO · Ficha 3229944 · Octubre 2026</p>
+    <div class="page-warning"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg><span>Sigue cada paso en orden. No avances al siguiente hasta que el anterior funcione y hayas marcado el check.</span></div>
+  </div>
+
+  <div class="intro-card">
+    <div class="intro-tag">¿Qué construimos hoy?</div>
+    <div class="intro-title">Una página propia para cada producto</div>
+    <p class="intro-sub">Una sola página, <code>ProductoDetalle.jsx</code>, que muestra un producto distinto según la dirección: <code>/productos/</code> seguido del <code>_id</code>. Aparecen tres ideas nuevas: la ruta con parámetro, el <code>useEffect</code> que depende de un dato y los estados de una página que carga.</p>
+    <div class="intro-grid">
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /> <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /> <circle cx="18" cy="5" r="3" /></svg></div><div class="intro-item-label">Paso 1</div><div class="intro-item-desc">La ruta /productos/:id y useParams</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 13v8l-4-4" /> <path d="m12 21 4-4" /> <path d="M4.393 15.269A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.436 8.284" /></svg></div><div class="intro-item-label">Pasos 2-3</div><div class="intro-item-desc">Fetch por id, estados y la ficha completa con carrito</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg></div><div class="intro-item-label">Pasos 4-5</div><div class="intro-item-desc">El enlace desde el modal y el título de la pestaña</div></div>
+    </div>
+  </div>
+
+  <!-- ════ PASO1 ════ -->
+  <section class="section" id="paso1" data-step="paso1">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 1 · Ruta</span>
+      <h2 class="section-title">Una ruta con parámetro y una página nueva</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Hasta hoy cada ruta era una dirección fija. Una tienda no puede crear una ruta por producto: se escribe <strong>una sola</strong> con un hueco que cambia (<code>:id</code>) y una página que lee ese hueco. En este paso la página todavía no pide nada al backend: solo demuestra que lee la dirección.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Levantar los 2 servidores, cada uno en su propia terminal (si ya estaban corriendo, no hace falta reiniciarlos):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal 1 — dentro de backend/</span></div><pre>npm run dev</pre></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal 2 — dentro de frontend-react/</span></div><pre>npm run dev</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> <code>localhost:5173/productos</code> muestra las tarjetas, el buscador, el menú de orden y el modal funcionando, como quedó en S28.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Crear <code>src/ProductoDetalle.jsx</code> con este contenido completo:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoDetalle.jsx</span><span class="code-tag green">archivo nuevo — contenido completo</span></div><pre><span class="k">import</span> { useParams } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+
+<span class="k">function</span> <span class="f">ProductoDetalle</span>() {
+  <span class="k">const</span> { id } = <span class="f">useParams</span>();
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span>&gt;
+      &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight"</span>&gt;
+        Detalle del producto
+      &lt;/<span class="f">h1</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 mt-2"</span>&gt;El id de la dirección es: {id}&lt;/<span class="f">p</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoDetalle;</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>import { useParams } from "react-router-dom"</td><td><code>useParams</code> es un <strong>hook</strong> del router (S25) que devuelve los parámetros que vienen en la dirección</td></tr><tr><td>const { id } = useParams()</td><td>Pregunta al router qué hay en el hueco <code>:id</code> de la ruta y guarda el valor en la variable <code>id</code>. Las llaves <code>{ }</code> <strong>desestructuran</strong>: sacan solo la pieza llamada <code>id</code> del objeto que devuelve el hook</td></tr><tr><td>{id}</td><td>Muestra el valor dentro del texto. Por ahora sirve para comprobar que la página lee bien la dirección</td></tr><tr><td>font-display font-bold text-3xl tracking-tight</td><td>El mismo estilo de títulos del resto de TechStore (tipografía de pantalla, negrita, letras ligeramente juntas)</td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>El archivo se queda <strong>sin importarse en ningún lado</strong> hasta el siguiente paso. Es normal que todavía no se vea nada en pantalla.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> sin líneas rojas de sintaxis en VS Code dentro de <code>ProductoDetalle.jsx</code>, y ningún error nuevo en la terminal de Vite.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Este es tu <code>App.jsx</code> real, tal como está hoy:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { Routes, Route } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="k">import</span> Navbar <span class="k">from</span> <span class="s">"./Navbar"</span>;
+<span class="k">import</span> Footer <span class="k">from</span> <span class="s">"./Footer.jsx"</span>;
+<span class="k">import</span> Home <span class="k">from</span> <span class="s">"./Home.jsx"</span>;
+<span class="k">import</span> Productos <span class="k">from</span> <span class="s">"./Productos.jsx"</span>;
+<span class="k">import</span> Nosotros <span class="k">from</span> <span class="s">"./Nosotros.jsx"</span>;
+<span class="k">import</span> Contacto <span class="k">from</span> <span class="s">"./Contacto.jsx"</span>;
+<span class="k">import</span> NotFound <span class="k">from</span> <span class="s">"./NotFound.jsx"</span>;
+
+<span class="k">function</span> <span class="f">App</span>() {
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"min-h-screen flex flex-col"</span>&gt;
+      &lt;<span class="f">Navbar</span> /&gt;
+      &lt;<span class="f">main</span> <span class="n">className</span>=<span class="s">"flex-1 w-full max-w-6xl mx-auto px-6 py-10"</span>&gt;
+        &lt;<span class="f">Routes</span>&gt;
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/"</span> <span class="n">element</span>={&lt;<span class="f">Home</span> /&gt;} /&gt;
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/productos"</span> <span class="n">element</span>={&lt;<span class="f">Productos</span> /&gt;} /&gt;
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/nosotros"</span> <span class="n">element</span>={&lt;<span class="f">Nosotros</span> /&gt;} /&gt;
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/contacto"</span> <span class="n">element</span>={&lt;<span class="f">Contacto</span> /&gt;} /&gt;
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"*"</span> <span class="n">element</span>={&lt;<span class="f">NotFound</span> /&gt;} /&gt;
+        &lt;/<span class="f">Routes</span>&gt;
+      &lt;/<span class="f">main</span>&gt;
+      &lt;<span class="f">Footer</span> /&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> App;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Se agregan el import de la página nueva y una ruta nueva <strong>entre</strong> la de <code>/productos</code> y la comodín <code>*</code>. Las líneas amarillas son las nuevas:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="k">import</span> { Routes, Route } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="k">import</span> Navbar <span class="k">from</span> <span class="s">"./Navbar"</span>;
+<span class="k">import</span> Footer <span class="k">from</span> <span class="s">"./Footer.jsx"</span>;
+<span class="k">import</span> Home <span class="k">from</span> <span class="s">"./Home.jsx"</span>;
+<span class="k">import</span> Productos <span class="k">from</span> <span class="s">"./Productos.jsx"</span>;
+<span class="edit-line"><span class="k">import</span> ProductoDetalle <span class="k">from</span> <span class="s">"./ProductoDetalle.jsx"</span>;</span>
+<span class="k">import</span> Nosotros <span class="k">from</span> <span class="s">"./Nosotros.jsx"</span>;
+<span class="k">import</span> Contacto <span class="k">from</span> <span class="s">"./Contacto.jsx"</span>;
+<span class="k">import</span> NotFound <span class="k">from</span> <span class="s">"./NotFound.jsx"</span>;
+
+<span class="k">function</span> <span class="f">App</span>() {
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"min-h-screen flex flex-col"</span>&gt;
+      &lt;<span class="f">Navbar</span> /&gt;
+      &lt;<span class="f">main</span> <span class="n">className</span>=<span class="s">"flex-1 w-full max-w-6xl mx-auto px-6 py-10"</span>&gt;
+        &lt;<span class="f">Routes</span>&gt;
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/"</span> <span class="n">element</span>={&lt;<span class="f">Home</span> /&gt;} /&gt;
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/productos"</span> <span class="n">element</span>={&lt;<span class="f">Productos</span> /&gt;} /&gt;
+<span class="edit-line">          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/productos/:id"</span> <span class="n">element</span>={&lt;<span class="f">ProductoDetalle</span> /&gt;} /&gt;</span>
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/nosotros"</span> <span class="n">element</span>={&lt;<span class="f">Nosotros</span> /&gt;} /&gt;
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/contacto"</span> <span class="n">element</span>={&lt;<span class="f">Contacto</span> /&gt;} /&gt;
+          &lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"*"</span> <span class="n">element</span>={&lt;<span class="f">NotFound</span> /&gt;} /&gt;
+        &lt;/<span class="f">Routes</span>&gt;
+      &lt;/<span class="f">main</span>&gt;
+      &lt;<span class="f">Footer</span> /&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> App;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 2 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>import Productos from "./Productos.jsx";</code>, agrega:</div><pre><span class="k">import</span> ProductoDetalle <span class="k">from</span> <span class="s">"./ProductoDetalle.jsx"</span>;</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>&lt;Route path="/productos" element={&lt;Productos /&gt;} /&gt;</code>, agrega:</div><pre>&lt;<span class="f">Route</span> <span class="n">path</span>=<span class="s">"/productos/:id"</span> <span class="n">element</span>={&lt;<span class="f">ProductoDetalle</span> /&gt;} /&gt;</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>import ProductoDetalle from "./ProductoDetalle.jsx"</td><td>Trae la página que creaste en el paso anterior</td></tr><tr><td>path="/productos/:id"</td><td>Una ruta con <strong>parámetro</strong>. Los dos puntos marcan un hueco: <code>:id</code> no es texto fijo, es un nombre para lo que venga en esa posición de la dirección. Sirve para <code>/productos/1</code>, <code>/productos/hola</code> o cualquier otra</td></tr><tr><td>element={&lt;ProductoDetalle /&gt;}</td><td>La página que se dibuja cuando la dirección encaja con la ruta</td></tr><tr><td>La ruta de * sigue al final</td><td>El router toma la ruta que <strong>mejor encaja</strong> y deja la comodín <code>*</code> para lo que no encaje con ninguna. Por orden de lectura conviene dejarla siempre de última</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>El nombre que escribes después de los dos puntos (<code>:id</code>) es <strong>el mismo</strong> que desestructuras en <code>useParams()</code>. Si la ruta dijera <code>:codigo</code>, tendrías que escribir <code>const { codigo } = useParams()</code>.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>El valor de <code>id</code> llega <strong>siempre como texto</strong>, aunque la dirección diga <code>/productos/5</code>. Hoy no se convierte porque el backend recibe el texto tal cual.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> escribe en el navegador <code>localhost:5173/productos/hola</code>: debe verse el título "Detalle del producto" y debajo "El id de la dirección es: hola". Cambia <code>hola</code> por otra palabra y recarga: el texto cambia. <code>localhost:5173/productos</code> sigue mostrando el catálogo y una dirección inventada como <code>localhost:5173/xyz</code> sigue mostrando el 404.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO2 ════ -->
+  <section class="section" id="paso2" data-step="paso2">
+    <div class="section-header">
+      <span class="step-badge ">Paso 2 · Datos</span>
+      <h2 class="section-title">Pedir el producto al backend</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">La página ya sabe <strong>qué</strong> producto le piden. Ahora tiene que traerlo del backend. Es el <code>useEffect</code> + <code>fetch</code> de S24, con dos diferencias: pide <strong>un</strong> producto y se vuelve a ejecutar cuando el id cambia. Además, una página que carga datos tiene varias "caras": cargando, error y lista.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Antes de escribir código necesitas el id de un producto real. Abre en una pestaña nueva <code>localhost:3000/api/productos</code> y mira el primer producto de la lista:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">respuesta del backend (ejemplo)</span></div><pre>[
+  {
+    "_id": "6a726af1856112825e9c9f36",
+    "id": 1,
+    "nombre": "MacBook Pro M3",
+    ...
+  }
+]</pre></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Cada producto tiene <strong>dos identificadores distintos</strong>. <code>id</code> (1, 2, 3...) es el número del catálogo: el que se ve en "REF 01" y el que usa el carrito. <code>_id</code> es el identificador que <strong>crea MongoDB</strong>, una cadena larga. El backend busca con <code>findById</code>, que usa el <code>_id</code>, así que <strong>la dirección de la página lleva el <code>_id</code></strong>.</span></div>
+<p>Copia el valor de <code>_id</code> de cualquier producto: lo usarás para probar este paso.</p>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Este es tu <code>ProductoDetalle.jsx</code> como quedó en el Paso 1:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoDetalle.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useParams } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+
+<span class="k">function</span> <span class="f">ProductoDetalle</span>() {
+  <span class="k">const</span> { id } = <span class="f">useParams</span>();
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span>&gt;
+      &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight"</span>&gt;
+        Detalle del producto
+      &lt;/<span class="f">h1</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 mt-2"</span>&gt;El id de la dirección es: {id}&lt;/<span class="f">p</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoDetalle;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">La página guarda el producto en un estado, lo pide al backend cuando cambia el id y decide qué dibujar según el momento. Las líneas amarillas son las nuevas o las que cambian:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoDetalle.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="edit-line"><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;</span>
+<span class="edit-line"><span class="k">import</span> { useParams, Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;</span>
+
+<span class="k">function</span> <span class="f">ProductoDetalle</span>() {
+  <span class="k">const</span> { id } = <span class="f">useParams</span>();
+<span class="edit-line">  <span class="k">const</span> [producto, setProducto] = <span class="f">useState</span>(<span class="y">null</span>);</span>
+<span class="edit-line">  <span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);</span>
+<span class="edit-line">  <span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);</span>
+
+<span class="edit-line">  <span class="f">useEffect</span>(() =&gt; {</span>
+<span class="edit-line">    <span class="f">setCargando</span>(<span class="y">true</span>);</span>
+<span class="edit-line">    <span class="f">setError</span>(<span class="y">null</span>);</span>
+<span class="edit-line">    <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos/"</span> + id)</span>
+<span class="edit-line">      .<span class="f">then</span>((res) =&gt; {</span>
+<span class="edit-line">        <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span>(<span class="s">"No encontrado"</span>);</span>
+<span class="edit-line">        <span class="k">return</span> res.<span class="f">json</span>();</span>
+<span class="edit-line">      })</span>
+<span class="edit-line">      .<span class="f">then</span>((datos) =&gt; <span class="f">setProducto</span>(datos))</span>
+<span class="edit-line">      .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"Producto no encontrado"</span>))</span>
+<span class="edit-line">      .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));</span>
+<span class="edit-line">  }, [id]);</span>
+
+<span class="edit-line">  <span class="k">if</span> (cargando) {</span>
+<span class="edit-line">    <span class="k">return</span> &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-20 text-gray-500"</span>&gt;Cargando producto...&lt;/<span class="f">p</span>&gt;;</span>
+  }
+
+<span class="edit-line">  <span class="k">if</span> (error) {</span>
+    <span class="k">return</span> (
+<span class="edit-line">      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col items-center text-center gap-4 py-20"</span>&gt;</span>
+<span class="edit-line">        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-accent-dark"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;</span>
+<span class="edit-line">        &lt;<span class="f">Link</span></span>
+<span class="edit-line">          <span class="n">to</span>=<span class="s">"/productos"</span></span>
+<span class="edit-line">          <span class="n">className</span>=<span class="s">"font-semibold underline hover:text-accent transition-colors"</span></span>
+<span class="edit-line">        &gt;</span>
+<span class="edit-line">          Volver al catálogo</span>
+<span class="edit-line">        &lt;/<span class="f">Link</span>&gt;</span>
+      &lt;/<span class="f">div</span>&gt;
+    );
+<span class="edit-line">  }</span>
+
+<span class="edit-line">  <span class="k">return</span> (</span>
+    &lt;<span class="f">div</span>&gt;
+      &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight"</span>&gt;
+<span class="edit-line">        {producto.nombre}</span>
+      &lt;/<span class="f">h1</span>&gt;
+<span class="edit-line">      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 mt-2"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;</span>
+<span class="edit-line">    &lt;/<span class="f">div</span>&gt;</span>
+<span class="edit-line">  );</span>
+<span class="edit-line">}</span>
+
+<span class="k">export</span> <span class="k">default</span> ProductoDetalle;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 6 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { useParams } <span class="k">from</span> <span class="s">"react-router-dom"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { useParams, Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>const { id } = useParams();</code>, agrega:</div><pre><span class="k">const</span> [producto, setProducto] = <span class="f">useState</span>(<span class="y">null</span>);
+<span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);
+<span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);</pre></div></div><div class="cambio"><span class="cambio-n">3</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>const { id } = useParams();</code>, agrega:</div><pre><span class="f">useEffect</span>(() =&gt; {
+  <span class="f">setCargando</span>(<span class="y">true</span>);
+  <span class="f">setError</span>(<span class="y">null</span>);
+  <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos/"</span> + id)
+    .<span class="f">then</span>((res) =&gt; {
+      <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span>(<span class="s">"No encontrado"</span>);
+      <span class="k">return</span> res.<span class="f">json</span>();
+    })
+    .<span class="f">then</span>((datos) =&gt; <span class="f">setProducto</span>(datos))
+    .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"Producto no encontrado"</span>))
+    .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));
+}, [id]);
+
+<span class="k">if</span> (cargando) {
+  <span class="k">return</span> &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-20 text-gray-500"</span>&gt;Cargando producto...&lt;/<span class="f">p</span>&gt;;
+}
+
+<span class="k">if</span> (error) {</pre></div></div><div class="cambio"><span class="cambio-n">4</span><div class="cambio-body"><div class="cambio-titulo">Después de estas líneas, agrega:</div><pre class="ctx"><span class="k">function</span> <span class="f">ProductoDetalle</span>() {
+  <span class="k">const</span> { id } = <span class="f">useParams</span>();
+    <span class="k">return</span> (</pre><pre>    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col items-center text-center gap-4 py-20"</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-accent-dark"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;
+      &lt;<span class="f">Link</span>
+        <span class="n">to</span>=<span class="s">"/productos"</span>
+        <span class="n">className</span>=<span class="s">"font-semibold underline hover:text-accent transition-colors"</span>
+      &gt;
+        Volver al catálogo
+      &lt;/<span class="f">Link</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">return</span> (</pre></div></div><div class="cambio"><span class="cambio-n">5</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre>Detalle del producto</pre><div class="cambio-por">por</div><pre>{producto.nombre}</pre></div></div><div class="cambio"><span class="cambio-n">6</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre>&lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 mt-2"</span>&gt;El id de la dirección es: {id}&lt;/<span class="f">p</span>&gt;</pre><div class="cambio-por">por</div><pre>&lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 mt-2"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>import { useState, useEffect }</td><td>Los dos hooks que ya conoces: <code>useState</code> (S23) para guardar datos y <code>useEffect</code> (S24) para pedirlos</td></tr><tr><td>import { useParams, Link }</td><td><code>Link</code> navega a otra ruta sin recargar la página (S25). Se usa en la pantalla de error</td></tr><tr><td>const [producto, setProducto] = useState(null)</td><td>El producto que llega del backend. Empieza en <code>null</code>: todavía no hay nada</td></tr><tr><td>const [cargando, setCargando] = useState(true)</td><td>Empieza en <code>true</code> porque lo primero que hace la página es esperar la respuesta</td></tr><tr><td>const [error, setError] = useState(null)</td><td>Guarda el mensaje si algo sale mal. <code>null</code> significa "sin error"</td></tr><tr><td>setCargando(true); setError(null)</td><td>Al empezar cada pedido se limpia el estado anterior. Importa cuando el id cambia: se vuelve a mostrar "Cargando..." en vez del producto viejo</td></tr><tr><td>fetch("http://localhost:3000/api/productos/" + id)</td><td>Arma la dirección del backend pegando el id al final: la misma idea que la dirección de la página</td></tr><tr><td>if (!res.ok) throw new Error("No encontrado")</td><td>Un 404 <strong>no es un error de red</strong>: <code>fetch</code> lo entrega como una respuesta normal y <code>.then</code> seguiría como si todo estuviera bien. <code>res.ok</code> es <code>false</code> cuando el servidor responde con error; <code>throw</code> lanza el error a mano para que lo atrape el <code>.catch</code></td></tr><tr><td>.catch(() =&gt; setError("Producto no encontrado"))</td><td>Cualquier falla (id que no existe, id inválido o servidor apagado) termina aquí con un mensaje en español</td></tr><tr><td>.finally(() =&gt; setCargando(false))</td><td>Pase lo que pase, la espera terminó</td></tr><tr><td>}, [id])</td><td>La <strong>lista de dependencias</strong>: el efecto corre al llegar y <strong>otra vez cada vez que <code>id</code> cambie</strong>. En S24 era <code>[]</code> (una sola vez) porque el catálogo no dependía de nada</td></tr><tr><td>if (cargando) { return ... }</td><td>Un <strong>return temprano</strong>: si está cargando, la función termina ahí y muestra el mensaje. El resto del código no se ejecuta</td></tr><tr><td>if (error) { return ... }</td><td>Lo mismo para el error. El enlace "Volver al catálogo" evita dejar al usuario en un callejón sin salida</td></tr><tr><td>El return final</td><td>Solo se llega a él cuando hay un producto en el estado: aquí ya no hace falta preguntar si <code>producto</code> existe. Por ahora muestra solo el nombre y la descripción</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Los hooks (<code>useState</code>, <code>useEffect</code>, <code>useParams</code>) van <strong>siempre arriba</strong>, antes de cualquier <code>return</code>. Si pusieras un <code>return</code> antes de un hook, React perdería la cuenta de los hooks entre un dibujo y otro y fallaría.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> escribe <code>localhost:5173/productos/</code> seguido del <code>_id</code> que copiaste: debe verse el <strong>nombre</strong> y la <strong>descripción</strong> de ese producto. Prueba con <code>localhost:5173/productos/hola</code>: debe verse "Producto no encontrado" y un enlace "Volver al catálogo" que te lleva a <code>/productos</code>. Cambia una letra del <code>_id</code> real: también debe decir "Producto no encontrado".</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO3 ════ -->
+  <section class="section" id="paso3" data-step="paso3">
+    <div class="section-header">
+      <span class="step-badge extra">Paso 3 · Ficha</span>
+      <h2 class="section-title">La ficha completa y el botón del carrito</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Ya llegan los datos. Ahora se dibuja la ficha de verdad: foto grande, nombre, descripción completa, precio y el botón que agrega al carrito. Es el mismo <code>CartContext</code> de S26 que ya usan la tarjeta y el modal.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Este es tu <code>ProductoDetalle.jsx</code> como quedó en el Paso 2:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoDetalle.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { useParams, Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+
+<span class="k">function</span> <span class="f">ProductoDetalle</span>() {
+  <span class="k">const</span> { id } = <span class="f">useParams</span>();
+  <span class="k">const</span> [producto, setProducto] = <span class="f">useState</span>(<span class="y">null</span>);
+  <span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);
+  <span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">setCargando</span>(<span class="y">true</span>);
+    <span class="f">setError</span>(<span class="y">null</span>);
+    <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos/"</span> + id)
+      .<span class="f">then</span>((res) =&gt; {
+        <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span>(<span class="s">"No encontrado"</span>);
+        <span class="k">return</span> res.<span class="f">json</span>();
+      })
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setProducto</span>(datos))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"Producto no encontrado"</span>))
+      .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));
+  }, [id]);
+
+  <span class="k">if</span> (cargando) {
+    <span class="k">return</span> &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-20 text-gray-500"</span>&gt;Cargando producto...&lt;/<span class="f">p</span>&gt;;
+  }
+
+  <span class="k">if</span> (error) {
+    <span class="k">return</span> (
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col items-center text-center gap-4 py-20"</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-accent-dark"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">Link</span>
+          <span class="n">to</span>=<span class="s">"/productos"</span>
+          <span class="n">className</span>=<span class="s">"font-semibold underline hover:text-accent transition-colors"</span>
+        &gt;
+          Volver al catálogo
+        &lt;/<span class="f">Link</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    );
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span>&gt;
+      &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight"</span>&gt;
+        {producto.nombre}
+      &lt;/<span class="f">h1</span>&gt;
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 mt-2"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoDetalle;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Se suman <code>useContext</code> y el contexto del carrito, la función <code>agregar</code> y el <code>return</code> final se reemplaza por la ficha completa. Las líneas amarillas son las nuevas:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoDetalle.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="edit-line"><span class="k">import</span> { useState, useEffect, useContext } <span class="k">from</span> <span class="s">"react"</span>;</span>
+<span class="k">import</span> { useParams, Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;</span>
+
+<span class="k">function</span> <span class="f">ProductoDetalle</span>() {
+  <span class="k">const</span> { id } = <span class="f">useParams</span>();
+<span class="edit-line">  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);</span>
+  <span class="k">const</span> [producto, setProducto] = <span class="f">useState</span>(<span class="y">null</span>);
+  <span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);
+  <span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">setCargando</span>(<span class="y">true</span>);
+    <span class="f">setError</span>(<span class="y">null</span>);
+    <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos/"</span> + id)
+      .<span class="f">then</span>((res) =&gt; {
+        <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span>(<span class="s">"No encontrado"</span>);
+        <span class="k">return</span> res.<span class="f">json</span>();
+      })
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setProducto</span>(datos))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"Producto no encontrado"</span>))
+      .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));
+  }, [id]);
+
+<span class="edit-line">  <span class="k">function</span> <span class="f">agregar</span>() {</span>
+<span class="edit-line">    <span class="f">agregarAlCarrito</span>({</span>
+<span class="edit-line">      id: producto.id,</span>
+<span class="edit-line">      nombre: producto.nombre,</span>
+<span class="edit-line">      precio: producto.precio,</span>
+<span class="edit-line">      imagen: producto.imagen,</span>
+<span class="edit-line">    });</span>
+  }
+
+  <span class="k">if</span> (cargando) {
+    <span class="k">return</span> &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-20 text-gray-500"</span>&gt;Cargando producto...&lt;/<span class="f">p</span>&gt;;
+  }
+
+  <span class="k">if</span> (error) {
+    <span class="k">return</span> (
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col items-center text-center gap-4 py-20"</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-accent-dark"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">Link</span>
+          <span class="n">to</span>=<span class="s">"/productos"</span>
+          <span class="n">className</span>=<span class="s">"font-semibold underline hover:text-accent transition-colors"</span>
+        &gt;
+          Volver al catálogo
+        &lt;/<span class="f">Link</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    );
+  }
+
+  <span class="k">return</span> (
+<span class="edit-line">    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-8"</span>&gt;</span>
+<span class="edit-line">      &lt;<span class="f">Link</span></span>
+<span class="edit-line">        <span class="n">to</span>=<span class="s">"/productos"</span></span>
+<span class="edit-line">        <span class="n">className</span>=<span class="s">"text-sm font-semibold text-gray-700 hover:text-ink transition-colors"</span></span>
+<span class="edit-line">      &gt;</span>
+<span class="edit-line">        ← Volver al catálogo</span>
+<span class="edit-line">      &lt;/<span class="f">Link</span>&gt;</span>
+
+<span class="edit-line">      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"grid gap-10 md:grid-cols-2"</span>&gt;</span>
+<span class="edit-line">        &lt;<span class="f">img</span></span>
+<span class="edit-line">          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=1000&amp;h=1250"</span>)}</span>
+<span class="edit-line">          <span class="n">alt</span>={producto.nombre}</span>
+<span class="edit-line">          <span class="n">className</span>=<span class="s">"w-full aspect-4/5 object-cover rounded-3xl"</span></span>
+<span class="edit-line">        /&gt;</span>
+
+<span class="edit-line">        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-5 md:py-6"</span>&gt;</span>
+<span class="edit-line">          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;</span>
+<span class="edit-line">            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}</span>
+<span class="edit-line">          &lt;/<span class="f">span</span>&gt;</span>
+<span class="edit-line">          &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-4xl md:text-5xl tracking-tighter leading-tight"</span>&gt;</span>
+            {producto.nombre}
+          &lt;/<span class="f">h1</span>&gt;
+<span class="edit-line">          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 text-lg leading-relaxed"</span>&gt;</span>
+<span class="edit-line">            {producto.descripcion}</span>
+<span class="edit-line">          &lt;/<span class="f">p</span>&gt;</span>
+<span class="edit-line">          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-3xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;</span>
+<span class="edit-line">          &lt;<span class="f">button</span></span>
+<span class="edit-line">            <span class="n">onClick</span>={agregar}</span>
+<span class="edit-line">            <span class="n">className</span>=<span class="s">"mt-4 bg-ink text-paper rounded-card py-4 text-sm font-semibold hover:bg-accent transition-colors"</span></span>
+<span class="edit-line">          &gt;</span>
+<span class="edit-line">            Agregar al carrito</span>
+<span class="edit-line">          &lt;/<span class="f">button</span>&gt;</span>
+        &lt;/<span class="f">div</span>&gt;
+<span class="edit-line">      &lt;/<span class="f">div</span>&gt;</span>
+<span class="edit-line">    &lt;/<span class="f">div</span>&gt;</span>
+  );
+<span class="edit-line">}</span>
+
+<span class="k">export</span> <span class="k">default</span> ProductoDetalle;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 6 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { useState, useEffect, useContext } <span class="k">from</span> <span class="s">"react"</span>;</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>import { useParams, Link } from "react-router-dom";</code>, agrega:</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;</pre></div></div><div class="cambio"><span class="cambio-n">3</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>const { id } = useParams();</code>, agrega:</div><pre><span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);</pre></div></div><div class="cambio"><span class="cambio-n">4</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>}, [id]);</code>, agrega:</div><pre><span class="k">function</span> <span class="f">agregar</span>() {
+  <span class="f">agregarAlCarrito</span>({
+    id: producto.id,
+    nombre: producto.nombre,
+    precio: producto.precio,
+    imagen: producto.imagen,
+  });
+}
+</pre></div></div><div class="cambio"><span class="cambio-n">5</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre>&lt;<span class="f">div</span>&gt;
+  &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight"</span>&gt;</pre><div class="cambio-por">por</div><pre>&lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-8"</span>&gt;
+  &lt;<span class="f">Link</span>
+    <span class="n">to</span>=<span class="s">"/productos"</span>
+    <span class="n">className</span>=<span class="s">"text-sm font-semibold text-gray-700 hover:text-ink transition-colors"</span>
+  &gt;
+    ← Volver al catálogo
+  &lt;/<span class="f">Link</span>&gt;
+
+  &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"grid gap-10 md:grid-cols-2"</span>&gt;
+    &lt;<span class="f">img</span>
+      <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=1000&amp;h=1250"</span>)}
+      <span class="n">alt</span>={producto.nombre}
+      <span class="n">className</span>=<span class="s">"w-full aspect-4/5 object-cover rounded-3xl"</span>
+    /&gt;
+
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-5 md:py-6"</span>&gt;
+      &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+        REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+      &lt;/<span class="f">span</span>&gt;
+      &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-4xl md:text-5xl tracking-tighter leading-tight"</span>&gt;</pre></div></div><div class="cambio"><span class="cambio-n">6</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre>&lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 mt-2"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;</pre><div class="cambio-por">por</div><pre>    &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 text-lg leading-relaxed"</span>&gt;
+      {producto.descripcion}
+    &lt;/<span class="f">p</span>&gt;
+    &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-3xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+    &lt;<span class="f">button</span>
+      <span class="n">onClick</span>={agregar}
+      <span class="n">className</span>=<span class="s">"mt-4 bg-ink text-paper rounded-card py-4 text-sm font-semibold hover:bg-accent transition-colors"</span>
+    &gt;
+      Agregar al carrito
+    &lt;/<span class="f">button</span>&gt;
+  &lt;/<span class="f">div</span>&gt;
+&lt;/<span class="f">div</span>&gt;</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>import { useState, useEffect, useContext }</td><td>Se suma <code>useContext</code> (S26) para leer el carrito global</td></tr><tr><td>import { CartContext } from "./CartContext.jsx"</td><td>El mismo contexto que usan la tarjeta, el modal y el Navbar</td></tr><tr><td>const { agregarAlCarrito } = useContext(CartContext)</td><td>Saca del carrito global la función para agregar productos. Va arriba, junto a los otros hooks</td></tr><tr><td>function agregar() { agregarAlCarrito({ ... }) }</td><td>Agrega al carrito los <strong>mismos cuatro campos</strong> que agregan la tarjeta y el modal (<code>id</code>, <code>nombre</code>, <code>precio</code>, <code>imagen</code>). Así los tres botones guardan exactamente lo mismo</td></tr><tr><td>id: producto.id</td><td>Aquí sí va el <code>id</code> <strong>numérico</strong> del catálogo, no el <code>_id</code>: el carrito siempre ha trabajado con el número</td></tr><tr><td>&lt;Link to="/productos"&gt; ← Volver al catálogo</td><td>Una salida clara arriba de la ficha. Sin ella, el único camino de regreso sería el botón Atrás del navegador</td></tr><tr><td>grid gap-10 md:grid-cols-2</td><td>En celular la foto va arriba y el texto abajo. Desde <code>md</code> (768px) se ponen lado a lado, en dos columnas iguales, con 40px entre ellas (<code>gap-10</code>)</td></tr><tr><td>producto.imagen.replace("w=400&amp;h=250", "w=1000&amp;h=1250")</td><td>El mismo arreglo de la tarjeta y el modal: pide a Unsplash la foto en grande y en vertical para que no se vea borrosa</td></tr><tr><td>aspect-4/5 object-cover rounded-3xl</td><td><code>aspect-4/5</code> fija la proporción de la foto (4 de ancho por 5 de alto); <code>object-cover</code> la recorta sin deformarla; <code>rounded-3xl</code> redondea las esquinas</td></tr><tr><td>String(producto.id).padStart(2, "0")</td><td>La referencia con dos cifras ("REF 01"), igual que en la tarjeta y el modal</td></tr><tr><td>&lt;h1 ...&gt;{producto.nombre}&lt;/h1&gt;</td><td>En esta página el nombre es el título principal, por eso es <code>h1</code>. En el modal era <code>h2</code> porque el modal vive encima de otra página</td></tr><tr><td>{producto.descripcion}</td><td>La descripción <strong>completa</strong>, sin recortar</td></tr><tr><td>font-mono text-3xl font-bold</td><td>El precio, en la tipografía de números del tema, grande</td></tr><tr><td>mt-4 ... py-4</td><td>El botón "Agregar al carrito" lleva un margen superior para separarse del precio y es un poco más alto que el del modal</td></tr></tbody></table></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Fíjate en lo que <strong>no</strong> cambió: el <code>useEffect</code>, los estados y los <code>return</code> tempranos son los del Paso 2. Solo se agregó lo necesario para dibujar y para comprar.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en <code>localhost:5173/productos/</code> + un <code>_id</code> real: se ve la ficha con la foto grande, "REF" con el número, el nombre, la descripción completa, el precio y el botón. <strong>"Agregar al carrito"</strong> suma 1 al contador del Navbar. <strong>"← Volver al catálogo"</strong> te regresa a <code>/productos</code>. <strong>Prueba en celular</strong> (<code>F12</code> y el ícono de dispositivos, a 390px): la foto queda arriba, el texto abajo y no hay scroll horizontal.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO4 ════ -->
+  <section class="section" id="paso4" data-step="paso4">
+    <div class="section-header">
+      <span class="step-badge teal">Paso 4 · Conexión</span>
+      <h2 class="section-title">Del modal a la ficha completa</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">La página funciona, pero nadie llega a ella: hay que escribir la dirección a mano. El modal de S28 es la <strong>vista rápida</strong>; ahora gana un enlace para quien quiera ver el producto completo. Un solo archivo cambia: <code>ProductoModal.jsx</code>.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Este es tu <code>ProductoModal.jsx</code> real, tal como está hoy:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoModal.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useContext, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductoModal</span>({ producto, onCerrar }) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="k">function</span> <span class="f">alPulsar</span>(e) {
+      <span class="k">if</span> (e.key === <span class="s">"Escape"</span>) <span class="f">onCerrar</span>();
+    }
+    document.<span class="f">addEventListener</span>(<span class="s">"keydown"</span>, alPulsar);
+    document.body.style.overflow = <span class="s">"hidden"</span>;
+
+    <span class="k">return</span> () =&gt; {
+      document.<span class="f">removeEventListener</span>(<span class="s">"keydown"</span>, alPulsar);
+      document.body.style.overflow = <span class="s">""</span>;
+    };
+  }, [onCerrar]);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+    });
+    <span class="f">onCerrar</span>();
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span>
+      <span class="n">className</span>=<span class="s">"fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"</span>
+      <span class="n">onClick</span>={onCerrar}
+    &gt;
+      &lt;<span class="f">div</span>
+        <span class="n">role</span>=<span class="s">"dialog"</span>
+        <span class="n">aria-modal</span>=<span class="s">"true"</span>
+        <span class="n">aria-label</span>={producto.nombre}
+        <span class="n">className</span>=<span class="s">"relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-paper shadow-float md:grid md:grid-cols-2"</span>
+        <span class="n">onClick</span>={(e) =&gt; e.<span class="f">stopPropagation</span>()}
+      &gt;
+        &lt;<span class="f">button</span>
+          <span class="n">onClick</span>={onCerrar}
+          <span class="n">aria-label</span>=<span class="s">"Cerrar"</span>
+          <span class="n">className</span>=<span class="s">"absolute top-4 right-4 z-10 size-10 rounded-full bg-paper/90 text-xl leading-none flex items-center justify-center hover:bg-accent hover:text-paper transition-colors"</span>
+        &gt;
+          ×
+        &lt;/<span class="f">button</span>&gt;
+
+        &lt;<span class="f">img</span>
+          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+          <span class="n">alt</span>={producto.nombre}
+          <span class="n">className</span>=<span class="s">"w-full h-64 md:h-full object-cover"</span>
+        /&gt;
+
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-4 p-6 md:p-8"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+          &lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">h2</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight leading-tight"</span>&gt;
+            {producto.nombre}
+          &lt;/<span class="f">h2</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 leading-relaxed"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-2xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">className</span>=<span class="s">"mt-auto bg-ink text-paper rounded-card py-3.5 text-sm font-semibold hover:bg-accent transition-colors"</span>
+          &gt;
+            Agregar al carrito
+          &lt;/<span class="f">button</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={onCerrar}
+            <span class="n">className</span>=<span class="s">"text-sm font-semibold text-gray-700 hover:text-ink transition-colors"</span>
+          &gt;
+            Seguir viendo
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoModal;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Se agrega el import de <code>Link</code> y el enlace "Ver ficha completa" <strong>entre</strong> "Agregar al carrito" y "Seguir viendo". Las líneas amarillas son las nuevas:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoModal.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="k">import</span> { useContext, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="edit-line"><span class="k">import</span> { Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;</span>
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductoModal</span>({ producto, onCerrar }) {
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="k">function</span> <span class="f">alPulsar</span>(e) {
+      <span class="k">if</span> (e.key === <span class="s">"Escape"</span>) <span class="f">onCerrar</span>();
+    }
+    document.<span class="f">addEventListener</span>(<span class="s">"keydown"</span>, alPulsar);
+    document.body.style.overflow = <span class="s">"hidden"</span>;
+
+    <span class="k">return</span> () =&gt; {
+      document.<span class="f">removeEventListener</span>(<span class="s">"keydown"</span>, alPulsar);
+      document.body.style.overflow = <span class="s">""</span>;
+    };
+  }, [onCerrar]);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+    });
+    <span class="f">onCerrar</span>();
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span>
+      <span class="n">className</span>=<span class="s">"fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"</span>
+      <span class="n">onClick</span>={onCerrar}
+    &gt;
+      &lt;<span class="f">div</span>
+        <span class="n">role</span>=<span class="s">"dialog"</span>
+        <span class="n">aria-modal</span>=<span class="s">"true"</span>
+        <span class="n">aria-label</span>={producto.nombre}
+        <span class="n">className</span>=<span class="s">"relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-paper shadow-float md:grid md:grid-cols-2"</span>
+        <span class="n">onClick</span>={(e) =&gt; e.<span class="f">stopPropagation</span>()}
+      &gt;
+        &lt;<span class="f">button</span>
+          <span class="n">onClick</span>={onCerrar}
+          <span class="n">aria-label</span>=<span class="s">"Cerrar"</span>
+          <span class="n">className</span>=<span class="s">"absolute top-4 right-4 z-10 size-10 rounded-full bg-paper/90 text-xl leading-none flex items-center justify-center hover:bg-accent hover:text-paper transition-colors"</span>
+        &gt;
+          ×
+        &lt;/<span class="f">button</span>&gt;
+
+        &lt;<span class="f">img</span>
+          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=800&amp;h=1000"</span>)}
+          <span class="n">alt</span>={producto.nombre}
+          <span class="n">className</span>=<span class="s">"w-full h-64 md:h-full object-cover"</span>
+        /&gt;
+
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-4 p-6 md:p-8"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+          &lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">h2</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-3xl tracking-tight leading-tight"</span>&gt;
+            {producto.nombre}
+          &lt;/<span class="f">h2</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 leading-relaxed"</span>&gt;{producto.descripcion}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-2xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">className</span>=<span class="s">"mt-auto bg-ink text-paper rounded-card py-3.5 text-sm font-semibold hover:bg-accent transition-colors"</span>
+          &gt;
+            Agregar al carrito
+          &lt;/<span class="f">button</span>&gt;
+<span class="edit-line">          &lt;<span class="f">Link</span></span>
+<span class="edit-line">            <span class="n">to</span>={<span class="s">"/productos/"</span> + producto._id}</span>
+<span class="edit-line">            <span class="n">className</span>=<span class="s">"text-center border border-gray-300 rounded-card py-3.5 text-sm font-semibold hover:border-ink transition-colors"</span></span>
+          &gt;
+<span class="edit-line">            Ver ficha completa</span>
+<span class="edit-line">          &lt;/<span class="f">Link</span>&gt;</span>
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={onCerrar}
+            <span class="n">className</span>=<span class="s">"text-sm font-semibold text-gray-700 hover:text-ink transition-colors"</span>
+<span class="edit-line">          &gt;</span>
+            Seguir viendo
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoModal;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 2 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>import { useContext, useEffect } from "react";</code>, agrega:</div><pre><span class="k">import</span> { Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>&lt;/button&gt;</code>, agrega:</div><pre>&lt;<span class="f">Link</span>
+  <span class="n">to</span>={<span class="s">"/productos/"</span> + producto._id}
+  <span class="n">className</span>=<span class="s">"text-center border border-gray-300 rounded-card py-3.5 text-sm font-semibold hover:border-ink transition-colors"</span>
+&gt;
+  Ver ficha completa
+&lt;/<span class="f">Link</span>&gt;</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>import { Link } from "react-router-dom"</td><td>El mismo <code>Link</code> de S25: navega a otra ruta <strong>sin recargar</strong> la página</td></tr><tr><td>&lt;Link to={"/productos/" + producto._id}&gt;</td><td>Arma la dirección con el <code>_id</code> del producto abierto. Las llaves <code>{ }</code> permiten escribir una expresión en un atributo y <code>+</code> pega el texto fijo con el valor</td></tr><tr><td>producto._id</td><td>Mongo agrega este campo a cada producto y llega en el objeto completo que el modal ya recibe en <code>producto</code>. No hizo falta tocar ni el backend ni <code>Productos.jsx</code></td></tr><tr><td>text-center border border-gray-300 rounded-card</td><td>Un botón con borde, para que se note menos que "Agregar al carrito": la acción principal sigue siendo comprar. <code>text-center</code> centra el texto, porque un <code>Link</code> es un elemento en línea</td></tr><tr><td>py-3.5 text-sm font-semibold hover:border-ink</td><td>Mismo alto y tamaño de letra que el botón principal; al pasar el mouse el borde se oscurece</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Es el error más común de la sesión: usar <code>producto.id</code> (el número) en vez de <code>producto._id</code>. La dirección <code>/productos/3</code> llega al backend como <code>findById("3")</code>, que no es un <code>_id</code> válido, y la página muestra "Producto no encontrado". El mensaje es correcto; el que está mal es el enlace.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>¿Por qué un <code>Link</code> y no una etiqueta <code>a</code> normal? Con <code>a href</code> el navegador pide <strong>toda</strong> la página al servidor y React arranca de cero. Con <code>Link</code> solo cambia la parte de la pantalla que corresponde, y el carrito y el resto del estado se conservan.</span></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Al navegar, <code>Productos</code> deja de dibujarse y el modal desaparece con él. La <strong>limpieza</strong> del <code>useEffect</code> de S28 se ejecuta en ese momento y devuelve el scroll a la página. Sin esa limpieza, la ficha quedaría sin poder desplazarse.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en <code>/productos</code>, abre un modal y pulsa <strong>"Ver ficha completa"</strong>: la dirección cambia a <code>/productos/</code> + el <code>_id</code>, el modal desaparece y se ve la ficha del mismo producto, <strong>con el scroll funcionando</strong>. El botón <strong>Atrás</strong> del navegador vuelve al catálogo. Repite desde la página de <strong>Inicio</strong>: el catálogo de ahí usa el mismo modal y debe llevar a la ficha igual. Con la ficha abierta, pulsa <strong>F5</strong>: sigue mostrando el mismo producto.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO5 ════ -->
+  <section class="section" id="paso5" data-step="paso5">
+    <div class="section-header">
+      <span class="step-badge green">Paso 5 · Pulido</span>
+      <h2 class="section-title">El título de la pestaña con limpieza</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Una página propia debería verse como tal en la pestaña del navegador. Hoy dice "TechStore" en todas partes. Con un efecto la pestaña mostrará el nombre del producto, y con la <strong>limpieza</strong> (S28) volverá a "TechStore" al salir.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Este es tu <code>ProductoDetalle.jsx</code> como quedó en el Paso 3:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoDetalle.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useState, useEffect, useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { useParams, Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductoDetalle</span>() {
+  <span class="k">const</span> { id } = <span class="f">useParams</span>();
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+  <span class="k">const</span> [producto, setProducto] = <span class="f">useState</span>(<span class="y">null</span>);
+  <span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);
+  <span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">setCargando</span>(<span class="y">true</span>);
+    <span class="f">setError</span>(<span class="y">null</span>);
+    <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos/"</span> + id)
+      .<span class="f">then</span>((res) =&gt; {
+        <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span>(<span class="s">"No encontrado"</span>);
+        <span class="k">return</span> res.<span class="f">json</span>();
+      })
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setProducto</span>(datos))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"Producto no encontrado"</span>))
+      .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));
+  }, [id]);
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+    });
+  }
+
+  <span class="k">if</span> (cargando) {
+    <span class="k">return</span> &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-20 text-gray-500"</span>&gt;Cargando producto...&lt;/<span class="f">p</span>&gt;;
+  }
+
+  <span class="k">if</span> (error) {
+    <span class="k">return</span> (
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col items-center text-center gap-4 py-20"</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-accent-dark"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">Link</span>
+          <span class="n">to</span>=<span class="s">"/productos"</span>
+          <span class="n">className</span>=<span class="s">"font-semibold underline hover:text-accent transition-colors"</span>
+        &gt;
+          Volver al catálogo
+        &lt;/<span class="f">Link</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    );
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-8"</span>&gt;
+      &lt;<span class="f">Link</span>
+        <span class="n">to</span>=<span class="s">"/productos"</span>
+        <span class="n">className</span>=<span class="s">"text-sm font-semibold text-gray-700 hover:text-ink transition-colors"</span>
+      &gt;
+        ← Volver al catálogo
+      &lt;/<span class="f">Link</span>&gt;
+
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"grid gap-10 md:grid-cols-2"</span>&gt;
+        &lt;<span class="f">img</span>
+          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=1000&amp;h=1250"</span>)}
+          <span class="n">alt</span>={producto.nombre}
+          <span class="n">className</span>=<span class="s">"w-full aspect-4/5 object-cover rounded-3xl"</span>
+        /&gt;
+
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-5 md:py-6"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+          &lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-4xl md:text-5xl tracking-tighter leading-tight"</span>&gt;
+            {producto.nombre}
+          &lt;/<span class="f">h1</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 text-lg leading-relaxed"</span>&gt;
+            {producto.descripcion}
+          &lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-3xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">className</span>=<span class="s">"mt-4 bg-ink text-paper rounded-card py-4 text-sm font-semibold hover:bg-accent transition-colors"</span>
+          &gt;
+            Agregar al carrito
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoDetalle;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Se agrega un segundo <code>useEffect</code>, justo antes de <code>function agregar</code>. Las líneas amarillas son las nuevas:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/ProductoDetalle.jsx</span><span class="code-tag green">después — así queda el archivo</span></div><pre><span class="k">import</span> { useState, useEffect, useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { useParams, Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+
+<span class="k">function</span> <span class="f">ProductoDetalle</span>() {
+  <span class="k">const</span> { id } = <span class="f">useParams</span>();
+  <span class="k">const</span> { agregarAlCarrito } = <span class="f">useContext</span>(CartContext);
+  <span class="k">const</span> [producto, setProducto] = <span class="f">useState</span>(<span class="y">null</span>);
+  <span class="k">const</span> [cargando, setCargando] = <span class="f">useState</span>(<span class="y">true</span>);
+  <span class="k">const</span> [error, setError] = <span class="f">useState</span>(<span class="y">null</span>);
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">setCargando</span>(<span class="y">true</span>);
+    <span class="f">setError</span>(<span class="y">null</span>);
+    <span class="f">fetch</span>(<span class="s">"http://localhost:3000/api/productos/"</span> + id)
+      .<span class="f">then</span>((res) =&gt; {
+        <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span>(<span class="s">"No encontrado"</span>);
+        <span class="k">return</span> res.<span class="f">json</span>();
+      })
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setProducto</span>(datos))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setError</span>(<span class="s">"Producto no encontrado"</span>))
+      .<span class="f">finally</span>(() =&gt; <span class="f">setCargando</span>(<span class="y">false</span>));
+  }, [id]);
+
+<span class="edit-line">  <span class="f">useEffect</span>(() =&gt; {</span>
+<span class="edit-line">    <span class="k">if</span> (!producto) <span class="k">return</span>;</span>
+<span class="edit-line">    <span class="k">const</span> tituloAnterior = document.title;</span>
+<span class="edit-line">    document.title = producto.nombre + <span class="s">" | TechStore"</span>;</span>
+
+<span class="edit-line">    <span class="k">return</span> () =&gt; {</span>
+<span class="edit-line">      document.title = tituloAnterior;</span>
+<span class="edit-line">    };</span>
+<span class="edit-line">  }, [producto]);</span>
+
+  <span class="k">function</span> <span class="f">agregar</span>() {
+    <span class="f">agregarAlCarrito</span>({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+    });
+  }
+
+  <span class="k">if</span> (cargando) {
+    <span class="k">return</span> &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-center py-20 text-gray-500"</span>&gt;Cargando producto...&lt;/<span class="f">p</span>&gt;;
+  }
+
+  <span class="k">if</span> (error) {
+    <span class="k">return</span> (
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col items-center text-center gap-4 py-20"</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-accent-dark"</span>&gt;{error}&lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">Link</span>
+          <span class="n">to</span>=<span class="s">"/productos"</span>
+          <span class="n">className</span>=<span class="s">"font-semibold underline hover:text-accent transition-colors"</span>
+        &gt;
+          Volver al catálogo
+        &lt;/<span class="f">Link</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    );
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-8"</span>&gt;
+      &lt;<span class="f">Link</span>
+        <span class="n">to</span>=<span class="s">"/productos"</span>
+        <span class="n">className</span>=<span class="s">"text-sm font-semibold text-gray-700 hover:text-ink transition-colors"</span>
+      &gt;
+        ← Volver al catálogo
+      &lt;/<span class="f">Link</span>&gt;
+
+      &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"grid gap-10 md:grid-cols-2"</span>&gt;
+        &lt;<span class="f">img</span>
+          <span class="n">src</span>={producto.imagen.<span class="f">replace</span>(<span class="s">"w=400&amp;h=250"</span>, <span class="s">"w=1000&amp;h=1250"</span>)}
+          <span class="n">alt</span>={producto.nombre}
+          <span class="n">className</span>=<span class="s">"w-full aspect-4/5 object-cover rounded-3xl"</span>
+        /&gt;
+
+        &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"flex flex-col gap-5 md:py-6"</span>&gt;
+          &lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"font-mono text-[11px] font-bold tracking-wider text-gray-500"</span>&gt;
+            REF {<span class="f">String</span>(producto.id).<span class="f">padStart</span>(<span class="y">2</span>, <span class="s">"0"</span>)}
+          &lt;/<span class="f">span</span>&gt;
+          &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-4xl md:text-5xl tracking-tighter leading-tight"</span>&gt;
+            {producto.nombre}
+          &lt;/<span class="f">h1</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700 text-lg leading-relaxed"</span>&gt;
+            {producto.descripcion}
+          &lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-3xl font-bold"</span>&gt;{producto.precio}&lt;/<span class="f">p</span>&gt;
+          &lt;<span class="f">button</span>
+            <span class="n">onClick</span>={agregar}
+            <span class="n">className</span>=<span class="s">"mt-4 bg-ink text-paper rounded-card py-4 text-sm font-semibold hover:bg-accent transition-colors"</span>
+          &gt;
+            Agregar al carrito
+          &lt;/<span class="f">button</span>&gt;
+        &lt;/<span class="f">div</span>&gt;
+      &lt;/<span class="f">div</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> ProductoDetalle;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>}, [id]);</code>, agrega:</div><pre><span class="f">useEffect</span>(() =&gt; {
+  <span class="k">if</span> (!producto) <span class="k">return</span>;
+  <span class="k">const</span> tituloAnterior = document.title;
+  document.title = producto.nombre + <span class="s">" | TechStore"</span>;
+
+  <span class="k">return</span> () =&gt; {
+    document.title = tituloAnterior;
+  };
+}, [producto]);
+</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>Un segundo useEffect</td><td>Una misma página puede tener <strong>varios efectos</strong>, cada uno con un trabajo distinto: el primero pide datos, este cambia la pestaña. Mantenerlos separados los hace fáciles de leer</td></tr><tr><td>if (!producto) return</td><td>Mientras el producto no llega (<code>null</code>), el efecto no hace nada. Un <code>return</code> sin valor termina la función ahí</td></tr><tr><td>const tituloAnterior = document.title</td><td>Guarda el texto que tenía la pestaña ("TechStore") para poder devolverlo</td></tr><tr><td>document.title = producto.nombre + " | TechStore"</td><td><code>document.title</code> es el texto de la pestaña del navegador. Es trabajo con el navegador, fuera de React, por eso va en un efecto</td></tr><tr><td>return () =&gt; { document.title = tituloAnterior }</td><td>La <strong>limpieza</strong>: la función que devuelve el efecto. React la ejecuta cuando la página desaparece (o antes de volver a correr el efecto), y restaura el título original</td></tr><tr><td>}, [producto])</td><td>El efecto se ejecuta cuando <code>producto</code> cambia: primero es <code>null</code>, y cuando llegan los datos pasa a ser el objeto completo</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Este efecto va <strong>antes</strong> de los <code>return</code> tempranos (<code>if (cargando)</code> y <code>if (error)</code>), con el resto de los hooks. Por eso necesita el <code>if (!producto) return</code> adentro: en ese momento el producto todavía puede ser <code>null</code>.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> abre una ficha: la pestaña del navegador dice <strong>"nombre del producto | TechStore"</strong>. Pulsa "← Volver al catálogo": la pestaña vuelve a decir <strong>"TechStore"</strong>. Abre otra ficha desde el modal: la pestaña muestra el nombre del nuevo producto.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Pruebas de cierre. Haz cada una y marca lo que funcione:</p>
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Resultado esperado</th></tr></thead><tbody><tr><td>/productos/ + un _id real</td><td>La ficha completa del producto</td></tr><tr><td>/productos/hola</td><td>"Producto no encontrado" y el enlace "Volver al catálogo"</td></tr><tr><td>/productos/000000000000000000000000</td><td>Un <code>_id</code> con formato válido pero que no existe: también "Producto no encontrado"</td></tr><tr><td>Pulsar F5 con una ficha abierta</td><td>Sigue el mismo producto (la dirección conserva el dato; el modal, en cambio, no sobrevive a un F5)</td></tr><tr><td>Apagar el backend y recargar una ficha</td><td>"Producto no encontrado": la página no se rompe aunque el servidor falle</td></tr><tr><td>Ficha a 390px de ancho</td><td>Foto arriba, texto abajo, sin scroll horizontal</td></tr><tr><td>Abrir la consola (F12)</td><td>Sin errores en rojo</td></tr></tbody></table></div>
+<div class="callout teal" style="margin-top:24px;"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg></span><span><strong>Próxima sesión S30 — Migrar Login y Registro:</strong> formularios controlados que hablan con <code>POST /api/auth/login</code> y <code>/registro</code>, y el token guardado en <code>AuthContext</code>. Con eso el carrito y las rutas protegidas empiezan a conocer al usuario.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ CHECKLIST ════ -->
+  <section class="section" id="checklist" data-step="checklist">
+    <div class="section-header">
+      <span class="step-badge green">Cierre</span>
+      <h2 class="section-title">Checklist final de la sesión</h2>
+    </div>
+    <ul class="checklist" id="checklist-ul">
+      <li data-check="chk1"><span class="check-box"></span><span><strong>App.jsx</strong> tiene la ruta <code>/productos/:id</code> antes de la ruta comodín, y <strong>ProductoDetalle.jsx</strong> lee el id con <code>useParams</code></span></li>
+      <li data-check="chk2"><span class="check-box"></span><span>La ficha pide <code>GET /api/productos/:id</code> con un efecto que depende del id y muestra foto, nombre, descripción completa y precio</span></li>
+      <li data-check="chk3"><span class="check-box"></span><span>Un id inventado o un servidor apagado muestran "Producto no encontrado" con el enlace "Volver al catálogo"; "Agregar al carrito" suma al contador del Navbar</span></li>
+      <li data-check="chk4"><span class="check-box"></span><span>El modal tiene "Ver ficha completa" (con el <code>_id</code>, no el <code>id</code>) y funciona desde Productos y desde Inicio</span></li>
+      <li data-check="chk5"><span class="check-box"></span><span>La pestaña muestra el nombre del producto y vuelve a "TechStore" al salir; F5 en la ficha conserva el producto</span></li>
+      <li data-check="chk6"><span class="check-box"></span><span>Probado a 390px de ancho, sin errores en consola ni en la terminal de Vite</span></li>
+    </ul>
+  </section>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="btn-enviar">
+      <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12" /> <path d="m17 8-5-5-5 5" /> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg><span>Enviar todo mi progreso</span>
+    </button>
+    <div class="submit-status" id="submit-status"></div>
+  </div>
+
+</main>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['c','x','a','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+
+
+const STEPS = ['paso1','paso2','paso3','paso4','paso5','checklist'];
+const KEY   = 's29-progress';
+
+function getState() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} }
+
+function updateProgress() {
+  const state = getState();
+  const done  = STEPS.filter(s => state[s]).length;
+  const pct   = Math.round((done / STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-txt').textContent  = done + ' / ' + STEPS.length;
+}
+
+function renderButtons() {
+  const state = getState();
+  STEPS.forEach(id => {
+    const section = document.querySelector(`[data-step="${id}"]`);
+    if (!section || section.querySelector('.complete-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'complete-btn' + (state[id] ? ' done' : '');
+    btn.dataset.step = id;
+    btn.innerHTML = `<span class="btn-icon">${state[id] ? '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>' : '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>'}</span>
+      <span class="btn-txt">${state[id] ? '¡Paso completado!' : 'Marcar como completado'}</span>
+      <span class="btn-badge">LISTO</span>`;
+    if (!state[id]) btn.addEventListener('click', () => completeStep(id, btn));
+    section.appendChild(btn);
+    const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+    if (nav && state[id]) nav.classList.add('done');
+  });
+}
+
+function completeStep(id, btn) {
+  const state = getState(); state[id] = true; saveState(state);
+  btn.classList.add('done');
+  btn.querySelector('.btn-icon').innerHTML = '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+  btn.querySelector('.btn-txt').textContent  = '¡Paso completado!';
+  const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+  if (nav) nav.classList.add('done');
+  updateProgress();
+  launchConfetti(STEPS.filter(s => state[s]).length === STEPS.length);
+}
+
+function launchConfetti(big) {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#3b82f6','#2dd4bf','#22c55e','#f59e0b','#a78bfa','#f87171'];
+  const count  = big ? 180 : 60;
+  const parts  = Array.from({length: count}, () => ({
+    x: canvas.width * (big ? Math.random() : .5 + (Math.random()-.5)*.4),
+    y: big ? -10 : canvas.height * .4,
+    r: Math.random() * 7 + 3, color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: 0, tiltAngle: 0, tiltSpeed: Math.random()*.1+.05,
+    vx: Math.random()*4-2, vy: Math.random()*3+2
+  }));
+  let frame = 0; const total = big ? 160 : 80;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p => {
+      ctx.beginPath(); ctx.fillStyle = p.color;
+      ctx.ellipse(p.x, p.y, p.r, p.r*.4, p.tilt, 0, Math.PI*2); ctx.fill();
+      p.x += p.vx; p.y += p.vy; p.tiltAngle += p.tiltSpeed; p.tilt = Math.sin(p.tiltAngle)*12; p.vy += .08;
+    });
+    if (++frame < total) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+function getChecklistState() { try { return JSON.parse(localStorage.getItem('s29-checklist') || '{}'); } catch { return {}; } }
+function saveChecklistState(s) { try { localStorage.setItem('s29-checklist', JSON.stringify(s)); } catch {} }
+
+function renderChecklist() {
+  const state = getChecklistState();
+  document.querySelectorAll('#checklist-ul li').forEach(li => {
+    const id = li.dataset.check;
+    if (state[id]) { li.classList.add('marcado'); li.querySelector('.check-box').textContent = '✓'; }
+    li.addEventListener('click', () => {
+      const s = getChecklistState();
+      s[id] = !s[id];
+      saveChecklistState(s);
+      li.classList.toggle('marcado', s[id]);
+      li.querySelector('.check-box').textContent = s[id] ? '✓' : '';
+      const allChecked = Array.from(document.querySelectorAll('#checklist-ul li')).every(el => s[el.dataset.check]);
+      if (allChecked) launchConfetti(false);
+    });
+  });
+}
+
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+sections.forEach(s => obs.observe(s));
+
+renderButtons();
+updateProgress();
+renderChecklist();
+
+/* ═══ Selector de aprendiz + envío a Google Sheets (Apps Script) ═══ */
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbyhq0L17BN2xp5FnAHuRXugHBYE4P9-4DvdWU4mR-1FnVBGUoBCGIkZw5O2ZEVu7T8P/exec';
+const ARCHIVO_ACTUAL  = '02_GUIA_MIGRAR_PRODUCTO_DETALLE';
+const APRENDIZ_KEY    = 'sena-aprendiz-nombre';
+
+const APRENDIZ_TRIGGER = document.getElementById('aprendiz-trigger');
+const APRENDIZ_PANEL   = document.getElementById('aprendiz-panel');
+const APRENDIZ_BUSCAR  = document.getElementById('aprendiz-search');
+const APRENDIZ_TEXTO   = document.getElementById('aprendiz-trigger-text');
+const APRENDIZ_ITEMS   = Array.from(document.querySelectorAll('#aprendiz-list li'));
+const APRENDIZ_VACIO   = document.getElementById('aprendiz-empty');
+const APRENDIZ_LISTA   = document.getElementById('aprendiz-list');
+const selectAprendiz = { value: '', classList: APRENDIZ_TRIGGER.classList,
+  scrollIntoView: (o) => APRENDIZ_TRIGGER.scrollIntoView(o) };
+
+function tituloAprendiz(n) {
+  return n.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
+}
+function marcarAprendiz(nombre) {
+  selectAprendiz.value = nombre;
+  APRENDIZ_TEXTO.textContent = nombre ? tituloAprendiz(nombre) : 'Selecciona tu nombre';
+  APRENDIZ_TEXTO.classList.toggle('placeholder', !nombre);
+  APRENDIZ_ITEMS.forEach((li) => li.setAttribute('aria-selected', li.dataset.nombre === nombre ? 'true' : 'false'));
+}
+function posicionarAprendiz() {
+  const r = APRENDIZ_TRIGGER.getBoundingClientRect();
+  const ancho = Math.min(Math.max(r.width, 320), window.innerWidth - 16);
+  APRENDIZ_PANEL.style.width = ancho + 'px';
+  APRENDIZ_PANEL.style.left = Math.max(8, Math.min(r.left, window.innerWidth - ancho - 8)) + 'px';
+  APRENDIZ_PANEL.style.top = (r.bottom + 6) + 'px';
+  APRENDIZ_LISTA.style.maxHeight = Math.max(140, Math.min(260, window.innerHeight - r.bottom - 90)) + 'px';
+}
+function abrirAprendiz(abrir) {
+  APRENDIZ_PANEL.hidden = !abrir;
+  if (abrir) posicionarAprendiz();
+  APRENDIZ_TRIGGER.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+  if (abrir) { APRENDIZ_BUSCAR.value = ''; filtrarAprendices(); APRENDIZ_BUSCAR.focus(); }
+}
+function filtrarAprendices() {
+  const q = APRENDIZ_BUSCAR.value.toLowerCase().trim();
+  let visibles = 0;
+  APRENDIZ_ITEMS.forEach((li) => {
+    const ok = !q || li.dataset.nombre.toLowerCase().includes(q);
+    li.hidden = !ok;
+    if (ok) visibles++;
+  });
+  APRENDIZ_VACIO.hidden = visibles > 0;
+}
+function elegirAprendiz(nombre) {
+  marcarAprendiz(nombre);
+  try { localStorage.setItem(APRENDIZ_KEY, nombre); } catch {}
+  selectAprendiz.classList.remove('falta');
+  abrirAprendiz(false);
+  APRENDIZ_TRIGGER.focus();
+}
+APRENDIZ_TRIGGER.addEventListener('click', () => abrirAprendiz(APRENDIZ_PANEL.hidden));
+APRENDIZ_BUSCAR.addEventListener('input', filtrarAprendices);
+APRENDIZ_BUSCAR.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { abrirAprendiz(false); APRENDIZ_TRIGGER.focus(); }
+  if (e.key === 'Enter') {
+    const primero = APRENDIZ_ITEMS.find((li) => !li.hidden);
+    if (primero) elegirAprendiz(primero.dataset.nombre);
+  }
+});
+APRENDIZ_ITEMS.forEach((li) => li.addEventListener('click', () => elegirAprendiz(li.dataset.nombre)));
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.aprendiz-wrap')) abrirAprendiz(false);
+});
+window.addEventListener('resize', () => { if (!APRENDIZ_PANEL.hidden) posicionarAprendiz(); });
+APRENDIZ_TRIGGER.closest('.sidebar').addEventListener('scroll', () => { if (!APRENDIZ_PANEL.hidden) abrirAprendiz(false); });
+let nombreGuardado = '';
+try { nombreGuardado = localStorage.getItem(APRENDIZ_KEY) || ''; } catch {}
+if (APRENDIZ_ITEMS.some((li) => li.dataset.nombre === nombreGuardado)) marcarAprendiz(nombreGuardado);
+
+const btnEnviar = document.getElementById('btn-enviar');
+const statusEl  = document.getElementById('submit-status');
+
+btnEnviar.addEventListener('click', async () => {
+  const aprendiz = selectAprendiz.value;
+  if (!aprendiz) {
+    selectAprendiz.classList.add('falta');
+    statusEl.textContent = 'Selecciona tu nombre arriba antes de enviar.';
+    statusEl.className = 'submit-status err';
+    selectAprendiz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const state = getState();
+  const pasosCompletados = STEPS.filter(s => state[s]);
+
+  btnEnviar.disabled = true;
+  statusEl.textContent = 'Enviando...';
+  statusEl.className = 'submit-status';
+
+  try {
+    await fetch(URL_APPS_SCRIPT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        aprendiz: aprendiz,
+        archivo: ARCHIVO_ACTUAL,
+        completados: pasosCompletados.length,
+        total: STEPS.length,
+        pasos: pasosCompletados
+      })
+    });
+    statusEl.textContent = 'Progreso enviado — ' + pasosCompletados.length + '/' + STEPS.length + ' pasos.';
+    statusEl.className = 'submit-status ok';
+  } catch (err) {
+    statusEl.textContent = 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.';
+    statusEl.className = 'submit-status err';
+  } finally {
+    btnEnviar.disabled = false;
+  }
+});
+
+</script>
+</body>
+</html>
