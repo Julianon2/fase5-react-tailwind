@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía S30 — Validar dominios de correo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#F4F2EC; --surface:#ffffff; --surface2:#ECE9DF; --border:#e5e1d4;
+  --txt:#0f172a; --txt-dim:#64748b;
+  --accent:#0284c7; --accent-glow:rgba(2,132,199,.10);
+  --green:#16a34a; --green-bg:rgba(22,163,74,.10);
+  --red:#dc2626; --red-bg:rgba(220,38,38,.08);
+  --yellow:#d97706; --yellow-bg:rgba(217,119,6,.10);
+  --purple:#7c3aed; --purple-bg:rgba(124,58,237,.08);
+  --teal:#018751; --teal-bg:rgba(1,135,81,.09);
+  --code-bg:#0d1117; --sidebar-w:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;display:flex;min-height:100vh;user-select:none;}
+
+.sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:0;left:0;bottom:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:24px 0 40px;display:flex;flex-direction:column;}
+.sidebar-brand{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-brand .curso{font-size:11px;color:var(--teal);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.sidebar-brand h1{font-size:14px;font-weight:700;color:var(--txt);margin-top:4px;line-height:1.3;}
+.sidebar-brand .ficha{font-size:11px;color:var(--txt-dim);margin-top:2px;}
+.progress-wrap{padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-dim);margin-bottom:8px;}
+.progress-label span:last-child{color:var(--teal);font-weight:700;}
+.progress-bar-bg{height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--teal);border-radius:10px;transition:width .4s ease;width:0%;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--txt-dim);font-size:13px;font-weight:500;text-decoration:none;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--accent-glow);color:var(--txt);}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);}
+.nav-item.active .nav-dot{background:var(--accent);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .15s;}
+.nav-item:hover .nav-dot{background:var(--txt-dim);}
+.nav-item.done{color:var(--teal);}
+.nav-item.done .nav-dot{background:var(--teal);}
+
+.main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px 80px;max-width:820px;}
+
+.page-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+.page-tag{font-size:11px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.page-title{font-size:28px;font-weight:700;color:var(--txt);line-height:1.2;text-wrap:balance;}
+.page-subtitle{font-size:14px;color:var(--txt-dim);margin-top:8px;}
+.page-warning{margin-top:20px;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--yellow);font-weight:500;}
+
+.intro-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px 36px;margin-bottom:52px;}
+.intro-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+.intro-title{font-size:20px;font-weight:800;color:var(--txt);line-height:1.25;margin-bottom:10px;}
+.intro-sub{font-size:14px;color:var(--txt-dim);margin-bottom:20px;line-height:1.6;}
+.intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.intro-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.intro-item-icon{font-size:22px;margin-bottom:8px;display:flex;}
+.intro-item-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-dim);margin-bottom:4px;}
+.intro-item-desc{font-size:13px;color:var(--txt);font-weight:500;line-height:1.4;}
+
+.section{margin-bottom:56px;scroll-margin-top:32px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.step-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.3);border-radius:6px;padding:3px 10px;white-space:nowrap;letter-spacing:.04em;flex-shrink:0;}
+.step-badge.green{background:var(--green-bg);color:var(--green);border-color:rgba(34,197,94,.3);}
+.step-badge.yellow{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,158,11,.3);}
+.step-badge.extra{background:var(--purple-bg);color:var(--purple);border-color:rgba(167,139,250,.3);}
+.step-badge.teal{background:var(--teal-bg);color:var(--teal);border-color:rgba(45,212,191,.3);}
+.section-title{font-size:20px;font-weight:700;color:var(--txt);text-wrap:balance;}
+
+.step-list{display:flex;flex-direction:column;gap:20px;}
+.step-item{display:flex;gap:16px;}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-body p{color:var(--txt);font-size:14px;}
+.step-body strong{color:var(--txt);font-weight:600;}
+
+.code-wrap{margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.code-header{display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 14px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-dot.r{background:#ff5f57;} .code-dot.y{background:#febc2e;} .code-dot.g{background:#28c840;}
+.code-filename{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-dim);flex:1;}
+.code-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.code-tag.blue{background:rgba(59,130,246,.15);color:var(--accent);}
+.code-tag.green{background:var(--green-bg);color:var(--green);}
+.code-tag.yellow{background:var(--yellow-bg);color:var(--yellow);}
+.code-tag.purple{background:var(--purple-bg);color:var(--purple);}
+pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;color:#abb2bf;}
+pre .c{color:#5c6370;} pre .k{color:#c678dd;} pre .s{color:#98c379;}
+pre .f{color:#61afef;} pre .n{color:#e5c07b;} pre .y{color:#d19a66;}
+pre .edit{color:#fbbf24;background:rgba(245,158,11,.12);border-radius:3px;padding:0 2px;}
+
+.callout{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:8px;font-size:13px;margin:14px 0;line-height:1.5;}
+.callout.ok{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout.err{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);color:var(--red);}
+.callout.warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.2);color:var(--yellow);}
+.callout.info{background:var(--accent-glow);border:1px solid rgba(59,130,246,.2);color:#0369a1;}
+.callout.teal{background:var(--teal-bg);border:1px solid rgba(45,212,191,.2);color:var(--teal);}
+.callout.tip{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;display:flex;}
+.callout strong{color:inherit;font-weight:600;}
+
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--surface2);color:var(--txt-dim);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:top;}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);}
+tr:last-child td{border-bottom:none;}
+
+.checklist{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.checklist li{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--txt-dim);cursor:pointer;transition:all .15s;}
+.checklist li:hover{border-color:var(--teal);}
+.checklist li.marcado{background:var(--teal-bg);border-color:rgba(45,212,191,.35);color:var(--txt);}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--teal);}
+.checklist li.marcado .check-box{border-color:var(--teal);background:var(--teal-bg);}
+.checklist li strong{color:var(--txt);font-weight:600;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:1px 6px;border-radius:4px;color:#0369a1;}
+
+.subsec{margin:28px 0 16px;}
+.subsec-title{font-size:15px;font-weight:700;color:var(--txt);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+
+.complete-btn{display:flex;align-items:center;gap:10px;margin-top:28px;padding:14px 20px;background:var(--teal-bg);border:1px solid rgba(45,212,191,.3);border-radius:10px;color:var(--teal);font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:all .2s;font-family:'Inter',sans-serif;}
+.complete-btn:hover{border-color:var(--teal);}
+.complete-btn.done{cursor:default;}
+.complete-btn .btn-icon{font-size:18px;}
+.complete-btn .btn-txt{flex:1;text-align:left;}
+.complete-btn .btn-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(45,212,191,.15);color:var(--teal);opacity:0;}
+.complete-btn.done .btn-badge{opacity:1;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+
+.submit-wrap{margin-top:28px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+.submit-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 20px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.submit-btn:hover{background:#2f6fe0;transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.submit-status{margin-top:10px;font-size:12.5px;text-align:center;color:var(--txt-dim);}
+.submit-status.ok{color:var(--green);}
+.submit-status.err{color:var(--red);}
+
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+.callout-icon svg{width:16px;height:16px;stroke-width:2.5;}
+.intro-item-icon svg{width:22px;height:22px;stroke-width:2;}
+.page-warning{display:flex;align-items:center;gap:8px;}
+.page-warning svg{width:16px;height:16px;stroke-width:2.5;flex-shrink:0;}
+.submit-btn svg{width:18px;height:18px;stroke-width:2.5;}
+.nav-ref{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;color:var(--yellow);font-size:12.5px;font-weight:600;text-decoration:none;border:1px dashed rgba(245,158,11,.4);}
+.nav-ref:hover{background:var(--yellow-bg);}
+.nav-ref svg{width:14px;height:14px;stroke-width:2.5;flex-shrink:0;}
+pre .edit-line{display:inline-block;width:calc(100% + 40px);box-sizing:border-box;margin:0 -20px;padding:0 20px;background:rgba(250,204,21,.18);box-shadow:inset 3px 0 0 #facc15;}
+.leyenda-edit{margin:8px 0 0;font-size:12.5px;color:var(--txt-dim);display:flex;align-items:center;gap:8px;}
+.leyenda-muestra{display:inline-block;width:22px;height:12px;border-radius:2px;background:rgba(250,204,21,.35);box-shadow:inset 3px 0 0 #facc15;}
+.cambios{margin:16px 0;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:16px 18px;}
+.cambios-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt);}
+.cambios-sub{font-size:13px;color:var(--txt-dim);margin:4px 0 6px;}
+.cambio{display:flex;gap:12px;margin-top:14px;align-items:flex-start;}
+.cambio-n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--accent-glow);color:var(--accent);font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.cambio-body{flex:1;min-width:0;}
+.cambio-titulo{font-size:13px;font-weight:600;color:var(--txt);}
+.cambio-titulo code{font-weight:500;}
+.cambio-por{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-dim);margin:6px 0 0;}
+.cambio pre.ctx{background:#1a2132;margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0;}
+.cambio pre.ctx span{opacity:.55;}
+.cambio pre.ctx + pre{margin-top:0;border-top-left-radius:0;border-top-right-radius:0;box-shadow:inset 3px 0 0 #facc15;}
+.cambio pre{margin:6px 0 0;border-radius:8px;padding:10px 14px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;} td,th{overflow-wrap:anywhere;} .step-body{min-width:0;}
+
+.sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border);}
+.sidebar-hub-link{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-size:12.5px;font-weight:700;padding:8px 10px;border-radius:8px;transition:background .15s;}
+.sidebar-hub-link:hover{background:var(--accent-glow);}
+
+/* ── Identidad del portal ADSO: tipografías y código oscuro sobre fondo claro ── */
+h1,h2,.page-title,.sidebar-brand h1{font-family:'Syne','Inter',sans-serif;}
+pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
+.sidebar{box-shadow:0 10px 30px -10px rgba(15,23,42,.07);}
+
+/* Texto sobre fondos tintados: tonos mas oscuros para que se lea en tema claro */
+.callout.ok,.callout.tip,.step-badge.green{color:#166534;}
+.callout.warn,.page-warning,.step-badge.yellow,.pin{color:#92400e;}
+.callout.err{color:#b91c1c;}
+
+/* Iconos Lucide en línea (reemplazan a los emojis) */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
+
+/* ── Selector de aprendiz (lista propia, mismo estilo del portal) ── */
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+.aprendiz-trigger{width:100%;display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;color:var(--txt);font:600 12.5px 'Inter',sans-serif;cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s;}
+.aprendiz-trigger:hover{border-color:var(--teal);}
+.aprendiz-trigger:focus-visible,.aprendiz-trigger[aria-expanded="true"]{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg);}
+.aprendiz-trigger.falta{border-color:var(--yellow);box-shadow:0 0 0 3px var(--yellow-bg);}
+.aprendiz-trigger svg{flex-shrink:0;color:var(--teal);}
+.aprendiz-trigger .aprendiz-chev{margin-left:auto;color:var(--txt-dim);transition:transform .2s;}
+.aprendiz-trigger[aria-expanded="true"] .aprendiz-chev{transform:rotate(180deg);}
+.aprendiz-trigger-text{flex:1;min-width:0;line-height:1.3;word-break:break-word;}
+.aprendiz-trigger-text.placeholder{color:var(--txt-dim);font-weight:500;}
+.aprendiz-panel{position:fixed;z-index:60;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;box-shadow:0 18px 40px -12px rgba(15,23,42,.25);overflow:hidden;}
+.aprendiz-panel[hidden]{display:none;}
+.aprendiz-search{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--txt-dim);}
+.aprendiz-search input{flex:1;min-width:0;border:0;background:transparent;font:500 12.5px 'Inter',sans-serif;color:var(--txt);outline:none;user-select:text;}
+.aprendiz-list{list-style:none;max-height:224px;overflow-y:auto;padding:4px;}
+.aprendiz-list li{display:flex;white-space:nowrap;line-height:1.35;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;font-size:12px;font-weight:500;color:var(--txt);cursor:pointer;}
+.aprendiz-list li[hidden]{display:none;}
+.aprendiz-list li:hover,.aprendiz-list li.activo{background:var(--surface2);}
+.aprendiz-list li[aria-selected="true"]{background:var(--teal-bg);color:var(--teal);font-weight:700;}
+.aprendiz-list li svg{margin-left:auto;flex-shrink:0;opacity:0;}
+.aprendiz-list li[aria-selected="true"] svg{opacity:1;}
+.aprendiz-empty{padding:12px;font-size:12px;color:var(--txt-dim);text-align:center;}
+.aprendiz-empty[hidden]{display:none;}
+</style>
+<canvas class="confetti-wrap" id="confetti-canvas"></canvas>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="curso">SENA ADSO · S30</div>
+    <h1>Validar dominios de correo — Guía 03</h1>
+    <div class="ficha">Ficha 3229944 · Oct 2026</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 5</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="aprendiz-wrap">
+    <span class="aprendiz-label" id="aprendiz-label">Aprendiz</span>
+    <button type="button" class="aprendiz-trigger" id="aprendiz-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="aprendiz-label aprendiz-trigger-text">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="aprendiz-trigger-text placeholder" id="aprendiz-trigger-text">Selecciona tu nombre</span>
+      <svg class="aprendiz-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="aprendiz-panel" id="aprendiz-panel" hidden>
+      <div class="aprendiz-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="aprendiz-search" placeholder="Buscar mi nombre..." autocomplete="off" aria-label="Buscar mi nombre"></div>
+      <ul class="aprendiz-list" id="aprendiz-list" role="listbox" aria-labelledby="aprendiz-label">
+      <li role="option" aria-selected="false" data-nombre="ANDRES STEVEN LOPEZ SCARPETTA">Andres Steven Lopez Scarpetta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="EDGAR STICK LOPEZ MURCIA">Edgar Stick Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="HEYDER IVAN VELASCO DELGADO">Heyder Ivan Velasco Delgado<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JESUS DAVID ORTIZ MUÑOZ">Jesus David Ortiz Muñoz<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHOJAN STEVEN SERRANO PATIÑO">Jhojan Steven Serrano Patiño<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHON EDGARDO LUGO VILLANUEVA">Jhon Edgardo Lugo Villanueva<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JONIER STIVEN GUTIERREZ SALCEDO">Jonier Stiven Gutierrez Salcedo<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JUAN PABLO PORRAS LOZANO">Juan Pablo Porras Lozano<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="KEVIN MIGUEL ORTIZ TELLEZ">Kevin Miguel Ortiz Tellez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LAURA FERNANDA SOSA CEDIEL">Laura Fernanda Sosa Cediel<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LEIDY VIVIANA SANCHEZ ACOSTA">Leidy Viviana Sanchez Acosta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LUIS CARLOS CADENA VALENCIA">Luis Carlos Cadena Valencia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MARTIN SMITH LOPEZ MURCIA">Martin Smith Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MICHAEL FERMAN HERNANDEZ BERMUDEZ">Michael Ferman Hernandez Bermudez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="NITSON ESTIVEN LOPEZ YUSTES">Nitson Estiven Lopez Yustes<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      </ul>
+      <div class="aprendiz-empty" id="aprendiz-empty" hidden>Sin coincidencias</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">La regla</div>
+    <a class="nav-item active" href="#paso1"><span class="nav-dot"></span>Paso 1 — El servidor revisa</a>
+    <a class="nav-item" href="#paso2"><span class="nav-dot"></span>Paso 2 — La página avisa</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Comprobar y practicar</div>
+    <a class="nav-item" href="#paso3"><span class="nav-dot"></span>Paso 3 — Probar</a>
+    <a class="nav-item" href="#paso4"><span class="nav-dot"></span>Paso 4 — Tu turno</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#checklist"><span class="nav-dot"></span>Checklist final</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="../../explorar.html" class="sidebar-hub-link">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      Volver al Hub
+    </a>
+  </div>
+</div>
+
+<main class="main">
+
+  <div class="page-header">
+    <div class="page-tag">Sesión 30 · Fase 5 React y Tailwind</div>
+    <h1 class="page-title">Solo correos de proveedores conocidos</h1>
+    <p class="page-subtitle">SENA ADSO · Ficha 3229944 · Octubre 2026</p>
+    <div class="page-warning"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg><span>Esta guía continúa la guía 02: tu Login y Registro deben estar funcionando. Trabaja con DB_MODO=local.</span></div>
+  </div>
+
+  <div class="intro-card">
+    <div class="intro-tag">¿Qué construimos hoy?</div>
+    <div class="intro-title">Solo correos de proveedores conocidos</div>
+    <p class="intro-sub">El registro de TechStore Pro hoy acepta cualquier correo con forma de correo. En esta guía aprendes a leer el <strong>dominio</strong> (lo que va después de la arroba) y a comparar con una lista de permitidos, en el servidor y en el formulario. Es un complemento corto de la guía 02.</p>
+    <div class="intro-grid">
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></svg></div><div class="intro-item-label">Paso 1</div><div class="intro-item-desc">El servidor rechaza los dominios que no están en la lista</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8" /> <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /> <path d="m16 19 2 2 4-4" /></svg></div><div class="intro-item-label">Paso 2</div><div class="intro-item-desc">El formulario avisa antes de enviar</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg></div><div class="intro-item-label">Pasos 3-4</div><div class="intro-item-desc">Pruebas completas y tu turno: aceptar también el correo del SENA</div></div>
+    </div>
+  </div>
+
+  <!-- ════ PASO1 ════ -->
+  <section class="section" id="paso1" data-step="paso1">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 1 · Backend</span>
+      <h2 class="section-title">El servidor revisa el dominio</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Hoy el registro acepta cualquier correo con forma de correo, como <code>ana@correo.com</code> o <code>x@x.xx</code>. Queremos aceptar solo los de proveedores conocidos. El <strong>dominio</strong> es lo que va después de la arroba: en <code>ana@gmail.com</code> el dominio es <code>gmail.com</code>. La regla se pone primero en el <strong>servidor</strong>, que es el que nadie puede saltarse. Se cambia <strong>un solo archivo</strong>: <code>backend/routes/auth.js</code>.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Este es tu <code>backend/routes/auth.js</code> real, completo, tal como está hoy:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/routes/auth.js</span><span class="code-tag yellow">antes</span></div><pre><span class="c">// 1. Importar dependencias</span>
+<span class="k">const</span> express  = <span class="f">require</span>(<span class="s">'express'</span>);
+<span class="k">const</span> bcrypt   = <span class="f">require</span>(<span class="s">'bcryptjs'</span>);
+<span class="k">const</span> jwt      = <span class="f">require</span>(<span class="s">'jsonwebtoken'</span>);
+<span class="k">const</span> Usuario  = <span class="f">require</span>(<span class="s">'../models/Usuario'</span>);
+<span class="k">const</span> router   = express.<span class="f">Router</span>();
+
+<span class="c">// 2. POST /api/auth/registro — crear cuenta nueva</span>
+router.<span class="f">post</span>(<span class="s">'/registro'</span>, <span class="k">async</span> (req, res) =&gt; {
+  <span class="k">try</span> {
+    <span class="c">// El rol NO se lee del cuerpo: lo que manda el navegador no es de fiar</span>
+    <span class="k">const</span> { nombre, email, password, departamento, municipio } = req.body;
+
+    <span class="c">// Validar los datos: el servidor revisa aunque la página ya lo haya hecho</span>
+    <span class="k">if</span> (!nombre || nombre.<span class="f">trim</span>().length &lt; <span class="y">3</span>) {
+      <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'El nombre debe tener al menos 3 caracteres'</span> });
+    }
+    <span class="k">if</span> (!email || !/^\S+@\S+\.\S+$/.<span class="f">test</span>(email)) {
+      <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'El correo no es válido'</span> });
+    }
+    <span class="k">if</span> (!password || password.length &lt; <span class="y">6</span>) {
+      <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'La contraseña debe tener al menos 6 caracteres'</span> });
+    }
+
+    <span class="c">// Verificar que el email no exista ya</span>
+    <span class="k">const</span> existe = <span class="k">await</span> Usuario.<span class="f">findOne</span>({ email });
+    <span class="k">if</span> (existe) <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'El email ya está registrado'</span> });
+
+    <span class="c">// Encriptar la contraseña con 10 rondas de bcrypt</span>
+    <span class="k">const</span> hash = <span class="k">await</span> bcrypt.<span class="f">hash</span>(password, <span class="y">10</span>);
+
+    <span class="c">// Guardar el usuario con la contraseña encriptada</span>
+    <span class="k">const</span> usuario = <span class="k">await</span> Usuario.<span class="f">create</span>({ nombre, email, password: hash, departamento, municipio, rol: <span class="s">'cliente'</span> });
+
+    res.<span class="f">status</span>(<span class="y">201</span>).<span class="f">json</span>({ mensaje: <span class="s">'Usuario creado correctamente'</span>, id: usuario._id });
+  } <span class="k">catch</span> (err) {
+    res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: err.message });
+  }
+});
+
+<span class="c">// 3. POST /api/auth/login — iniciar sesión y recibir token</span>
+router.<span class="f">post</span>(<span class="s">'/login'</span>, <span class="k">async</span> (req, res) =&gt; {
+  <span class="k">try</span> {
+    <span class="k">const</span> { email, password } = req.body;
+
+    <span class="c">// Buscar usuario por email</span>
+    <span class="k">const</span> usuario = <span class="k">await</span> Usuario.<span class="f">findOne</span>({ email });
+    <span class="k">if</span> (!usuario) <span class="k">return</span> res.<span class="f">status</span>(<span class="y">401</span>).<span class="f">json</span>({ error: <span class="s">'Email o contraseña incorrectos'</span> });
+
+    <span class="c">// Comparar la contraseña con el hash guardado en Atlas</span>
+    <span class="k">const</span> valida = <span class="k">await</span> bcrypt.<span class="f">compare</span>(password, usuario.password);
+    <span class="k">if</span> (!valida) <span class="k">return</span> res.<span class="f">status</span>(<span class="y">401</span>).<span class="f">json</span>({ error: <span class="s">'Email o contraseña incorrectos'</span> });
+
+    <span class="c">// Crear el token JWT — dura 24 horas</span>
+    <span class="k">const</span> token = jwt.<span class="f">sign</span>(
+      { id: usuario._id, email: usuario.email, rol: usuario.rol },
+      process.env.JWT_SECRET,
+      { expiresIn: <span class="s">'24h'</span> }
+    );
+
+    res.<span class="f">json</span>({ token, nombre: usuario.nombre, rol: usuario.rol });
+  } <span class="k">catch</span> (err) {
+    res.<span class="f">status</span>(<span class="y">500</span>).<span class="f">json</span>({ error: err.message });
+  }
+});
+
+<span class="c">// 4. GET /api/auth/perfil — devuelve los datos del usuario logueado (requiere token)</span>
+<span class="k">const</span> verificarToken = <span class="f">require</span>(<span class="s">'../middleware/auth'</span>);
+
+router.<span class="f">get</span>(<span class="s">'/perfil'</span>, verificarToken, <span class="k">async</span> (req, res) =&gt; {
+  <span class="k">try</span> {
+    <span class="c">// req.usuario.id viene del token — lo usa verificarToken</span>
+    <span class="c">// select('-password') excluye el hash de contraseña de la respuesta</span>
+    <span class="k">const</span> usuario = <span class="k">await</span> Usuario.<span class="f">findById</span>(req.usuario.id).<span class="f">select</span>(<span class="s">'-password'</span>);
+    <span class="k">if</span> (!usuario) <span class="k">return</span> res.<span class="f">status</span>(<span class="y">404</span>).<span class="f">json</span>({ error: <span class="s">'Usuario no encontrado'</span> });
+    res.<span class="f">json</span>(usuario);
+  } <span class="k">catch</span> (err) {
+    res.<span class="f">status</span>(<span class="y">500</span>).<span class="f">json</span>({ error: err.message });
+  }
+});
+
+<span class="c">// 5. Exportar el router</span>
+module.exports = router;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Hay <strong>dos cambios</strong>: la lista de dominios permitidos, arriba del archivo, y la revisión del dominio dentro del registro. Las líneas amarillas son las nuevas:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/routes/auth.js</span><span class="code-tag green">después — así queda</span></div><pre><span class="c">// 1. Importar dependencias</span>
+<span class="k">const</span> express  = <span class="f">require</span>(<span class="s">'express'</span>);
+<span class="k">const</span> bcrypt   = <span class="f">require</span>(<span class="s">'bcryptjs'</span>);
+<span class="k">const</span> jwt      = <span class="f">require</span>(<span class="s">'jsonwebtoken'</span>);
+<span class="k">const</span> Usuario  = <span class="f">require</span>(<span class="s">'../models/Usuario'</span>);
+<span class="k">const</span> router   = express.<span class="f">Router</span>();
+
+<span class="edit-line"><span class="c">// Dominios de correo que aceptamos al registrarse</span></span>
+<span class="edit-line"><span class="k">const</span> dominiosPermitidos = [</span>
+<span class="edit-line">  <span class="s">'gmail.com'</span>, <span class="s">'hotmail.com'</span>, <span class="s">'outlook.com'</span>, <span class="s">'yahoo.com'</span>,</span>
+<span class="edit-line">  <span class="s">'icloud.com'</span>, <span class="s">'me.com'</span>, <span class="s">'mac.com'</span>,</span>
+<span class="edit-line">];</span>
+
+<span class="c">// 2. POST /api/auth/registro — crear cuenta nueva</span>
+router.<span class="f">post</span>(<span class="s">'/registro'</span>, <span class="k">async</span> (req, res) =&gt; {
+  <span class="k">try</span> {
+    <span class="c">// El rol NO se lee del cuerpo: lo que manda el navegador no es de fiar</span>
+    <span class="k">const</span> { nombre, email, password, departamento, municipio } = req.body;
+
+    <span class="c">// Validar los datos: el servidor revisa aunque la página ya lo haya hecho</span>
+    <span class="k">if</span> (!nombre || nombre.<span class="f">trim</span>().length &lt; <span class="y">3</span>) {
+      <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'El nombre debe tener al menos 3 caracteres'</span> });
+    }
+    <span class="k">if</span> (!email || !/^\S+@\S+\.\S+$/.<span class="f">test</span>(email)) {
+      <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'El correo no es válido'</span> });
+    }
+<span class="edit-line">    <span class="c">// El dominio es lo que va después de la última @</span></span>
+<span class="edit-line">    <span class="k">const</span> dominio = email.<span class="f">slice</span>(email.<span class="f">lastIndexOf</span>(<span class="s">'@'</span>) + <span class="y">1</span>).<span class="f">toLowerCase</span>();</span>
+<span class="edit-line">    <span class="k">if</span> (!dominiosPermitidos.<span class="f">includes</span>(dominio)) {</span>
+<span class="edit-line">      <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'Usa un correo de Gmail, Hotmail, Outlook, Yahoo o iCloud'</span> });</span>
+    }
+    <span class="k">if</span> (!password || password.length &lt; <span class="y">6</span>) {
+      <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'La contraseña debe tener al menos 6 caracteres'</span> });
+    }
+
+    <span class="c">// Verificar que el email no exista ya</span>
+    <span class="k">const</span> existe = <span class="k">await</span> Usuario.<span class="f">findOne</span>({ email });
+    <span class="k">if</span> (existe) <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'El email ya está registrado'</span> });
+
+    <span class="c">// Encriptar la contraseña con 10 rondas de bcrypt</span>
+    <span class="k">const</span> hash = <span class="k">await</span> bcrypt.<span class="f">hash</span>(password, <span class="y">10</span>);
+
+    <span class="c">// Guardar el usuario con la contraseña encriptada</span>
+    <span class="k">const</span> usuario = <span class="k">await</span> Usuario.<span class="f">create</span>({ nombre, email, password: hash, departamento, municipio, rol: <span class="s">'cliente'</span> });
+
+    res.<span class="f">status</span>(<span class="y">201</span>).<span class="f">json</span>({ mensaje: <span class="s">'Usuario creado correctamente'</span>, id: usuario._id });
+  } <span class="k">catch</span> (err) {
+    res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: err.message });
+  }
+});
+
+<span class="c">// 3. POST /api/auth/login — iniciar sesión y recibir token</span>
+router.<span class="f">post</span>(<span class="s">'/login'</span>, <span class="k">async</span> (req, res) =&gt; {
+  <span class="k">try</span> {
+    <span class="k">const</span> { email, password } = req.body;
+
+    <span class="c">// Buscar usuario por email</span>
+    <span class="k">const</span> usuario = <span class="k">await</span> Usuario.<span class="f">findOne</span>({ email });
+    <span class="k">if</span> (!usuario) <span class="k">return</span> res.<span class="f">status</span>(<span class="y">401</span>).<span class="f">json</span>({ error: <span class="s">'Email o contraseña incorrectos'</span> });
+
+    <span class="c">// Comparar la contraseña con el hash guardado en Atlas</span>
+    <span class="k">const</span> valida = <span class="k">await</span> bcrypt.<span class="f">compare</span>(password, usuario.password);
+    <span class="k">if</span> (!valida) <span class="k">return</span> res.<span class="f">status</span>(<span class="y">401</span>).<span class="f">json</span>({ error: <span class="s">'Email o contraseña incorrectos'</span> });
+
+    <span class="c">// Crear el token JWT — dura 24 horas</span>
+    <span class="k">const</span> token = jwt.<span class="f">sign</span>(
+      { id: usuario._id, email: usuario.email, rol: usuario.rol },
+      process.env.JWT_SECRET,
+      { expiresIn: <span class="s">'24h'</span> }
+    );
+
+    res.<span class="f">json</span>({ token, nombre: usuario.nombre, rol: usuario.rol });
+  } <span class="k">catch</span> (err) {
+    res.<span class="f">status</span>(<span class="y">500</span>).<span class="f">json</span>({ error: err.message });
+  }
+});
+
+<span class="c">// 4. GET /api/auth/perfil — devuelve los datos del usuario logueado (requiere token)</span>
+<span class="k">const</span> verificarToken = <span class="f">require</span>(<span class="s">'../middleware/auth'</span>);
+
+router.<span class="f">get</span>(<span class="s">'/perfil'</span>, verificarToken, <span class="k">async</span> (req, res) =&gt; {
+  <span class="k">try</span> {
+    <span class="c">// req.usuario.id viene del token — lo usa verificarToken</span>
+    <span class="c">// select('-password') excluye el hash de contraseña de la respuesta</span>
+    <span class="k">const</span> usuario = <span class="k">await</span> Usuario.<span class="f">findById</span>(req.usuario.id).<span class="f">select</span>(<span class="s">'-password'</span>);
+    <span class="k">if</span> (!usuario) <span class="k">return</span> res.<span class="f">status</span>(<span class="y">404</span>).<span class="f">json</span>({ error: <span class="s">'Usuario no encontrado'</span> });
+    res.<span class="f">json</span>(usuario);
+  } <span class="k">catch</span> (err) {
+    res.<span class="f">status</span>(<span class="y">500</span>).<span class="f">json</span>({ error: err.message });
+<span class="edit-line">  }</span>
+});
+
+<span class="c">// 5. Exportar el router</span>
+module.exports = router;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 2 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Después de la línea <code>const router   = express.Router();</code>, agrega:</div><pre><span class="c">// Dominios de correo que aceptamos al registrarse</span>
+<span class="k">const</span> dominiosPermitidos = [
+  <span class="s">'gmail.com'</span>, <span class="s">'hotmail.com'</span>, <span class="s">'outlook.com'</span>, <span class="s">'yahoo.com'</span>,
+  <span class="s">'icloud.com'</span>, <span class="s">'me.com'</span>, <span class="s">'mac.com'</span>,
+];
+</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Después de estas líneas, agrega:</div><pre class="ctx"><span class="k">if</span> (!email || !/^\S+@\S+\.\S+$/.<span class="f">test</span>(email)) {
+  <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'El correo no es válido'</span> });
+}</pre><pre><span class="c">// El dominio es lo que va después de la última @</span>
+<span class="k">const</span> dominio = email.<span class="f">slice</span>(email.<span class="f">lastIndexOf</span>(<span class="s">'@'</span>) + <span class="y">1</span>).<span class="f">toLowerCase</span>();
+<span class="k">if</span> (!dominiosPermitidos.<span class="f">includes</span>(dominio)) {
+  <span class="k">return</span> res.<span class="f">status</span>(<span class="y">400</span>).<span class="f">json</span>({ error: <span class="s">'Usa un correo de Gmail, Hotmail, Outlook, Yahoo o iCloud'</span> });
+}</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>const dominiosPermitidos = [ ... ]</td><td>Una lista (arreglo) con los dominios que aceptamos. Está fuera del registro para poder verla y cambiarla en un solo lugar</td></tr><tr><td>email.lastIndexOf('@')</td><td>Busca la posición de la <strong>última</strong> arroba del correo. En <code>ana@gmail.com</code> es la posición 3</td></tr><tr><td>email.slice(posición + 1)</td><td>Corta el texto desde ese punto hasta el final: lo que queda es el dominio, <code>gmail.com</code>. El <code>+ 1</code> salta la arroba</td></tr><tr><td>.toLowerCase()</td><td>Pasa el dominio a minúsculas. Así <code>ANA@GMAIL.COM</code> también se acepta, porque los dominios no distinguen mayúsculas</td></tr><tr><td>dominiosPermitidos.includes(dominio)</td><td>Responde <code>true</code> si el dominio está en la lista. El <code>!</code> de la condición lo invierte: entra al <code>if</code> cuando <strong>no</strong> está</td></tr><tr><td>return res.status(400).json({ error: '...' })</td><td>Si el dominio no está permitido, el servidor responde 400 con un mensaje en español y deja de procesar la petición</td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><strong>¿Por qué la última arroba?</strong> Si alguien manda <code>ana@gmail.com@evil.com</code>, con <code>lastIndexOf</code> el dominio es <code>evil.com</code> y se rechaza. Si se tomara la primera arroba, el dominio sería <code>gmail.com</code> y pasaría. Elegir bien dónde cortar es parte de validar.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Fíjate en el orden: primero se revisa que el correo <strong>tenga forma de correo</strong> y después su dominio. El <code>nodemon</code> reinicia el backend solo al guardar.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Prueba en Postman, con <code>POST http://localhost:3000/api/auth/registro</code> y Body <strong>raw / JSON</strong>. Parte de este cuerpo y cambia solo el correo en cada intento:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">Postman — Body (raw, JSON)</span></div><pre>{
+  "nombre": "Ana Lopez",
+  "email": "ana.prueba@gmail.com",
+  "password": "123456",
+  "departamento": "Huila",
+  "municipio": "Garzón"
+}</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Correo que mandas</th><th>Qué debe responder el servidor</th></tr></thead><tbody><tr><td>ana.prueba@gmail.com</td><td><strong>201</strong>: Gmail está en la lista</td></tr><tr><td>ana.icloud@icloud.com</td><td><strong>201</strong>: iCloud es el dominio de Apple</td></tr><tr><td>ANA.MAYUS@GMAIL.COM</td><td><strong>201</strong>: las mayúsculas no importan</td></tr><tr><td>ana@correo.com</td><td><strong>400</strong> — "Usa un correo de Gmail, Hotmail, Outlook, Yahoo o iCloud"</td></tr><tr><td>ana@fakegmail.com</td><td><strong>400</strong>: el dominio es <code>fakegmail.com</code>, no <code>gmail.com</code></td></tr><tr><td>ana@gmail.com@evil.com</td><td><strong>400</strong>: gracias a <code>lastIndexOf</code> se mira el último dominio</td></tr><tr><td>sin-arroba</td><td><strong>400</strong> — "El correo no es válido": el mensaje de formato sigue funcionando</td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> las respuestas coinciden con la tabla. Cada intento que da <strong>400</strong> no crea usuario: compruébalo con <code>db.usuarios.countDocuments()</code> en Compass (conectado a <strong>TechStore Local</strong>).</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO2 ════ -->
+  <section class="section" id="paso2" data-step="paso2">
+    <div class="section-header">
+      <span class="step-badge ">Paso 2 · Formulario</span>
+      <h2 class="section-title">La página avisa antes de enviar</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">El servidor ya protege, pero el aprendiz tendría que enviar el formulario para enterarse. Se agrega la misma regla en <code>Registro.jsx</code>, dentro de <code>validar()</code>, para que el error salga en rojo bajo el campo, sin viajar al servidor. Se cambia <strong>un solo archivo</strong>.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Este es tu <code>Registro.jsx</code> real, completo, tal como está hoy:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/Registro.jsx</span><span class="code-tag yellow">antes</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { Link, useNavigate } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"./Campo.jsx"</span>;
+
+<span class="k">const</span> URL_API = <span class="s">"http://localhost:3000/api/auth"</span>;
+<span class="k">const</span> URL_COLOMBIA = <span class="s">"https://api-colombia.com/api/v1"</span>;
+
+<span class="k">const</span> FORM_VACIO = {
+  nombre: <span class="s">""</span>,
+  email: <span class="s">""</span>,
+  password: <span class="s">""</span>,
+  confirmar: <span class="s">""</span>,
+  departamento: <span class="s">""</span>,
+  municipio: <span class="s">""</span>,
+};
+
+<span class="k">function</span> <span class="f">porNombre</span>(a, b) {
+  <span class="k">return</span> a.name.<span class="f">localeCompare</span>(b.name);
+}
+
+<span class="k">function</span> <span class="f">Registro</span>() {
+  <span class="k">const</span> navegar = <span class="f">useNavigate</span>();
+  <span class="k">const</span> [form, setForm] = <span class="f">useState</span>(FORM_VACIO);
+  <span class="k">const</span> [errores, setErrores] = <span class="f">useState</span>({});
+  <span class="k">const</span> [estado, setEstado] = <span class="f">useState</span>(<span class="s">"inactivo"</span>);
+  <span class="k">const</span> [mensajeError, setMensajeError] = <span class="f">useState</span>(<span class="s">""</span>);
+  <span class="k">const</span> [departamentos, setDepartamentos] = <span class="f">useState</span>([]);
+  <span class="k">const</span> [municipios, setMunicipios] = <span class="f">useState</span>([]);
+
+  <span class="k">const</span> elegido = departamentos.<span class="f">find</span>((d) =&gt; d.name === form.departamento);
+  <span class="k">const</span> departamentoId = elegido ? elegido.id : <span class="y">null</span>;
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">fetch</span>(URL_COLOMBIA + <span class="s">"/Department"</span>)
+      .<span class="f">then</span>((res) =&gt; res.<span class="f">json</span>())
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setDepartamentos</span>(datos.<span class="f">sort</span>(porNombre)))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setDepartamentos</span>([]));
+  }, []);
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="k">if</span> (!departamentoId) {
+      <span class="f">setMunicipios</span>([]);
+      <span class="k">return</span>;
+    }
+    <span class="k">let</span> vigente = <span class="y">true</span>;
+    <span class="f">fetch</span>(URL_COLOMBIA + <span class="s">"/Department/"</span> + departamentoId + <span class="s">"/cities"</span>)
+      .<span class="f">then</span>((res) =&gt; res.<span class="f">json</span>())
+      .<span class="f">then</span>((datos) =&gt; {
+        <span class="k">if</span> (vigente) <span class="f">setMunicipios</span>(datos.<span class="f">sort</span>(porNombre));
+      })
+      .<span class="k">catch</span>(() =&gt; {
+        <span class="k">if</span> (vigente) <span class="f">setMunicipios</span>([]);
+      });
+    <span class="k">return</span> () =&gt; {
+      vigente = <span class="y">false</span>;
+    };
+  }, [departamentoId]);
+
+  <span class="k">function</span> <span class="f">manejarCambio</span>(e) {
+    <span class="k">const</span> { name, value } = e.target;
+    <span class="k">const</span> nuevo = { ...form, [name]: value };
+    <span class="k">if</span> (name === <span class="s">"departamento"</span>) nuevo.municipio = <span class="s">""</span>;
+    <span class="f">setForm</span>(nuevo);
+    <span class="f">setErrores</span>({ ...errores, [name]: <span class="s">""</span> });
+    <span class="k">if</span> (estado !== <span class="s">"inactivo"</span>) <span class="f">setEstado</span>(<span class="s">"inactivo"</span>);
+  }
+
+  <span class="k">function</span> <span class="f">validar</span>() {
+    <span class="k">const</span> nuevos = {};
+    <span class="k">if</span> (form.nombre.<span class="f">trim</span>().length &lt; <span class="y">3</span>) {
+      nuevos.nombre = <span class="s">"Escribe tu nombre completo (mínimo 3 caracteres)"</span>;
+    }
+    <span class="k">if</span> (!/^\S+@\S+\.\S+$/.<span class="f">test</span>(form.email)) {
+      nuevos.email = <span class="s">"Escribe un correo válido, como nombre@correo.com"</span>;
+    }
+    <span class="k">if</span> (form.password.length &lt; <span class="y">6</span>) {
+      nuevos.password = <span class="s">"La contraseña debe tener al menos 6 caracteres"</span>;
+    }
+    <span class="k">if</span> (form.confirmar !== form.password) {
+      nuevos.confirmar = <span class="s">"Las contraseñas no coinciden"</span>;
+    }
+    <span class="k">if</span> (!form.departamento) {
+      nuevos.departamento = <span class="s">"Selecciona un departamento"</span>;
+    }
+    <span class="k">if</span> (!form.municipio) {
+      nuevos.municipio = <span class="s">"Selecciona un municipio"</span>;
+    }
+    <span class="k">return</span> nuevos;
+  }
+
+  <span class="k">async</span> <span class="k">function</span> <span class="f">manejarEnvio</span>(e) {
+    e.<span class="f">preventDefault</span>();
+
+    <span class="k">const</span> nuevos = <span class="f">validar</span>();
+    <span class="f">setErrores</span>(nuevos);
+    <span class="k">if</span> (Object.<span class="f">keys</span>(nuevos).length &gt; <span class="y">0</span>) <span class="k">return</span>;
+
+    <span class="f">setEstado</span>(<span class="s">"enviando"</span>);
+    <span class="k">try</span> {
+      <span class="k">const</span> res = <span class="k">await</span> <span class="f">fetch</span>(URL_API + <span class="s">"/registro"</span>, {
+        method: <span class="s">"POST"</span>,
+        headers: { <span class="s">"Content-Type"</span>: <span class="s">"application/json"</span> },
+        body: JSON.<span class="f">stringify</span>({
+          nombre: form.nombre,
+          email: form.email,
+          password: form.password,
+          departamento: form.departamento,
+          municipio: form.municipio,
+        }),
+      });
+      <span class="k">const</span> datos = <span class="k">await</span> res.<span class="f">json</span>();
+      <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span>(datos.error || <span class="s">"No se pudo crear la cuenta"</span>);
+
+      <span class="f">navegar</span>(<span class="s">"/login"</span>, {
+        state: { aviso: <span class="s">"Cuenta creada. Ya puedes iniciar sesión."</span> },
+      });
+    } <span class="k">catch</span> (err) {
+      <span class="f">setMensajeError</span>(
+        err <span class="k">instanceof</span> TypeError ? <span class="s">"No se pudo conectar al servidor"</span> : err.message,
+      );
+      <span class="f">setEstado</span>(<span class="s">"error"</span>);
+    }
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"max-w-md mx-auto flex flex-col gap-8 pt-6"</span>&gt;
+      &lt;<span class="f">section</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-xs uppercase tracking-widest text-gray-500"</span>&gt;
+          Cuenta
+        &lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-5xl tracking-tighter mt-4 mb-3"</span>&gt;
+          Crear cuenta&lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"text-accent"</span>&gt;.&lt;/<span class="f">span</span>&gt;
+        &lt;/<span class="f">h1</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700"</span>&gt;Regístrate para comprar en TechStore.&lt;/<span class="f">p</span>&gt;
+      &lt;/<span class="f">section</span>&gt;
+
+      &lt;<span class="f">form</span> <span class="n">onSubmit</span>={manejarEnvio} noValidate <span class="n">className</span>=<span class="s">"flex flex-col gap-5"</span>&gt;
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Nombre completo"</span> <span class="n">nombre</span>=<span class="s">"nombre"</span> <span class="n">error</span>={errores.nombre}&gt;
+          &lt;<span class="f">input</span>
+            <span class="n">id</span>=<span class="s">"nombre"</span>
+            <span class="n">name</span>=<span class="s">"nombre"</span>
+            <span class="n">type</span>=<span class="s">"text"</span>
+            <span class="n">value</span>={form.nombre}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">placeholder</span>=<span class="s">"Tu nombre y apellido"</span>
+            <span class="n">autoComplete</span>=<span class="s">"name"</span>
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.nombre)}
+          /&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Correo electrónico"</span> <span class="n">nombre</span>=<span class="s">"email"</span> <span class="n">error</span>={errores.email}&gt;
+          &lt;<span class="f">input</span>
+            <span class="n">id</span>=<span class="s">"email"</span>
+            <span class="n">name</span>=<span class="s">"email"</span>
+            <span class="n">type</span>=<span class="s">"email"</span>
+            <span class="n">value</span>={form.email}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">placeholder</span>=<span class="s">"tucorreo@ejemplo.com"</span>
+            <span class="n">autoComplete</span>=<span class="s">"email"</span>
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.email)}
+          /&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Contraseña"</span> <span class="n">nombre</span>=<span class="s">"password"</span> <span class="n">error</span>={errores.password}&gt;
+          &lt;<span class="f">input</span>
+            <span class="n">id</span>=<span class="s">"password"</span>
+            <span class="n">name</span>=<span class="s">"password"</span>
+            <span class="n">type</span>=<span class="s">"password"</span>
+            <span class="n">value</span>={form.password}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">placeholder</span>=<span class="s">"Mínimo 6 caracteres"</span>
+            <span class="n">autoComplete</span>=<span class="s">"new-password"</span>
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.password)}
+          /&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Repite la contraseña"</span> <span class="n">nombre</span>=<span class="s">"confirmar"</span> <span class="n">error</span>={errores.confirmar}&gt;
+          &lt;<span class="f">input</span>
+            <span class="n">id</span>=<span class="s">"confirmar"</span>
+            <span class="n">name</span>=<span class="s">"confirmar"</span>
+            <span class="n">type</span>=<span class="s">"password"</span>
+            <span class="n">value</span>={form.confirmar}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">placeholder</span>=<span class="s">"Escríbela otra vez"</span>
+            <span class="n">autoComplete</span>=<span class="s">"new-password"</span>
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.confirmar)}
+          /&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Departamento"</span> <span class="n">nombre</span>=<span class="s">"departamento"</span> <span class="n">error</span>={errores.departamento}&gt;
+          &lt;<span class="f">select</span>
+            <span class="n">id</span>=<span class="s">"departamento"</span>
+            <span class="n">name</span>=<span class="s">"departamento"</span>
+            <span class="n">value</span>={form.departamento}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.departamento)}
+          &gt;
+            &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">""</span>&gt;Selecciona un departamento&lt;/<span class="f">option</span>&gt;
+            {departamentos.<span class="f">map</span>((d) =&gt; (
+              &lt;<span class="f">option</span> <span class="n">key</span>={d.id} <span class="n">value</span>={d.name}&gt;
+                {d.name}
+              &lt;/<span class="f">option</span>&gt;
+            ))}
+          &lt;/<span class="f">select</span>&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Municipio"</span> <span class="n">nombre</span>=<span class="s">"municipio"</span> <span class="n">error</span>={errores.municipio}&gt;
+          &lt;<span class="f">select</span>
+            <span class="n">id</span>=<span class="s">"municipio"</span>
+            <span class="n">name</span>=<span class="s">"municipio"</span>
+            <span class="n">value</span>={form.municipio}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">disabled</span>={!form.departamento}
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.municipio) + <span class="s">" disabled:opacity-50"</span>}
+          &gt;
+            &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">""</span>&gt;
+              {form.departamento ? <span class="s">"Selecciona un municipio"</span> : <span class="s">"Primero elige un departamento"</span>}
+            &lt;/<span class="f">option</span>&gt;
+            {municipios.<span class="f">map</span>((m) =&gt; (
+              &lt;<span class="f">option</span> <span class="n">key</span>={m.id} <span class="n">value</span>={m.name}&gt;
+                {m.name}
+              &lt;/<span class="f">option</span>&gt;
+            ))}
+          &lt;/<span class="f">select</span>&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">button</span>
+          <span class="n">type</span>=<span class="s">"submit"</span>
+          <span class="n">disabled</span>={estado === <span class="s">"enviando"</span>}
+          <span class="n">className</span>=<span class="s">"bg-ink text-paper px-7 py-3.5 rounded-card text-sm font-semibold enabled:hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"</span>
+        &gt;
+          {estado === <span class="s">"enviando"</span> ? <span class="s">"Creando cuenta..."</span> : <span class="s">"Crear cuenta →"</span>}
+        &lt;/<span class="f">button</span>&gt;
+
+        {estado === <span class="s">"error"</span> &amp;&amp; (
+          &lt;<span class="f">p</span> <span class="n">role</span>=<span class="s">"alert"</span> <span class="n">className</span>=<span class="s">"bg-gray-50 rounded-card p-4 text-sm font-semibold text-accent-dark"</span>&gt;
+            {mensajeError}
+          &lt;/<span class="f">p</span>&gt;
+        )}
+      &lt;/<span class="f">form</span>&gt;
+
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-sm text-gray-700"</span>&gt;
+        ¿Ya tienes cuenta?{<span class="s">" "</span>}
+        &lt;<span class="f">Link</span> <span class="n">to</span>=<span class="s">"/login"</span> <span class="n">className</span>=<span class="s">"font-semibold underline hover:text-accent transition-colors"</span>&gt;
+          Ingresa
+        &lt;/<span class="f">Link</span>&gt;
+      &lt;/<span class="f">p</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+}
+
+<span class="k">export</span> <span class="k">default</span> Registro;</pre></div>
+<p style="color:var(--txt-dim);font-size:14px;margin:14px 0 6px;">Hay <strong>dos cambios</strong>: la lista <code>DOMINIOS_PERMITIDOS</code>, arriba de <code>porNombre</code>, y la revisión dentro de <code>validar()</code>. El ejemplo del mensaje de formato ahora usa <code>@gmail.com</code>. Las líneas amarillas son las nuevas o las que cambian:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/Registro.jsx</span><span class="code-tag green">después — así queda</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { Link, useNavigate } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"./Campo.jsx"</span>;
+
+<span class="k">const</span> URL_API = <span class="s">"http://localhost:3000/api/auth"</span>;
+<span class="k">const</span> URL_COLOMBIA = <span class="s">"https://api-colombia.com/api/v1"</span>;
+
+<span class="k">const</span> FORM_VACIO = {
+  nombre: <span class="s">""</span>,
+  email: <span class="s">""</span>,
+  password: <span class="s">""</span>,
+  confirmar: <span class="s">""</span>,
+  departamento: <span class="s">""</span>,
+  municipio: <span class="s">""</span>,
+};
+
+<span class="edit-line"><span class="c">// Los mismos dominios que acepta el servidor</span></span>
+<span class="edit-line"><span class="k">const</span> DOMINIOS_PERMITIDOS = [</span>
+<span class="edit-line">  <span class="s">"gmail.com"</span>, <span class="s">"hotmail.com"</span>, <span class="s">"outlook.com"</span>, <span class="s">"yahoo.com"</span>,</span>
+<span class="edit-line">  <span class="s">"icloud.com"</span>, <span class="s">"me.com"</span>, <span class="s">"mac.com"</span>,</span>
+<span class="edit-line">];</span>
+
+<span class="k">function</span> <span class="f">porNombre</span>(a, b) {
+  <span class="k">return</span> a.name.<span class="f">localeCompare</span>(b.name);
+}
+
+<span class="k">function</span> <span class="f">Registro</span>() {
+  <span class="k">const</span> navegar = <span class="f">useNavigate</span>();
+  <span class="k">const</span> [form, setForm] = <span class="f">useState</span>(FORM_VACIO);
+  <span class="k">const</span> [errores, setErrores] = <span class="f">useState</span>({});
+  <span class="k">const</span> [estado, setEstado] = <span class="f">useState</span>(<span class="s">"inactivo"</span>);
+  <span class="k">const</span> [mensajeError, setMensajeError] = <span class="f">useState</span>(<span class="s">""</span>);
+  <span class="k">const</span> [departamentos, setDepartamentos] = <span class="f">useState</span>([]);
+  <span class="k">const</span> [municipios, setMunicipios] = <span class="f">useState</span>([]);
+
+  <span class="k">const</span> elegido = departamentos.<span class="f">find</span>((d) =&gt; d.name === form.departamento);
+  <span class="k">const</span> departamentoId = elegido ? elegido.id : <span class="y">null</span>;
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="f">fetch</span>(URL_COLOMBIA + <span class="s">"/Department"</span>)
+      .<span class="f">then</span>((res) =&gt; res.<span class="f">json</span>())
+      .<span class="f">then</span>((datos) =&gt; <span class="f">setDepartamentos</span>(datos.<span class="f">sort</span>(porNombre)))
+      .<span class="k">catch</span>(() =&gt; <span class="f">setDepartamentos</span>([]));
+  }, []);
+
+  <span class="f">useEffect</span>(() =&gt; {
+    <span class="k">if</span> (!departamentoId) {
+      <span class="f">setMunicipios</span>([]);
+      <span class="k">return</span>;
+    }
+    <span class="k">let</span> vigente = <span class="y">true</span>;
+    <span class="f">fetch</span>(URL_COLOMBIA + <span class="s">"/Department/"</span> + departamentoId + <span class="s">"/cities"</span>)
+      .<span class="f">then</span>((res) =&gt; res.<span class="f">json</span>())
+      .<span class="f">then</span>((datos) =&gt; {
+        <span class="k">if</span> (vigente) <span class="f">setMunicipios</span>(datos.<span class="f">sort</span>(porNombre));
+      })
+      .<span class="k">catch</span>(() =&gt; {
+        <span class="k">if</span> (vigente) <span class="f">setMunicipios</span>([]);
+      });
+    <span class="k">return</span> () =&gt; {
+      vigente = <span class="y">false</span>;
+    };
+  }, [departamentoId]);
+
+  <span class="k">function</span> <span class="f">manejarCambio</span>(e) {
+    <span class="k">const</span> { name, value } = e.target;
+    <span class="k">const</span> nuevo = { ...form, [name]: value };
+    <span class="k">if</span> (name === <span class="s">"departamento"</span>) nuevo.municipio = <span class="s">""</span>;
+    <span class="f">setForm</span>(nuevo);
+    <span class="f">setErrores</span>({ ...errores, [name]: <span class="s">""</span> });
+    <span class="k">if</span> (estado !== <span class="s">"inactivo"</span>) <span class="f">setEstado</span>(<span class="s">"inactivo"</span>);
+  }
+
+  <span class="k">function</span> <span class="f">validar</span>() {
+    <span class="k">const</span> nuevos = {};
+    <span class="k">if</span> (form.nombre.<span class="f">trim</span>().length &lt; <span class="y">3</span>) {
+      nuevos.nombre = <span class="s">"Escribe tu nombre completo (mínimo 3 caracteres)"</span>;
+    }
+    <span class="k">if</span> (!/^\S+@\S+\.\S+$/.<span class="f">test</span>(form.email)) {
+<span class="edit-line">      nuevos.email = <span class="s">"Escribe un correo válido, como nombre@gmail.com"</span>;</span>
+<span class="edit-line">    } <span class="k">else</span> {</span>
+<span class="edit-line">      <span class="k">const</span> dominio = form.email.<span class="f">slice</span>(form.email.<span class="f">lastIndexOf</span>(<span class="s">"@"</span>) + <span class="y">1</span>).<span class="f">toLowerCase</span>();</span>
+<span class="edit-line">      <span class="k">if</span> (!DOMINIOS_PERMITIDOS.<span class="f">includes</span>(dominio)) {</span>
+<span class="edit-line">        nuevos.email = <span class="s">"Usa un correo de Gmail, Hotmail, Outlook, Yahoo o iCloud"</span>;</span>
+      }
+    }
+    <span class="k">if</span> (form.password.length &lt; <span class="y">6</span>) {
+      nuevos.password = <span class="s">"La contraseña debe tener al menos 6 caracteres"</span>;
+    }
+    <span class="k">if</span> (form.confirmar !== form.password) {
+      nuevos.confirmar = <span class="s">"Las contraseñas no coinciden"</span>;
+    }
+    <span class="k">if</span> (!form.departamento) {
+      nuevos.departamento = <span class="s">"Selecciona un departamento"</span>;
+    }
+    <span class="k">if</span> (!form.municipio) {
+      nuevos.municipio = <span class="s">"Selecciona un municipio"</span>;
+    }
+    <span class="k">return</span> nuevos;
+  }
+
+  <span class="k">async</span> <span class="k">function</span> <span class="f">manejarEnvio</span>(e) {
+    e.<span class="f">preventDefault</span>();
+
+    <span class="k">const</span> nuevos = <span class="f">validar</span>();
+    <span class="f">setErrores</span>(nuevos);
+    <span class="k">if</span> (Object.<span class="f">keys</span>(nuevos).length &gt; <span class="y">0</span>) <span class="k">return</span>;
+
+    <span class="f">setEstado</span>(<span class="s">"enviando"</span>);
+    <span class="k">try</span> {
+      <span class="k">const</span> res = <span class="k">await</span> <span class="f">fetch</span>(URL_API + <span class="s">"/registro"</span>, {
+        method: <span class="s">"POST"</span>,
+        headers: { <span class="s">"Content-Type"</span>: <span class="s">"application/json"</span> },
+        body: JSON.<span class="f">stringify</span>({
+          nombre: form.nombre,
+          email: form.email,
+          password: form.password,
+          departamento: form.departamento,
+          municipio: form.municipio,
+        }),
+      });
+      <span class="k">const</span> datos = <span class="k">await</span> res.<span class="f">json</span>();
+      <span class="k">if</span> (!res.ok) <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span>(datos.error || <span class="s">"No se pudo crear la cuenta"</span>);
+
+      <span class="f">navegar</span>(<span class="s">"/login"</span>, {
+        state: { aviso: <span class="s">"Cuenta creada. Ya puedes iniciar sesión."</span> },
+      });
+    } <span class="k">catch</span> (err) {
+      <span class="f">setMensajeError</span>(
+        err <span class="k">instanceof</span> TypeError ? <span class="s">"No se pudo conectar al servidor"</span> : err.message,
+      );
+      <span class="f">setEstado</span>(<span class="s">"error"</span>);
+    }
+  }
+
+  <span class="k">return</span> (
+    &lt;<span class="f">div</span> <span class="n">className</span>=<span class="s">"max-w-md mx-auto flex flex-col gap-8 pt-6"</span>&gt;
+      &lt;<span class="f">section</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"font-mono text-xs uppercase tracking-widest text-gray-500"</span>&gt;
+          Cuenta
+        &lt;/<span class="f">p</span>&gt;
+        &lt;<span class="f">h1</span> <span class="n">className</span>=<span class="s">"font-display font-bold text-5xl tracking-tighter mt-4 mb-3"</span>&gt;
+          Crear cuenta&lt;<span class="f">span</span> <span class="n">className</span>=<span class="s">"text-accent"</span>&gt;.&lt;/<span class="f">span</span>&gt;
+        &lt;/<span class="f">h1</span>&gt;
+        &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-gray-700"</span>&gt;Regístrate para comprar en TechStore.&lt;/<span class="f">p</span>&gt;
+      &lt;/<span class="f">section</span>&gt;
+
+      &lt;<span class="f">form</span> <span class="n">onSubmit</span>={manejarEnvio} noValidate <span class="n">className</span>=<span class="s">"flex flex-col gap-5"</span>&gt;
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Nombre completo"</span> <span class="n">nombre</span>=<span class="s">"nombre"</span> <span class="n">error</span>={errores.nombre}&gt;
+          &lt;<span class="f">input</span>
+            <span class="n">id</span>=<span class="s">"nombre"</span>
+            <span class="n">name</span>=<span class="s">"nombre"</span>
+            <span class="n">type</span>=<span class="s">"text"</span>
+            <span class="n">value</span>={form.nombre}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">placeholder</span>=<span class="s">"Tu nombre y apellido"</span>
+            <span class="n">autoComplete</span>=<span class="s">"name"</span>
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.nombre)}
+          /&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Correo electrónico"</span> <span class="n">nombre</span>=<span class="s">"email"</span> <span class="n">error</span>={errores.email}&gt;
+          &lt;<span class="f">input</span>
+            <span class="n">id</span>=<span class="s">"email"</span>
+            <span class="n">name</span>=<span class="s">"email"</span>
+            <span class="n">type</span>=<span class="s">"email"</span>
+            <span class="n">value</span>={form.email}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">placeholder</span>=<span class="s">"tucorreo@ejemplo.com"</span>
+            <span class="n">autoComplete</span>=<span class="s">"email"</span>
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.email)}
+          /&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Contraseña"</span> <span class="n">nombre</span>=<span class="s">"password"</span> <span class="n">error</span>={errores.password}&gt;
+          &lt;<span class="f">input</span>
+            <span class="n">id</span>=<span class="s">"password"</span>
+            <span class="n">name</span>=<span class="s">"password"</span>
+            <span class="n">type</span>=<span class="s">"password"</span>
+            <span class="n">value</span>={form.password}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">placeholder</span>=<span class="s">"Mínimo 6 caracteres"</span>
+            <span class="n">autoComplete</span>=<span class="s">"new-password"</span>
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.password)}
+          /&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Repite la contraseña"</span> <span class="n">nombre</span>=<span class="s">"confirmar"</span> <span class="n">error</span>={errores.confirmar}&gt;
+          &lt;<span class="f">input</span>
+            <span class="n">id</span>=<span class="s">"confirmar"</span>
+            <span class="n">name</span>=<span class="s">"confirmar"</span>
+            <span class="n">type</span>=<span class="s">"password"</span>
+            <span class="n">value</span>={form.confirmar}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">placeholder</span>=<span class="s">"Escríbela otra vez"</span>
+            <span class="n">autoComplete</span>=<span class="s">"new-password"</span>
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.confirmar)}
+          /&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Departamento"</span> <span class="n">nombre</span>=<span class="s">"departamento"</span> <span class="n">error</span>={errores.departamento}&gt;
+          &lt;<span class="f">select</span>
+            <span class="n">id</span>=<span class="s">"departamento"</span>
+            <span class="n">name</span>=<span class="s">"departamento"</span>
+            <span class="n">value</span>={form.departamento}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.departamento)}
+          &gt;
+            &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">""</span>&gt;Selecciona un departamento&lt;/<span class="f">option</span>&gt;
+            {departamentos.<span class="f">map</span>((d) =&gt; (
+              &lt;<span class="f">option</span> <span class="n">key</span>={d.id} <span class="n">value</span>={d.name}&gt;
+                {d.name}
+              &lt;/<span class="f">option</span>&gt;
+            ))}
+          &lt;/<span class="f">select</span>&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">Campo</span> <span class="n">etiqueta</span>=<span class="s">"Municipio"</span> <span class="n">nombre</span>=<span class="s">"municipio"</span> <span class="n">error</span>={errores.municipio}&gt;
+          &lt;<span class="f">select</span>
+            <span class="n">id</span>=<span class="s">"municipio"</span>
+            <span class="n">name</span>=<span class="s">"municipio"</span>
+            <span class="n">value</span>={form.municipio}
+            <span class="n">onChange</span>={manejarCambio}
+            <span class="n">disabled</span>={!form.departamento}
+            <span class="n">className</span>={<span class="f">claseInput</span>(errores.municipio) + <span class="s">" disabled:opacity-50"</span>}
+          &gt;
+            &lt;<span class="f">option</span> <span class="n">value</span>=<span class="s">""</span>&gt;
+              {form.departamento ? <span class="s">"Selecciona un municipio"</span> : <span class="s">"Primero elige un departamento"</span>}
+            &lt;/<span class="f">option</span>&gt;
+            {municipios.<span class="f">map</span>((m) =&gt; (
+              &lt;<span class="f">option</span> <span class="n">key</span>={m.id} <span class="n">value</span>={m.name}&gt;
+                {m.name}
+              &lt;/<span class="f">option</span>&gt;
+            ))}
+          &lt;/<span class="f">select</span>&gt;
+        &lt;/<span class="f">Campo</span>&gt;
+
+        &lt;<span class="f">button</span>
+          <span class="n">type</span>=<span class="s">"submit"</span>
+          <span class="n">disabled</span>={estado === <span class="s">"enviando"</span>}
+          <span class="n">className</span>=<span class="s">"bg-ink text-paper px-7 py-3.5 rounded-card text-sm font-semibold enabled:hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"</span>
+        &gt;
+          {estado === <span class="s">"enviando"</span> ? <span class="s">"Creando cuenta..."</span> : <span class="s">"Crear cuenta →"</span>}
+        &lt;/<span class="f">button</span>&gt;
+
+        {estado === <span class="s">"error"</span> &amp;&amp; (
+          &lt;<span class="f">p</span> <span class="n">role</span>=<span class="s">"alert"</span> <span class="n">className</span>=<span class="s">"bg-gray-50 rounded-card p-4 text-sm font-semibold text-accent-dark"</span>&gt;
+            {mensajeError}
+          &lt;/<span class="f">p</span>&gt;
+        )}
+      &lt;/<span class="f">form</span>&gt;
+
+      &lt;<span class="f">p</span> <span class="n">className</span>=<span class="s">"text-sm text-gray-700"</span>&gt;
+        ¿Ya tienes cuenta?{<span class="s">" "</span>}
+        &lt;<span class="f">Link</span> <span class="n">to</span>=<span class="s">"/login"</span> <span class="n">className</span>=<span class="s">"font-semibold underline hover:text-accent transition-colors"</span>&gt;
+          Ingresa
+        &lt;/<span class="f">Link</span>&gt;
+      &lt;/<span class="f">p</span>&gt;
+    &lt;/<span class="f">div</span>&gt;
+  );
+<span class="edit-line">}</span>
+
+<span class="k">export</span> <span class="k">default</span> Registro;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 2 cambios</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Después de estas líneas, agrega:</div><pre class="ctx">  departamento: <span class="s">""</span>,
+  municipio: <span class="s">""</span>,
+};</pre><pre><span class="c">// Los mismos dominios que acepta el servidor</span>
+<span class="k">const</span> DOMINIOS_PERMITIDOS = [
+  <span class="s">"gmail.com"</span>, <span class="s">"hotmail.com"</span>, <span class="s">"outlook.com"</span>, <span class="s">"yahoo.com"</span>,
+  <span class="s">"icloud.com"</span>, <span class="s">"me.com"</span>, <span class="s">"mac.com"</span>,
+];
+</pre></div></div><div class="cambio"><span class="cambio-n">2</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre>nuevos.email = <span class="s">"Escribe un correo válido, como nombre@correo.com"</span>;</pre><div class="cambio-por">por</div><pre>  nuevos.email = <span class="s">"Escribe un correo válido, como nombre@gmail.com"</span>;
+} <span class="k">else</span> {
+  <span class="k">const</span> dominio = form.email.<span class="f">slice</span>(form.email.<span class="f">lastIndexOf</span>(<span class="s">"@"</span>) + <span class="y">1</span>).<span class="f">toLowerCase</span>();
+  <span class="k">if</span> (!DOMINIOS_PERMITIDOS.<span class="f">includes</span>(dominio)) {
+    nuevos.email = <span class="s">"Usa un correo de Gmail, Hotmail, Outlook, Yahoo o iCloud"</span>;
+  }</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>const DOMINIOS_PERMITIDOS = [ ... ]</td><td>La misma lista del servidor. En JavaScript las constantes de verdad se escriben en MAYÚSCULAS por costumbre</td></tr><tr><td>} else { ... }</td><td>Solo se revisa el dominio si el correo <strong>ya tiene forma de correo</strong>: así se muestra un único error por campo, el que corresponde</td></tr><tr><td>form.email.slice(form.email.lastIndexOf("@") + 1)</td><td>Lo mismo que en el servidor, pero leyendo el correo del estado <code>form</code></td></tr><tr><td>nuevos.email = "Usa un correo de Gmail, ..."</td><td>Guarda el mensaje en el objeto de errores. <code>Campo</code> lo dibuja en rojo debajo del input</td></tr></tbody></table></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Quedan <strong>dos capas</strong> otra vez: la página avisa rápido y con cariño, y el servidor revisa de nuevo porque es el único que nadie puede saltarse. Por eso la lista está <strong>dos veces</strong> y las dos deben decir lo mismo.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en <code>localhost:5173/registro</code> escribe <code>ana@correo.com</code> y pulsa "Crear cuenta": debajo del correo sale en rojo "Usa un correo de Gmail, Hotmail, Outlook, Yahoo o iCloud". Con <code>ana@gmail.com</code> ese error desaparece. Si la página se queda en blanco, revisa que no hayas duplicado la lista y mira el error de la consola (<code>F12</code>).</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO3 ════ -->
+  <section class="section" id="paso3" data-step="paso3">
+    <div class="section-header">
+      <span class="step-badge green">Paso 3 · Probar</span>
+      <h2 class="section-title">El recorrido completo</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Dos cosas cambian en tu forma de trabajar: las pruebas nuevas ya no pueden usar <code>@correo.com</code>, y las cuentas viejas siguen existiendo.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Registra una cuenta de verdad en <code>localhost:5173/registro</code> y comprueba cada fila:</p>
+<div class="table-wrap"><table><thead><tr><th>Qué haces</th><th>Qué debes ver</th></tr></thead><tbody><tr><td>Registrarte con tu.nombre@gmail.com</td><td>La cuenta se crea y vas a <code>/login</code> con el aviso "Cuenta creada"</td></tr><tr><td>Registrarte con alguien@correo.com</td><td>La página lo rechaza en rojo, sin enviar nada</td></tr><tr><td>Mandar alguien@correo.com desde Postman</td><td>El servidor responde 400 con el mismo mensaje: la regla no depende de la página</td></tr><tr><td>Entrar con ana@correo.com (la cuenta que creaste en la guía 02)</td><td><strong>Sí entra.</strong> La regla se revisa al <strong>registrarse</strong>, no al entrar: las cuentas viejas siguen funcionando</td></tr><tr><td>Registrarte otra vez con tu.nombre@gmail.com</td><td>"El email ya está registrado": la validación anterior sigue activa</td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> los cinco comportamientos coinciden y no hay errores en rojo en la consola ni en las terminales.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span><strong>Lo que esta regla no hace:</strong> solo mira cómo <strong>termina</strong> el correo, no si existe. <code>fantasma123@gmail.com</code> pasa aunque nadie lo use. Para confirmar que el correo es real hay que enviar un mensaje con un enlace de verificación; eso es otro tema que se verá más adelante.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><strong>Cuentas de prueba:</strong> si quieres limpiar las de esta guía, en Compass (conectado a <strong>TechStore Local</strong>) borra por correo, una por una: <code>db.usuarios.deleteOne({ email: "tu.nombre@gmail.com" })</code>. No borres con <code>deleteMany</code> por dominio: borrarías también tus cuentas buenas.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO4 ════ -->
+  <section class="section" id="paso4" data-step="paso4">
+    <div class="section-header">
+      <span class="step-badge ">Paso 4 · Tu turno</span>
+      <h2 class="section-title">Aceptar también los correos del SENA</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Muchos aprendices usan su correo institucional, <code>@soy.sena.edu.co</code>, y hoy la regla lo rechaza. Lo arreglas tú, en los <strong>dos</strong> archivos. Busca las líneas con <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg> y complétalas.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg> En <code>backend/routes/auth.js</code>, agrega el dominio del SENA a la lista:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/routes/auth.js</span><span class="code-tag purple">ejercicio — completa los <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg></span></div><pre><span class="k">const</span> dominiosPermitidos = [
+  <span class="s">'gmail.com'</span>, <span class="s">'hotmail.com'</span>, <span class="s">'outlook.com'</span>, <span class="s">'yahoo.com'</span>,
+  <span class="s">'icloud.com'</span>, <span class="s">'me.com'</span>, <span class="s">'mac.com'</span>,
+<span class="edit-line">  <span class="c">// ✏️ agrega aquí, entre comillas, el dominio de los correos del SENA: soy.sena.edu.co</span></span>
+];</pre></div>
+<p><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg> En <code>Registro.jsx</code>, agrega el mismo dominio a la lista:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/Registro.jsx</span><span class="code-tag purple">ejercicio — completa los <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg></span></div><pre><span class="k">const</span> DOMINIOS_PERMITIDOS = [
+  <span class="s">"gmail.com"</span>, <span class="s">"hotmail.com"</span>, <span class="s">"outlook.com"</span>, <span class="s">"yahoo.com"</span>,
+  <span class="s">"icloud.com"</span>, <span class="s">"me.com"</span>, <span class="s">"mac.com"</span>,
+<span class="edit-line">  <span class="c">// ✏️ agrega aquí, entre comillas, el dominio de los correos del SENA: soy.sena.edu.co</span></span>
+];</pre></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Pista: cada dominio es un texto entre comillas, separado del anterior por una coma. Si olvidas la coma, el archivo no compila y el servidor o la página se caen.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg> Ahora el mensaje. Hoy dice "Usa un correo de Gmail, Hotmail, Outlook, Yahoo o iCloud". Cámbialo para que mencione también el correo del SENA, <strong>en los dos archivos</strong> (el del servidor y el de <code>validar()</code>).</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> con <code>ana.sena@soy.sena.edu.co</code> el servidor responde <strong>201</strong> (pruébalo en Postman) y la página ya no marca error. Con <code>ana@correo.com</code> sigue rechazando, y el mensaje nuevo menciona al SENA. Borra la cuenta de prueba con <code>deleteOne</code>.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ CHECKLIST ════ -->
+  <section class="section" id="checklist" data-step="checklist">
+    <div class="section-header">
+      <span class="step-badge green">Cierre</span>
+      <h2 class="section-title">Checklist final de la sesión</h2>
+    </div>
+    <ul class="checklist" id="checklist-ul">
+      <li data-check="chk1"><span class="check-box"></span><span><strong>routes/auth.js</strong> tiene la lista <code>dominiosPermitidos</code> y rechaza con 400 los correos de otros dominios, sin importar mayúsculas</span></li>
+      <li data-check="chk2"><span class="check-box"></span><span><strong>Registro.jsx</strong> tiene <code>DOMINIOS_PERMITIDOS</code> y muestra el error en rojo bajo el correo</span></li>
+      <li data-check="chk3"><span class="check-box"></span><span>Las dos listas dicen exactamente lo mismo (Gmail, Hotmail, Outlook, Yahoo, iCloud, me.com, mac.com y SENA)</span></li>
+      <li data-check="chk4"><span class="check-box"></span><span>Probado con Postman: <code>ana@gmail.com@evil.com</code> y <code>ana@fakegmail.com</code> se rechazan</span></li>
+      <li data-check="chk5"><span class="check-box"></span><span>Las cuentas viejas con <code>@correo.com</code> siguen entrando al login</span></li>
+      <li data-check="chk6"><span class="check-box"></span><span>Reto resuelto: <code>@soy.sena.edu.co</code> se acepta en el servidor y en la página, con el mensaje actualizado</span></li>
+    </ul>
+  </section>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="btn-enviar">
+      <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12" /> <path d="m17 8-5-5-5 5" /> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg><span>Enviar todo mi progreso</span>
+    </button>
+    <div class="submit-status" id="submit-status"></div>
+  </div>
+
+</main>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['c','x','a','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+
+
+const STEPS = ['paso1','paso2','paso3','paso4','checklist'];
+const KEY   = 's30b-progress';
+
+function getState() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} }
+
+function updateProgress() {
+  const state = getState();
+  const done  = STEPS.filter(s => state[s]).length;
+  const pct   = Math.round((done / STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-txt').textContent  = done + ' / ' + STEPS.length;
+}
+
+function renderButtons() {
+  const state = getState();
+  STEPS.forEach(id => {
+    const section = document.querySelector(`[data-step="${id}"]`);
+    if (!section || section.querySelector('.complete-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'complete-btn' + (state[id] ? ' done' : '');
+    btn.dataset.step = id;
+    btn.innerHTML = `<span class="btn-icon">${state[id] ? '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>' : '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>'}</span>
+      <span class="btn-txt">${state[id] ? '¡Paso completado!' : 'Marcar como completado'}</span>
+      <span class="btn-badge">LISTO</span>`;
+    if (!state[id]) btn.addEventListener('click', () => completeStep(id, btn));
+    section.appendChild(btn);
+    const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+    if (nav && state[id]) nav.classList.add('done');
+  });
+}
+
+function completeStep(id, btn) {
+  const state = getState(); state[id] = true; saveState(state);
+  btn.classList.add('done');
+  btn.querySelector('.btn-icon').innerHTML = '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+  btn.querySelector('.btn-txt').textContent  = '¡Paso completado!';
+  const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+  if (nav) nav.classList.add('done');
+  updateProgress();
+  launchConfetti(STEPS.filter(s => state[s]).length === STEPS.length);
+}
+
+function launchConfetti(big) {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#3b82f6','#2dd4bf','#22c55e','#f59e0b','#a78bfa','#f87171'];
+  const count  = big ? 180 : 60;
+  const parts  = Array.from({length: count}, () => ({
+    x: canvas.width * (big ? Math.random() : .5 + (Math.random()-.5)*.4),
+    y: big ? -10 : canvas.height * .4,
+    r: Math.random() * 7 + 3, color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: 0, tiltAngle: 0, tiltSpeed: Math.random()*.1+.05,
+    vx: Math.random()*4-2, vy: Math.random()*3+2
+  }));
+  let frame = 0; const total = big ? 160 : 80;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p => {
+      ctx.beginPath(); ctx.fillStyle = p.color;
+      ctx.ellipse(p.x, p.y, p.r, p.r*.4, p.tilt, 0, Math.PI*2); ctx.fill();
+      p.x += p.vx; p.y += p.vy; p.tiltAngle += p.tiltSpeed; p.tilt = Math.sin(p.tiltAngle)*12; p.vy += .08;
+    });
+    if (++frame < total) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+function getChecklistState() { try { return JSON.parse(localStorage.getItem('s30b-checklist') || '{}'); } catch { return {}; } }
+function saveChecklistState(s) { try { localStorage.setItem('s30b-checklist', JSON.stringify(s)); } catch {} }
+
+function renderChecklist() {
+  const state = getChecklistState();
+  document.querySelectorAll('#checklist-ul li').forEach(li => {
+    const id = li.dataset.check;
+    if (state[id]) { li.classList.add('marcado'); li.querySelector('.check-box').textContent = '✓'; }
+    li.addEventListener('click', () => {
+      const s = getChecklistState();
+      s[id] = !s[id];
+      saveChecklistState(s);
+      li.classList.toggle('marcado', s[id]);
+      li.querySelector('.check-box').textContent = s[id] ? '✓' : '';
+      const allChecked = Array.from(document.querySelectorAll('#checklist-ul li')).every(el => s[el.dataset.check]);
+      if (allChecked) launchConfetti(false);
+    });
+  });
+}
+
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+sections.forEach(s => obs.observe(s));
+
+renderButtons();
+updateProgress();
+renderChecklist();
+
+/* ═══ Selector de aprendiz + envío a Google Sheets (Apps Script) ═══ */
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbyhq0L17BN2xp5FnAHuRXugHBYE4P9-4DvdWU4mR-1FnVBGUoBCGIkZw5O2ZEVu7T8P/exec';
+const ARCHIVO_ACTUAL  = '03_GUIA_VALIDAR_CORREOS';
+const APRENDIZ_KEY    = 'sena-aprendiz-nombre';
+
+const APRENDIZ_TRIGGER = document.getElementById('aprendiz-trigger');
+const APRENDIZ_PANEL   = document.getElementById('aprendiz-panel');
+const APRENDIZ_BUSCAR  = document.getElementById('aprendiz-search');
+const APRENDIZ_TEXTO   = document.getElementById('aprendiz-trigger-text');
+const APRENDIZ_ITEMS   = Array.from(document.querySelectorAll('#aprendiz-list li'));
+const APRENDIZ_VACIO   = document.getElementById('aprendiz-empty');
+const APRENDIZ_LISTA   = document.getElementById('aprendiz-list');
+const selectAprendiz = { value: '', classList: APRENDIZ_TRIGGER.classList,
+  scrollIntoView: (o) => APRENDIZ_TRIGGER.scrollIntoView(o) };
+
+function tituloAprendiz(n) {
+  return n.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
+}
+function marcarAprendiz(nombre) {
+  selectAprendiz.value = nombre;
+  APRENDIZ_TEXTO.textContent = nombre ? tituloAprendiz(nombre) : 'Selecciona tu nombre';
+  APRENDIZ_TEXTO.classList.toggle('placeholder', !nombre);
+  APRENDIZ_ITEMS.forEach((li) => li.setAttribute('aria-selected', li.dataset.nombre === nombre ? 'true' : 'false'));
+}
+function posicionarAprendiz() {
+  const r = APRENDIZ_TRIGGER.getBoundingClientRect();
+  const ancho = Math.min(Math.max(r.width, 320), window.innerWidth - 16);
+  APRENDIZ_PANEL.style.width = ancho + 'px';
+  APRENDIZ_PANEL.style.left = Math.max(8, Math.min(r.left, window.innerWidth - ancho - 8)) + 'px';
+  APRENDIZ_PANEL.style.top = (r.bottom + 6) + 'px';
+  APRENDIZ_LISTA.style.maxHeight = Math.max(140, Math.min(260, window.innerHeight - r.bottom - 90)) + 'px';
+}
+function abrirAprendiz(abrir) {
+  APRENDIZ_PANEL.hidden = !abrir;
+  if (abrir) posicionarAprendiz();
+  APRENDIZ_TRIGGER.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+  if (abrir) { APRENDIZ_BUSCAR.value = ''; filtrarAprendices(); APRENDIZ_BUSCAR.focus(); }
+}
+function filtrarAprendices() {
+  const q = APRENDIZ_BUSCAR.value.toLowerCase().trim();
+  let visibles = 0;
+  APRENDIZ_ITEMS.forEach((li) => {
+    const ok = !q || li.dataset.nombre.toLowerCase().includes(q);
+    li.hidden = !ok;
+    if (ok) visibles++;
+  });
+  APRENDIZ_VACIO.hidden = visibles > 0;
+}
+function elegirAprendiz(nombre) {
+  marcarAprendiz(nombre);
+  try { localStorage.setItem(APRENDIZ_KEY, nombre); } catch {}
+  selectAprendiz.classList.remove('falta');
+  abrirAprendiz(false);
+  APRENDIZ_TRIGGER.focus();
+}
+APRENDIZ_TRIGGER.addEventListener('click', () => abrirAprendiz(APRENDIZ_PANEL.hidden));
+APRENDIZ_BUSCAR.addEventListener('input', filtrarAprendices);
+APRENDIZ_BUSCAR.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { abrirAprendiz(false); APRENDIZ_TRIGGER.focus(); }
+  if (e.key === 'Enter') {
+    const primero = APRENDIZ_ITEMS.find((li) => !li.hidden);
+    if (primero) elegirAprendiz(primero.dataset.nombre);
+  }
+});
+APRENDIZ_ITEMS.forEach((li) => li.addEventListener('click', () => elegirAprendiz(li.dataset.nombre)));
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.aprendiz-wrap')) abrirAprendiz(false);
+});
+window.addEventListener('resize', () => { if (!APRENDIZ_PANEL.hidden) posicionarAprendiz(); });
+APRENDIZ_TRIGGER.closest('.sidebar').addEventListener('scroll', () => { if (!APRENDIZ_PANEL.hidden) abrirAprendiz(false); });
+let nombreGuardado = '';
+try { nombreGuardado = localStorage.getItem(APRENDIZ_KEY) || ''; } catch {}
+if (APRENDIZ_ITEMS.some((li) => li.dataset.nombre === nombreGuardado)) marcarAprendiz(nombreGuardado);
+
+const btnEnviar = document.getElementById('btn-enviar');
+const statusEl  = document.getElementById('submit-status');
+
+btnEnviar.addEventListener('click', async () => {
+  const aprendiz = selectAprendiz.value;
+  if (!aprendiz) {
+    selectAprendiz.classList.add('falta');
+    statusEl.textContent = 'Selecciona tu nombre arriba antes de enviar.';
+    statusEl.className = 'submit-status err';
+    selectAprendiz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const state = getState();
+  const pasosCompletados = STEPS.filter(s => state[s]);
+
+  btnEnviar.disabled = true;
+  statusEl.textContent = 'Enviando...';
+  statusEl.className = 'submit-status';
+
+  try {
+    await fetch(URL_APPS_SCRIPT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        aprendiz: aprendiz,
+        archivo: ARCHIVO_ACTUAL,
+        completados: pasosCompletados.length,
+        total: STEPS.length,
+        pasos: pasosCompletados
+      })
+    });
+    statusEl.textContent = 'Progreso enviado — ' + pasosCompletados.length + '/' + STEPS.length + ' pasos.';
+    statusEl.className = 'submit-status ok';
+  } catch (err) {
+    statusEl.textContent = 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.';
+    statusEl.className = 'submit-status err';
+  } finally {
+    btnEnviar.disabled = false;
+  }
+});
+
+</script>
+</body>
+</html>
