@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Paso a Paso — Base de datos local</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#F4F2EC; --surface:#ffffff; --surface2:#ECE9DF; --border:#e5e1d4;
+  --txt:#0f172a; --txt-dim:#64748b;
+  --accent:#0284c7; --accent-glow:rgba(2,132,199,.10);
+  --green:#16a34a; --green-bg:rgba(22,163,74,.10);
+  --red:#dc2626; --red-bg:rgba(220,38,38,.08);
+  --yellow:#d97706; --yellow-bg:rgba(217,119,6,.10);
+  --purple:#7c3aed; --purple-bg:rgba(124,58,237,.08);
+  --teal:#018751; --teal-bg:rgba(1,135,81,.09);
+  --code-bg:#0d1117; --sidebar-w:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;display:flex;min-height:100vh;user-select:none;}
+
+.sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:0;left:0;bottom:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:24px 0 40px;display:flex;flex-direction:column;}
+.sidebar-brand{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-brand .curso{font-size:11px;color:var(--teal);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.sidebar-brand h1{font-size:14px;font-weight:700;color:var(--txt);margin-top:4px;line-height:1.3;}
+.sidebar-brand .ficha{font-size:11px;color:var(--txt-dim);margin-top:2px;}
+.progress-wrap{padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-dim);margin-bottom:8px;}
+.progress-label span:last-child{color:var(--teal);font-weight:700;}
+.progress-bar-bg{height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--teal);border-radius:10px;transition:width .4s ease;width:0%;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--txt-dim);font-size:13px;font-weight:500;text-decoration:none;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--accent-glow);color:var(--txt);}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);}
+.nav-item.active .nav-dot{background:var(--accent);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .15s;}
+.nav-item:hover .nav-dot{background:var(--txt-dim);}
+.nav-item.done{color:var(--teal);}
+.nav-item.done .nav-dot{background:var(--teal);}
+
+.main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px 80px;max-width:820px;}
+
+.page-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+.page-tag{font-size:11px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.page-title{font-size:28px;font-weight:700;color:var(--txt);line-height:1.2;text-wrap:balance;}
+.page-subtitle{font-size:14px;color:var(--txt-dim);margin-top:8px;}
+.page-warning{margin-top:20px;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--yellow);font-weight:500;}
+
+.intro-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px 36px;margin-bottom:52px;}
+.intro-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+.intro-title{font-size:20px;font-weight:800;color:var(--txt);line-height:1.25;margin-bottom:10px;}
+.intro-sub{font-size:14px;color:var(--txt-dim);margin-bottom:20px;line-height:1.6;}
+.intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.intro-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.intro-item-icon{font-size:22px;margin-bottom:8px;display:flex;}
+.intro-item-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-dim);margin-bottom:4px;}
+.intro-item-desc{font-size:13px;color:var(--txt);font-weight:500;line-height:1.4;}
+
+.section{margin-bottom:56px;scroll-margin-top:32px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.step-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.3);border-radius:6px;padding:3px 10px;white-space:nowrap;letter-spacing:.04em;flex-shrink:0;}
+.step-badge.green{background:var(--green-bg);color:var(--green);border-color:rgba(34,197,94,.3);}
+.step-badge.yellow{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,158,11,.3);}
+.step-badge.extra{background:var(--purple-bg);color:var(--purple);border-color:rgba(167,139,250,.3);}
+.step-badge.teal{background:var(--teal-bg);color:var(--teal);border-color:rgba(45,212,191,.3);}
+.section-title{font-size:20px;font-weight:700;color:var(--txt);text-wrap:balance;}
+
+.step-list{display:flex;flex-direction:column;gap:20px;}
+.step-item{display:flex;gap:16px;}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-body p{color:var(--txt);font-size:14px;}
+.step-body strong{color:var(--txt);font-weight:600;}
+
+.code-wrap{margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.code-header{display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 14px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-dot.r{background:#ff5f57;} .code-dot.y{background:#febc2e;} .code-dot.g{background:#28c840;}
+.code-filename{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-dim);flex:1;}
+.code-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.code-tag.blue{background:rgba(59,130,246,.15);color:var(--accent);}
+.code-tag.green{background:var(--green-bg);color:var(--green);}
+.code-tag.yellow{background:var(--yellow-bg);color:var(--yellow);}
+.code-tag.purple{background:var(--purple-bg);color:var(--purple);}
+pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;color:#abb2bf;}
+pre .c{color:#5c6370;} pre .k{color:#c678dd;} pre .s{color:#98c379;}
+pre .f{color:#61afef;} pre .n{color:#e5c07b;} pre .y{color:#d19a66;}
+pre .edit{color:#fbbf24;background:rgba(245,158,11,.12);border-radius:3px;padding:0 2px;}
+
+.callout{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:8px;font-size:13px;margin:14px 0;line-height:1.5;}
+.callout.ok{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout.err{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);color:var(--red);}
+.callout.warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.2);color:var(--yellow);}
+.callout.info{background:var(--accent-glow);border:1px solid rgba(59,130,246,.2);color:#0369a1;}
+.callout.teal{background:var(--teal-bg);border:1px solid rgba(45,212,191,.2);color:var(--teal);}
+.callout.tip{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;display:flex;}
+.callout strong{color:inherit;font-weight:600;}
+
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--surface2);color:var(--txt-dim);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:top;}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);}
+tr:last-child td{border-bottom:none;}
+
+.checklist{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.checklist li{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--txt-dim);cursor:pointer;transition:all .15s;}
+.checklist li:hover{border-color:var(--teal);}
+.checklist li.marcado{background:var(--teal-bg);border-color:rgba(45,212,191,.35);color:var(--txt);}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--teal);}
+.checklist li.marcado .check-box{border-color:var(--teal);background:var(--teal-bg);}
+.checklist li strong{color:var(--txt);font-weight:600;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:1px 6px;border-radius:4px;color:#0369a1;}
+
+.subsec{margin:28px 0 16px;}
+.subsec-title{font-size:15px;font-weight:700;color:var(--txt);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+
+.complete-btn{display:flex;align-items:center;gap:10px;margin-top:28px;padding:14px 20px;background:var(--teal-bg);border:1px solid rgba(45,212,191,.3);border-radius:10px;color:var(--teal);font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:all .2s;font-family:'Inter',sans-serif;}
+.complete-btn:hover{border-color:var(--teal);}
+.complete-btn.done{cursor:default;}
+.complete-btn .btn-icon{font-size:18px;}
+.complete-btn .btn-txt{flex:1;text-align:left;}
+.complete-btn .btn-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(45,212,191,.15);color:var(--teal);opacity:0;}
+.complete-btn.done .btn-badge{opacity:1;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+
+.submit-wrap{margin-top:28px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+.submit-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 20px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.submit-btn:hover{background:#2f6fe0;transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.submit-status{margin-top:10px;font-size:12.5px;text-align:center;color:var(--txt-dim);}
+.submit-status.ok{color:var(--green);}
+.submit-status.err{color:var(--red);}
+
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+.callout-icon svg{width:16px;height:16px;stroke-width:2.5;}
+.intro-item-icon svg{width:22px;height:22px;stroke-width:2;}
+.page-warning{display:flex;align-items:center;gap:8px;}
+.page-warning svg{width:16px;height:16px;stroke-width:2.5;flex-shrink:0;}
+.submit-btn svg{width:18px;height:18px;stroke-width:2.5;}
+.nav-ref{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;color:var(--yellow);font-size:12.5px;font-weight:600;text-decoration:none;border:1px dashed rgba(245,158,11,.4);}
+.nav-ref:hover{background:var(--yellow-bg);}
+.nav-ref svg{width:14px;height:14px;stroke-width:2.5;flex-shrink:0;}
+pre .edit-line{display:inline-block;width:calc(100% + 40px);box-sizing:border-box;margin:0 -20px;padding:0 20px;background:rgba(250,204,21,.18);box-shadow:inset 3px 0 0 #facc15;}
+.leyenda-edit{margin:8px 0 0;font-size:12.5px;color:var(--txt-dim);display:flex;align-items:center;gap:8px;}
+.leyenda-muestra{display:inline-block;width:22px;height:12px;border-radius:2px;background:rgba(250,204,21,.35);box-shadow:inset 3px 0 0 #facc15;}
+.cambios{margin:16px 0;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:16px 18px;}
+.cambios-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt);}
+.cambios-sub{font-size:13px;color:var(--txt-dim);margin:4px 0 6px;}
+.cambio{display:flex;gap:12px;margin-top:14px;align-items:flex-start;}
+.cambio-n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--accent-glow);color:var(--accent);font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.cambio-body{flex:1;min-width:0;}
+.cambio-titulo{font-size:13px;font-weight:600;color:var(--txt);}
+.cambio-titulo code{font-weight:500;}
+.cambio-por{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-dim);margin:6px 0 0;}
+.cambio pre.ctx{background:#1a2132;margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0;}
+.cambio pre.ctx span{opacity:.55;}
+.cambio pre.ctx + pre{margin-top:0;border-top-left-radius:0;border-top-right-radius:0;box-shadow:inset 3px 0 0 #facc15;}
+.cambio pre{margin:6px 0 0;border-radius:8px;padding:10px 14px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;} td,th{overflow-wrap:anywhere;} .step-body{min-width:0;}
+
+.sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border);}
+.sidebar-hub-link{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-size:12.5px;font-weight:700;padding:8px 10px;border-radius:8px;transition:background .15s;}
+.sidebar-hub-link:hover{background:var(--accent-glow);}
+
+/* ── Identidad del portal ADSO: tipografías y código oscuro sobre fondo claro ── */
+h1,h2,.page-title,.sidebar-brand h1{font-family:'Syne','Inter',sans-serif;}
+pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
+.sidebar{box-shadow:0 10px 30px -10px rgba(15,23,42,.07);}
+
+/* Texto sobre fondos tintados: tonos mas oscuros para que se lea en tema claro */
+.callout.ok,.callout.tip,.step-badge.green{color:#166534;}
+.callout.warn,.page-warning,.step-badge.yellow,.pin{color:#92400e;}
+.callout.err{color:#b91c1c;}
+
+/* Iconos Lucide en línea (reemplazan a los emojis) */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
+
+/* ── Selector de aprendiz (lista propia, mismo estilo del portal) ── */
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+.aprendiz-trigger{width:100%;display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;color:var(--txt);font:600 12.5px 'Inter',sans-serif;cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s;}
+.aprendiz-trigger:hover{border-color:var(--teal);}
+.aprendiz-trigger:focus-visible,.aprendiz-trigger[aria-expanded="true"]{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg);}
+.aprendiz-trigger.falta{border-color:var(--yellow);box-shadow:0 0 0 3px var(--yellow-bg);}
+.aprendiz-trigger svg{flex-shrink:0;color:var(--teal);}
+.aprendiz-trigger .aprendiz-chev{margin-left:auto;color:var(--txt-dim);transition:transform .2s;}
+.aprendiz-trigger[aria-expanded="true"] .aprendiz-chev{transform:rotate(180deg);}
+.aprendiz-trigger-text{flex:1;min-width:0;line-height:1.3;word-break:break-word;}
+.aprendiz-trigger-text.placeholder{color:var(--txt-dim);font-weight:500;}
+.aprendiz-panel{position:fixed;z-index:60;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;box-shadow:0 18px 40px -12px rgba(15,23,42,.25);overflow:hidden;}
+.aprendiz-panel[hidden]{display:none;}
+.aprendiz-search{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--txt-dim);}
+.aprendiz-search input{flex:1;min-width:0;border:0;background:transparent;font:500 12.5px 'Inter',sans-serif;color:var(--txt);outline:none;user-select:text;}
+.aprendiz-list{list-style:none;max-height:224px;overflow-y:auto;padding:4px;}
+.aprendiz-list li{display:flex;white-space:nowrap;line-height:1.35;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;font-size:12px;font-weight:500;color:var(--txt);cursor:pointer;}
+.aprendiz-list li[hidden]{display:none;}
+.aprendiz-list li:hover,.aprendiz-list li.activo{background:var(--surface2);}
+.aprendiz-list li[aria-selected="true"]{background:var(--teal-bg);color:var(--teal);font-weight:700;}
+.aprendiz-list li svg{margin-left:auto;flex-shrink:0;opacity:0;}
+.aprendiz-list li[aria-selected="true"] svg{opacity:1;}
+.aprendiz-empty{padding:12px;font-size:12px;color:var(--txt-dim);text-align:center;}
+.aprendiz-empty[hidden]{display:none;}
+</style>
+<canvas class="confetti-wrap" id="confetti-canvas"></canvas>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="curso">SENA ADSO · Sesión extra</div>
+    <h1>Base de datos local — Guía Paso a Paso</h1>
+    <div class="ficha">Ficha 3229944 · Oct 2026</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 8</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="aprendiz-wrap">
+    <span class="aprendiz-label" id="aprendiz-label">Aprendiz</span>
+    <button type="button" class="aprendiz-trigger" id="aprendiz-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="aprendiz-label aprendiz-trigger-text">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="aprendiz-trigger-text placeholder" id="aprendiz-trigger-text">Selecciona tu nombre</span>
+      <svg class="aprendiz-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="aprendiz-panel" id="aprendiz-panel" hidden>
+      <div class="aprendiz-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="aprendiz-search" placeholder="Buscar mi nombre..." autocomplete="off" aria-label="Buscar mi nombre"></div>
+      <ul class="aprendiz-list" id="aprendiz-list" role="listbox" aria-labelledby="aprendiz-label">
+      <li role="option" aria-selected="false" data-nombre="ANDRES STEVEN LOPEZ SCARPETTA">Andres Steven Lopez Scarpetta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="EDGAR STICK LOPEZ MURCIA">Edgar Stick Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="HEYDER IVAN VELASCO DELGADO">Heyder Ivan Velasco Delgado<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JESUS DAVID ORTIZ MUÑOZ">Jesus David Ortiz Muñoz<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHOJAN STEVEN SERRANO PATIÑO">Jhojan Steven Serrano Patiño<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHON EDGARDO LUGO VILLANUEVA">Jhon Edgardo Lugo Villanueva<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JONIER STIVEN GUTIERREZ SALCEDO">Jonier Stiven Gutierrez Salcedo<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JUAN PABLO PORRAS LOZANO">Juan Pablo Porras Lozano<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="KEVIN MIGUEL ORTIZ TELLEZ">Kevin Miguel Ortiz Tellez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LAURA FERNANDA SOSA CEDIEL">Laura Fernanda Sosa Cediel<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LEIDY VIVIANA SANCHEZ ACOSTA">Leidy Viviana Sanchez Acosta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LUIS CARLOS CADENA VALENCIA">Luis Carlos Cadena Valencia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MARTIN SMITH LOPEZ MURCIA">Martin Smith Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MICHAEL FERMAN HERNANDEZ BERMUDEZ">Michael Ferman Hernandez Bermudez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="NITSON ESTIVEN LOPEZ YUSTES">Nitson Estiven Lopez Yustes<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      </ul>
+      <div class="aprendiz-empty" id="aprendiz-empty" hidden>Sin coincidencias</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Instalar y ver</div>
+    <a class="nav-item active" href="#paso0"><span class="nav-dot"></span>Paso 0 — Verificar lo que tienes</a>
+    <a class="nav-item" href="#paso1"><span class="nav-dot"></span>Paso 1 — MongoDB Community</a>
+    <a class="nav-item" href="#paso2"><span class="nav-dot"></span>Paso 2 — MongoDB Compass</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Configurar el proyecto</div>
+    <a class="nav-item" href="#paso3"><span class="nav-dot"></span>Paso 3 — Dos entornos</a>
+    <a class="nav-item" href="#paso4"><span class="nav-dot"></span>Paso 4 — El seed</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Usar y llevar</div>
+    <a class="nav-item" href="#paso5"><span class="nav-dot"></span>Paso 5 — Trabajar en local</a>
+    <a class="nav-item" href="#paso6"><span class="nav-dot"></span>Paso 6 — De local a Atlas</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#checklist"><span class="nav-dot"></span>Checklist final</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="../../explorar.html" class="sidebar-hub-link">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      Volver al Hub
+    </a>
+  </div>
+</div>
+
+<main class="main">
+
+  <div class="page-header">
+    <div class="page-tag">Sesión extra · Fase 5 React y Tailwind</div>
+    <h1 class="page-title">TechStore Pro gana su base de datos local</h1>
+    <p class="page-subtitle">SENA ADSO · Ficha 3229944 · Octubre 2026</p>
+    <div class="page-warning"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg><span>Sigue cada paso en orden. No avances al siguiente hasta que el anterior funcione y hayas marcado el check.</span></div>
+  </div>
+
+  <div class="intro-card">
+    <div class="intro-tag">¿Qué construimos hoy?</div>
+    <div class="intro-title">Una base de datos propia y un interruptor para elegirla</div>
+    <p class="intro-sub">TechStore deja de depender de internet para desarrollar. Instalas MongoDB en tu computador, lo miras con Compass, y con una variable del <code>.env</code> decides si el backend usa tu base local o Atlas. Un script (<code>seed.js</code>) la llena con el catálogo cuando haga falta.</p>
+    <div class="intro-grid">
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 16h.01" /> <path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /> <path d="M21.946 12.013H2.054" /> <path d="M6 16h.01" /></svg></div><div class="intro-item-label">Pasos 1-2</div><div class="intro-item-desc">Instalar MongoDB Community y explorarlo con Compass</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="12" r="3" /> <rect width="20" height="14" x="2" y="5" rx="7" /></svg></div><div class="intro-item-label">Pasos 3-4</div><div class="intro-item-desc">Dos entornos en el .env, la línea de server.js y el seed</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 4 7l4 4" /> <path d="M4 7h16" /> <path d="m16 21 4-4-4-4" /> <path d="M20 17H4" /></svg></div><div class="intro-item-label">Pasos 5-6</div><div class="intro-item-desc">Trabajar en local sin tocar Atlas y llevar datos entre bases</div></div>
+    </div>
+  </div>
+
+  <!-- ════ PASO0 ════ -->
+  <section class="section" id="paso0" data-step="paso0">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 0 · Verificación</span>
+      <h2 class="section-title">Antes de empezar: verifica lo que ya tienes</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Esta sesión se apoya en cosas que ya hiciste en la <strong>S10</strong> (Atlas y Compass) y en la <strong>S12</strong> (el backend con Mongoose). No las repitas si ya las tienes: <strong>verifícalas</strong>. Si alguna falta, hazla con lo que dice la última columna y sigue. Solo el servidor de MongoDB (última fila) es nuevo para todos.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<div class="table-wrap"><table><thead><tr><th>Qué necesitas</th><th>Cómo verificarlo</th><th>Si no lo tienes</th></tr></thead><tbody><tr><td>Un cluster de Atlas con la base techstore y sus 6 productos (S10)</td><td>En Atlas, <strong>Database → Browse Collections</strong> muestra <code>techstore → productos</code> con 6 documentos</td><td>Repite en la guía de la S10 el paso de crear la base y la colección, e inserta de nuevo los 6 productos</td></tr><tr><td>Acceso de red 0.0.0.0/0 en Atlas (S10)</td><td>En Atlas, <strong>Security → Network Access</strong> muestra <code>0.0.0.0/0</code> con estado <strong>Active</strong></td><td>Agrégala con <strong>Add IP Address → Allow Access from Anywhere</strong></td></tr><tr><td>MongoDB Compass (S10)</td><td>Abre Compass: si abre, lo tienes</td><td>Instálalo desde <code>mongodb.com/products/tools/compass</code>: en Windows el <code>.msi</code> (siguiente, siguiente, instalar) y en Mac el <code>.dmg</code>, arrastrando la app a Aplicaciones</td></tr><tr><td>Una conexión de Atlas en Compass (S10)</td><td>En la columna izquierda de Compass hay una conexión con el nombre de tu cluster; al pulsarla conecta y muestra <code>techstore</code></td><td>Créala con <strong>+ Add new connection</strong> y pega tu cadena de Atlas. El campo URI debe empezar exactamente con <code>mongodb+srv://</code>, sin comillas ni prefijo <code>NOMBRE=</code></td></tr><tr><td>El backend conectado a Atlas con Mongoose (S12)</td><td>En <code>backend/</code> ejecuta <code>npm run dev</code>: la terminal dice que conectó a MongoDB Atlas y <code>localhost:3000/api/productos</code> muestra los productos</td><td>Repite la guía de la S12 hasta que conecte. Esta sesión parte de un backend que ya funciona</td></tr><tr><td>MongoDB Community Server (el motor local) (nuevo hoy)</td><td>Windows: <code>Get-Service MongoDB</code> muestra <strong>Running</strong>. Mac: <code>brew services list</code> muestra <strong>mongodb-community</strong> en <strong>started</strong>. También sirve conectar Compass a <code>mongodb://127.0.0.1:27017</code></td><td>Se instala en el Paso 1</td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Escribe los comandos <strong>exactamente</strong> como aparecen. Un punto o un espacio de más hace que PowerShell diga que no encuentra el servicio aunque esté instalado: <code>Get-Service MongoDB</code> va <strong>sin punto</strong> al final.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> cada fila está en "ya lo tengo" o la completaste. Si todas están listas, sigue con el Paso 1 (o salta al Paso 2 si ya tienes el servidor local).</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO1 ════ -->
+  <section class="section" id="paso1" data-step="paso1">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 1 · Instalación</span>
+      <h2 class="section-title">Instalar MongoDB Community Server</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">MongoDB Atlas es un servidor de MongoDB que alguien más mantiene en internet. <strong>MongoDB Community Server</strong> es el mismo programa, gratis, instalado en tu computador. Se instala una vez y queda corriendo en segundo plano, como un servicio. Hazlo primero: la descarga y la instalación son lo más lento de la sesión.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Si en el Paso 0 comprobaste que <strong>MongoDB Community Server ya está instalado y corriendo</strong>, salta directo al Paso 2.</span></div>
+<p>Elige tu sistema operativo y sigue <strong>solo</strong> esa parte. Necesitas la <strong>versión 7.0 o superior</strong>.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><strong>Windows.</strong> Abre <code>mongodb.com/try/download/community</code> y descarga el instalador: versión <strong>7.0.x</strong>, plataforma <strong>Windows x64</strong>, paquete <strong>msi</strong>. Ejecútalo y en el asistente elige, en este orden: (1) aceptar la licencia, (2) tipo de instalación <strong>Complete</strong>, (3) en "Service Configuration" deja marcado <strong>Install MongoD as a Service</strong> con la opción <strong>Run service as Network Service user</strong>, (4) deja marcado <strong>Install MongoDB Compass</strong> y (5) <strong>Install</strong>. Si Windows pide permisos de administrador, acepta.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><strong>Mac.</strong> Necesitas Homebrew (si no lo tienes, se instala desde <code>brew.sh</code>). En la Terminal, una línea a la vez:</span></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">Terminal de Mac — instalar y arrancar el servicio</span></div><pre>brew tap mongodb/brew
+brew update
+brew install mongodb-community@7.0
+brew services start mongodb-community@7.0</pre></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Los pasos de Mac vienen de la documentación oficial de MongoDB y <strong>no se probaron en un Mac</strong> al preparar esta guía. Si algún paso falla, avisa al instructor con el mensaje de error completo.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Comprueba que el servidor quedó corriendo.</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">PowerShell de Windows</span></div><pre>Get-Service MongoDB</pre></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">Terminal de Mac</span></div><pre>brew services list</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en Windows, <code>Get-Service MongoDB</code> muestra el estado <strong>Running</strong>. En Mac, <code>brew services list</code> muestra <strong>mongodb-community</strong> con el estado <strong>started</strong>. Si dice Stopped o none, reinicia el computador y vuelve a mirar: el servicio arranca solo.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>No hace falta abrir ninguna ventana: el servidor vive en segundo plano, escuchando en el puerto <strong>27017</strong>. Puede que ya tenga bases de otros proyectos; eso lo ves en el paso siguiente.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Si más adelante Compass dice <strong>ECONNREFUSED</strong> (conexión rechazada), el servicio está apagado. En <strong>Windows</strong> abre el <strong>Símbolo del sistema como administrador</strong> y ejecuta <code>net start MongoDB</code>. En <strong>Mac</strong> ejecuta <code>brew services start mongodb-community@7.0</code>.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO2 ════ -->
+  <section class="section" id="paso2" data-step="paso2">
+    <div class="section-header">
+      <span class="step-badge ">Paso 2 · Compass</span>
+      <h2 class="section-title">Ver la base de datos con MongoDB Compass</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Hasta ahora la base de datos era invisible: se llenaba y se leía solo desde el código. <strong>MongoDB Compass</strong> es la herramienta gráfica oficial: se conecta a un servidor y muestra sus bases como carpetas. Si ya lo tienes instalado, pasa directo al punto 2. Primero lo usas en una base de práctica que vas a borrar al final.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p><strong>Compass lo instalaste en la S10</strong> (Paso 0). Ábrelo: si abre, sigue al punto 2. Si no lo tienes, instálalo ahora desde <code>mongodb.com/products/tools/compass</code>: en <strong>Windows</strong> el <code>.msi</code>, normalmente (siguiente, siguiente, instalar), y en <strong>Mac</strong> abre el <code>.dmg</code> y arrastra Compass a la carpeta Aplicaciones.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>En la columna izquierda de Compass ya debe aparecer <strong>tu conexión de Atlas</strong> de la S10, con el nombre de tu cluster. Es normal: la conexión local que vas a crear ahora es una <strong>segunda</strong> conexión, y las dos conviven en la lista.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><strong>Clave de oro:</strong> Compass es solo el <strong>cliente visual</strong> (la pantalla con la que interactúas). No guarda datos por sí mismo: se conecta al <strong>servidor</strong> que instalaste en el Paso 1. Si ese servicio no está corriendo, Compass mostrará un error de conexión.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Conéctate a tu servidor local. Pulsa el botón verde <strong>+ Add new connection</strong> de la pantalla de bienvenida (o el ícono <strong>+</strong> junto a "CONNECTIONS" en la columna izquierda). Se abre la ventana <strong>New Connection</strong>:</p>
+<figure style="margin:14px 0;"><img src="img/compass_modal_connection.png" alt="Ventana New Connection de MongoDB Compass" loading="lazy" style="display:block;max-width:100%;width:560px;border:1px solid var(--border);border-radius:10px;"><figcaption style="font-size:12.5px;color:var(--txt-dim);margin-top:6px;">La ventana <strong>New Connection</strong>. En tu Compass el campo URI puede venir con <code>mongodb://localhost:27017/</code> ya escrito.</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Qué escribir</th></tr></thead><tbody><tr><td>URI</td><td><code>mongodb://127.0.0.1:27017</code></td></tr><tr><td>Name</td><td><code>TechStore Local</code>: el nombre con el que aparecerá en tu lista de conexiones</td></tr><tr><td>Color</td><td>Elige <strong>verde</strong>. En el Paso 6 la conexión de Atlas llevará otro color, para no confundirlas</td></tr><tr><td>Advanced Connection Options</td><td>No se modifica: el entorno local no lo necesita</td></tr></tbody></table></div>
+<p>Pulsa el botón verde oscuro <strong>Save &amp; Connect</strong>: Compass guarda la conexión y entra de inmediato.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Compass funciona igual con <code>localhost</code> y con <code>127.0.0.1</code>. En esta guía usamos <code>127.0.0.1</code> en todas partes para acostumbrarte a una dirección que <strong>siempre</strong> funciona: en el <code>.env</code> del Paso 3 sí importa, porque con algunas versiones de Node (17 a 19) <code>localhost</code> se resuelve a la dirección IPv6 (<code>::1</code>) y MongoDB solo atiende IPv4 por defecto.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Los nombres de los botones de Compass pueden variar un poco según la versión (esta guía se escribió para la 1.4x). Si no encuentras uno, busca el que tenga la misma función o pregunta al instructor.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> aparece un <strong>círculo verde</strong> junto a <code>TechStore Local</code> y, al desplegarla, la lista de bases del servidor. Siempre verás <strong>admin</strong>, <strong>config</strong> y <strong>local</strong>: son internas de MongoDB, no las toques. Si ves otras bases que no reconoces, es <strong>normal</strong>: Compass lista todo lo que ya existe en el MongoDB de tu computador. Aún no existe <code>techstore</code>: la creará el propio backend en el Paso 3, la primera vez que se conecte en modo local. Si sale <strong>ECONNREFUSED</strong>, el servidor está apagado: en Windows, abre el <strong>Símbolo del sistema como administrador</strong> y ejecuta <code>net start MongoDB</code>; en Mac, <code>brew services start mongodb-community@7.0</code>.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Crea una base de práctica para ver cómo se organiza todo. En la columna izquierda pasa el mouse sobre <code>TechStore Local</code> y pulsa el botón circular <strong>+</strong>, que muestra el mensaje <strong>Create database</strong>:</p>
+<figure style="margin:14px 0;"><img src="img/compass_create_db_icon.png" alt="Botón + Create database en la barra lateral de Compass" loading="lazy" style="display:block;max-width:100%;width:560px;border:1px solid var(--border);border-radius:10px;"><figcaption style="font-size:12.5px;color:var(--txt-dim);margin-top:6px;">El botón <strong>+</strong> aparece al pasar el mouse sobre el nombre de la conexión.</figcaption></figure>
+<p>En la ventana <strong>Create Database</strong> escribe:</p>
+<figure style="margin:14px 0;"><img src="img/compass_modal_create_db.png" alt="Ventana Create Database de MongoDB Compass" loading="lazy" style="display:block;max-width:100%;width:560px;border:1px solid var(--border);border-radius:10px;"><figcaption style="font-size:12.5px;color:var(--txt-dim);margin-top:6px;">Compass pide <strong>siempre</strong> una colección para poder guardar la base nueva.</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Valor</th></tr></thead><tbody><tr><td>Database Name</td><td><code>practica</code> (en minúsculas, sin espacios)</td></tr><tr><td>Collection Name</td><td><code>notas</code></td></tr></tbody></table></div>
+<p>Pulsa el botón verde <strong>Create Database</strong>. Compass abre la colección <code>notas</code>, vacía. Pulsa <strong>ADD DATA ▾ → Insert document</strong>. Si la ventana muestra campos sueltos, pulsa el ícono de llaves <strong>{ }</strong> de la esquina superior derecha para pasar a modo JSON, borra todo lo que haya y pega:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">Compass — documento de prueba</span></div><pre>{
+  "titulo": "Mi primera nota",
+  "hecha": false
+}</pre></div>
+<p>Pulsa <strong>Insert</strong>.</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en la pestaña <strong>Documents</strong> aparece tu nota con un campo <code>_id</code> que <strong>tú no escribiste</strong>: lo crea MongoDB solo, y es el mismo <code>_id</code> con el que busca <code>GET /api/productos/:id</code> en S29. En la barra <strong>Filter</strong> escribe <code>{ "hecha": false }</code> y pulsa <strong>Find</strong>: aparece tu nota. Con <code>{ "hecha": true }</code> no aparece nada.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">4</div><div class="step-body">
+<p>Edita y borra, para saber hacerlo con cuidado. Pasa el mouse sobre tu documento y pulsa el <strong>lápiz</strong>: cambia <code>false</code> por <code>true</code> y pulsa <strong>Update</strong>. Luego, en la columna izquierda, pasa el mouse sobre la base <code>practica</code> y elige <strong>Drop database</strong> (el ícono del bote de basura o el menú de los tres puntos <strong>⋯</strong>, según tu versión de Compass). Escribe el nombre de la base para confirmar.</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> la base <code>practica</code> desaparece de la lista.</span></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Una regla de oro de la edición, que usarás todo el curso: <strong>nunca modifiques ni borres a ciegas</strong>. Primero <strong>busca</strong> el documento (Filter), después <strong>actúa</strong> (editar o borrar) y al final <strong>busca de nuevo</strong> para confirmar. Y filtra siempre por un identificador único, como el <code>_id</code>, no por un texto libre que pueda repetirse.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Compass puede borrar una colección o una base entera con dos clics, <strong>sin papelera</strong>. Antes de borrar o editar algo, mira arriba <strong>a qué conexión estás conectado</strong>: ahora es tu base local, pero en el Paso 6 también tendrás conectada la de Atlas.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO3 ════ -->
+  <section class="section" id="paso3" data-step="paso3">
+    <div class="section-header">
+      <span class="step-badge extra">Paso 3 · Entornos</span>
+      <h2 class="section-title">Dos entornos en el .env y una línea en server.js</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Hoy <code>server.js</code> lee una sola variable, <code>MONGODB_URI</code>, que apunta a Atlas. Se renombra y se agrega una segunda dirección, la local, más un interruptor, <code>DB_MODO</code>, que decide cuál se usa. El código de las rutas, los modelos y el frontend <strong>no cambian</strong>.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Abre <code>backend/.env</code>. Los <strong>valores</strong> (después del <code>=</code>) no se tocan: solo cambia el <strong>nombre</strong> de una variable y se agregan dos líneas. Este es el cambio, con <code>...</code> en lugar de tus datos:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/.env — antes</span><span class="code-tag yellow">antes</span></div><pre>MONGODB_USERNAME=...
+MONGODB_PASSWORD=...
+MONGODB_URI=mongodb+srv://...
+PORT=3000
+JWT_SECRET=...</pre></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/.env — después</span><span class="code-tag green">después</span></div><pre>MONGODB_USERNAME=...
+MONGODB_PASSWORD=...
+<span class="edit-line">DB_MODO=atlas</span>
+<span class="edit-line">MONGODB_URI_ATLAS=mongodb+srv://...</span>
+<span class="edit-line">MONGODB_URI_LOCAL=mongodb://127.0.0.1:27017/techstore</span>
+PORT=3000
+JWT_SECRET=...</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>MONGODB_URI → MONGODB_URI_ATLAS</td><td>Solo se cambia el <strong>nombre</strong>. Que diga "ATLAS" evita confundirla con la local. El valor (tu cadena <code>mongodb+srv://...</code>) queda exactamente igual</td></tr><tr><td>DB_MODO=atlas</td><td>El interruptor. Con <code>atlas</code> todo funciona como hasta hoy; con <code>local</code> el backend usa la base de tu computador. Empieza en <code>atlas</code> para no cambiar nada todavía</td></tr><tr><td>MONGODB_URI_LOCAL=mongodb://127.0.0.1:27017/techstore</td><td><code>mongodb://</code> es el formato clásico (sin usuario ni clave), <code>127.0.0.1</code> es este computador, <code>27017</code> el puerto y <code>techstore</code> el nombre de la base. Si la base no existe, MongoDB la crea sola al guardar el primer documento</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Borra del <code>.env</code> cualquier línea que <strong>no</strong> tenga la forma <code>NOMBRE=valor</code> (por ejemplo un texto o un JSON que se pegó por error). Y recuerda: el <code>.env</code> <strong>nunca</strong> se comparte ni se sube a GitHub (ya está en <code>.gitignore</code>) porque tiene contraseñas y claves. No muestres tu <code>.env</code> en pantalla compartida.</span></div>
+<p><strong>Si algo falla</strong>, estos son los errores más comunes de esta parte (varios ya los viste en la S12):</p>
+<div class="table-wrap"><table><thead><tr><th>Lo que ves</th><th>Causa</th><th>Qué hacer</th></tr></thead><tbody><tr><td>The uri parameter to openUri() must be a string, got "undefined"</td><td>El nombre de la variable que <code>server.js</code> busca no existe en el <code>.env</code>: no se renombró <code>MONGODB_URI</code>, hay un error de tipeo, o <code>DB_MODO</code> está mal escrito</td><td>Revisa que existan exactamente <code>MONGODB_URI_ATLAS</code> y <code>MONGODB_URI_LOCAL</code>, y que <code>DB_MODO</code> sea <code>local</code> o <code>atlas</code>. Guarda y escribe <code>rs</code> en la terminal del backend</td></tr><tr><td>Conecta, pero la tienda sale vacía o con otros datos</td><td>A la cadena le falta el nombre de la base al final (<code>/techstore</code>). Sin él, MongoDB usa una base llamada <code>test</code></td><td>Comprueba que la cadena local y la de Atlas terminan en <code>/techstore</code></td></tr><tr><td>MongoServerError: bad auth</td><td>Usuario o contraseña incorrectos en la cadena de Atlas</td><td>Revisa la cadena; si hace falta, restablece la contraseña en Atlas</td></tr><tr><td>MongooseServerSelectionError</td><td>En local, el servidor de MongoDB está apagado. En Atlas, tu IP no está permitida</td><td>Local: revisa el servicio (Paso 1). Atlas: <strong>Network Access</strong> con <code>0.0.0.0/0</code> en <strong>Active</strong></td></tr></tbody></table></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Abre <code>backend/server.js</code>. La sección <strong>4</strong> conecta con la base. Este es el bloque tal como está hoy y como debe quedar (el resto del archivo no se toca):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/server.js</span><span class="code-tag yellow">antes</span></div><pre><span class="c">// 4. Conectar con MongoDB Altla</span>
+mongoose.<span class="f">connect</span>(process.env.MONGODB_URI)
+  .<span class="f">then</span>(() =&gt; console.<span class="f">log</span>(<span class="s">'✅ Conectado a MongoDB Atlas'</span>))
+  .<span class="k">catch</span>((err) =&gt; console.<span class="f">error</span>(<span class="s">'❌ Error de conexión:'</span>, err));</pre></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/server.js</span><span class="code-tag green">después — así queda</span></div><pre><span class="edit-line"><span class="c">// 4. Conectar con MongoDB: local o Atlas, según DB_MODO en el .env</span></span>
+<span class="edit-line"><span class="k">const</span> modo = process.env.DB_MODO === <span class="s">'local'</span> ? <span class="s">'local'</span> : <span class="s">'atlas'</span>;</span>
+<span class="edit-line"><span class="k">const</span> uri  = modo === <span class="s">'local'</span></span>
+<span class="edit-line">  ? process.env.MONGODB_URI_LOCAL</span>
+<span class="edit-line">  : process.env.MONGODB_URI_ATLAS;</span>
+
+<span class="edit-line">mongoose.<span class="f">connect</span>(uri)</span>
+<span class="edit-line">  .<span class="f">then</span>(() =&gt; console.<span class="f">log</span>(<span class="s">'✅ Conectado a MongoDB ('</span> + modo + <span class="s">')'</span>))</span>
+  .<span class="k">catch</span>((err) =&gt; console.<span class="f">error</span>(<span class="s">'❌ Error de conexión:'</span>, err));</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="c">// 4. Conectar con MongoDB Altla</span>
+mongoose.<span class="f">connect</span>(process.env.MONGODB_URI)
+  .<span class="f">then</span>(() =&gt; console.<span class="f">log</span>(<span class="s">'✅ Conectado a MongoDB Atlas'</span>))</pre><div class="cambio-por">por</div><pre><span class="c">// 4. Conectar con MongoDB: local o Atlas, según DB_MODO en el .env</span>
+<span class="k">const</span> modo = process.env.DB_MODO === <span class="s">'local'</span> ? <span class="s">'local'</span> : <span class="s">'atlas'</span>;
+<span class="k">const</span> uri  = modo === <span class="s">'local'</span>
+  ? process.env.MONGODB_URI_LOCAL
+  : process.env.MONGODB_URI_ATLAS;
+
+mongoose.<span class="f">connect</span>(uri)
+  .<span class="f">then</span>(() =&gt; console.<span class="f">log</span>(<span class="s">'✅ Conectado a MongoDB ('</span> + modo + <span class="s">')'</span>))</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>process.env.DB_MODO</td><td>Lee la variable del <code>.env</code> (la carga <code>dotenv</code>, en la primera línea de <code>server.js</code>)</td></tr><tr><td>const modo = process.env.DB_MODO === 'local' ? 'local' : 'atlas'</td><td>Un operador ternario: si la variable vale exactamente <code>"local"</code>, <code>modo</code> es <code>"local"</code>; <strong>cualquier otra cosa</strong> (incluso si falta la variable) es <code>"atlas"</code>. Así, si alguien olvida la variable, el proyecto sigue funcionando como siempre</td></tr><tr><td>const uri = modo === 'local' ? ...LOCAL : ...ATLAS</td><td>Elige cuál de las dos direcciones usar. Se escribe en varias líneas porque no cabe cómoda en una</td></tr><tr><td>mongoose.connect(uri)</td><td>Es la misma línea de antes, pero conectando a la dirección elegida en vez de a una fija</td></tr><tr><td>'<svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Conectado a MongoDB (' + modo + ')'</td><td>El mensaje de arranque ahora dice <strong>a cuál base</strong> se conectó. Es tu confirmación de que el interruptor funcionó</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>El <code>.env</code> se lee <strong>una sola vez, al arrancar</strong> el servidor. <strong><code>nodemon</code> NO reinicia solo cuando cambias el <code>.env</code></strong>: solo vigila los archivos de código. Para que un cambio de <code>DB_MODO</code> surta efecto, en la terminal donde corre el backend escribe <strong><code>rs</code></strong> y pulsa Enter (es el comando de reinicio manual de nodemon), o detén con <code>Ctrl + C</code> y vuelve a iniciar con <code>npm run dev</code>. Si olvidas reiniciar, el backend sigue usando la base de antes.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Un detalle útil: para saber <strong>a qué base está conectado</strong> el backend sin mirar la terminal, la ruta de prueba (<code>/</code>) también lo va a decir. En <code>server.js</code>, busca la sección <strong>9</strong> (ruta de prueba) y cámbiala así:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/server.js</span><span class="code-tag yellow">antes</span></div><pre>app.<span class="f">get</span>(<span class="s">'/'</span>, (req, res) =&gt; {
+  res.<span class="f">json</span>({ mensaje: <span class="s">'Servidor TechStore Pro ✅'</span> });
+});</pre></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/server.js</span><span class="code-tag green">después — así queda</span></div><pre>app.<span class="f">get</span>(<span class="s">'/'</span>, (req, res) =&gt; {
+<span class="edit-line">  res.<span class="f">json</span>({ mensaje: <span class="s">'Servidor TechStore Pro ✅'</span>, baseDeDatos: modo });</span>
+});</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre>res.<span class="f">json</span>({ mensaje: <span class="s">'Servidor TechStore Pro ✅'</span> });</pre><div class="cambio-por">por</div><pre>res.<span class="f">json</span>({ mensaje: <span class="s">'Servidor TechStore Pro ✅'</span>, baseDeDatos: modo });</pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>baseDeDatos: modo</td><td>Agrega un campo a la respuesta con el valor de la variable <code>modo</code>, que vale <code>"local"</code> o <code>"atlas"</code></td></tr><tr><td>La variable modo ya existe</td><td>Se declaró con <code>const</code> en la sección 4, que está <strong>antes</strong> en el archivo, así que esta ruta puede usarla</td></tr><tr><td>Se agrega una coma</td><td>En un objeto, los campos se separan con comas: <code>mensaje: ...,</code> y luego <code>baseDeDatos: ...</code></td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Como cambió un archivo de código, <code>nodemon</code> sí reinicia solo al guardar. Esta vez no tienes que hacer nada más.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">4</div><div class="step-body">
+<p>Primero comprueba que <strong>nada se rompió</strong>. Con <code>DB_MODO=atlas</code> guardado, el backend corriendo (<code>npm run dev</code> en <code>backend/</code>) y reiniciado si hacía falta:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal 1 — dentro de backend/</span></div><pre>npm run dev</pre></div>
+<p>Para ver la tienda también necesitas el <strong>frontend de React</strong> corriendo. Ábrelo en una <strong>segunda terminal</strong> (si ya lo tenías abierto de la sesión anterior, no hace falta repetirlo):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal 2 — dentro de frontend-react/</span></div><pre>npm run dev</pre></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Son <strong>dos servidores</strong>, cada uno en su propia terminal y los dos al mismo tiempo: el <strong>backend</strong> (puerto 3000, el que habla con la base de datos) y el <strong>frontend</strong> (puerto 5173, la tienda que ves en el navegador). Al cambiar de entorno <strong>solo se reinicia el backend</strong>; el frontend sigue corriendo y basta con recargar la página (<code>F5</code>).</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> la terminal dice <strong><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Conectado a MongoDB (atlas)</strong>, abrir <code>localhost:3000</code> en el navegador muestra <code>"baseDeDatos":"atlas"</code> y la tienda en <code>localhost:5173/productos</code> muestra tus productos de siempre.</span></div>
+<p>Ahora cambia <strong>solo</strong> la línea <code>DB_MODO=atlas</code> por <code>DB_MODO=local</code>, guarda con <code>Ctrl + S</code>, y en la terminal del backend escribe <strong><code>rs</code></strong> y Enter.</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> la terminal dice <strong><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Conectado a MongoDB (local)</strong>, <code>localhost:3000</code> muestra <code>"baseDeDatos":"local"</code> y, al recargar <code>localhost:5173/productos</code>, la tienda aparece <strong>vacía</strong> ("No se encontraron productos…"). Es lo esperado: la base local es nueva y no tiene ningún producto. Eso es lo que arregla el paso siguiente.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><strong>Mira Compass.</strong> En <code>TechStore Local</code> pulsa el ícono <strong>Refresh databases</strong> (las flechas circulares): ahora aparece la base <strong>techstore</strong>. La creó el backend al conectarse, junto con una colección vacía por cada modelo. La verás completa en el Paso 4.</span></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Si en modo local la terminal muestra un error de conexión, el servidor de MongoDB no está corriendo: vuelve al Paso 1 y revisa el estado del servicio. Si el error menciona <code>::1</code>, la dirección dice <code>localhost</code> en lugar de <code>127.0.0.1</code>. Si la terminal dice (atlas) aunque escribiste <code>local</code>, olvidaste reiniciar con <code>rs</code>.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO4 ════ -->
+  <section class="section" id="paso4" data-step="paso4">
+    <div class="section-header">
+      <span class="step-badge teal">Paso 4 · Seed</span>
+      <h2 class="section-title">Sembrar el catálogo con un script</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Una base nueva está vacía, y llenarla a mano producto por producto sería lento y repetir el trabajo en cada computador. Un <strong>seed</strong> (semilla) es un script que la llena con datos iniciales conocidos, las veces que haga falta. Usa el <code>productos.json</code> que ya está en <code>frontend/data/</code>. <strong>No hace falta crear nada a mano</strong>: la base <code>techstore</code> y sus colecciones ya las creó el backend al conectarse en modo local (Paso 3), pero están <strong>vacías</strong>. El seed solo las llena.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Crea <code>backend/seed.js</code> con este contenido completo:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/seed.js</span><span class="code-tag green">archivo nuevo — contenido completo</span></div><pre><span class="c">// Siembra la base LOCAL con el catálogo de frontend/data/productos.json</span>
+<span class="c">// Uso: DB_MODO=local en el .env y luego  npm run seed</span>
+<span class="f">require</span>(<span class="s">'dotenv'</span>).<span class="f">config</span>();
+<span class="k">const</span> mongoose = <span class="f">require</span>(<span class="s">'mongoose'</span>);
+<span class="k">const</span> Producto = <span class="f">require</span>(<span class="s">'./models/Producto'</span>);
+<span class="k">const</span> productos = <span class="f">require</span>(<span class="s">'../frontend/data/productos.json'</span>);
+
+<span class="k">async</span> <span class="k">function</span> <span class="f">sembrar</span>() {
+  <span class="c">// Freno de seguridad: el seed BORRA los productos, así que nunca corre contra Atlas</span>
+  <span class="k">if</span> (process.env.DB_MODO !== <span class="s">'local'</span>) {
+    console.<span class="f">error</span>(<span class="s">'❌ El seed solo corre con DB_MODO=local en el .env. No se hizo nada.'</span>);
+    process.<span class="f">exit</span>(<span class="y">1</span>);
+  }
+
+  <span class="k">await</span> mongoose.<span class="f">connect</span>(process.env.MONGODB_URI_LOCAL);
+  <span class="k">await</span> Producto.<span class="f">deleteMany</span>({});
+  <span class="k">await</span> Producto.<span class="f">insertMany</span>(productos);
+  console.<span class="f">log</span>(<span class="s">'✅ Productos sembrados en la base local: '</span> + productos.length);
+  <span class="k">await</span> mongoose.<span class="f">disconnect</span>();
+}
+
+<span class="f">sembrar</span>().<span class="k">catch</span>((err) =&gt; {
+  console.<span class="f">error</span>(<span class="s">'❌ Error en el seed:'</span>, err.message);
+  process.<span class="f">exit</span>(<span class="y">1</span>);
+});</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>require('dotenv').config()</td><td>Carga el <code>.env</code>, igual que en <code>server.js</code>: este script es un programa aparte y necesita leerlo por su cuenta</td></tr><tr><td>require('../frontend/data/productos.json')</td><td>Node puede importar un archivo JSON directamente. <code>../</code> sube de <code>backend/</code> a la carpeta del proyecto y entra a <code>frontend/data/</code>. Resultado: un arreglo con los 6 productos</td></tr><tr><td>if (process.env.DB_MODO !== 'local')</td><td>El <strong>freno de seguridad</strong>. El seed borra los productos antes de insertarlos, así que si por error se ejecutara contra Atlas borraría lo de producción. Si el modo no es <code>"local"</code>, imprime un aviso y termina</td></tr><tr><td>process.exit(1)</td><td>Termina el programa. El <code>1</code> significa "terminó con error" (un <code>0</code> sería éxito)</td></tr><tr><td>mongoose.connect(process.env.MONGODB_URI_LOCAL)</td><td>Se conecta <strong>siempre a la local</strong>, nunca a la de Atlas: la dirección no depende de un condicional, así no hay forma de equivocarse</td></tr><tr><td>await Producto.deleteMany({})</td><td>Borra <strong>todos</strong> los documentos de la colección <code>productos</code>. El <code>{}</code> significa "sin filtro: todos". Por esto el seed se puede correr muchas veces sin duplicar</td></tr><tr><td>await Producto.insertMany(productos)</td><td>Inserta los 6 productos de una sola vez, validándolos con el mismo modelo que usa el backend</td></tr><tr><td>await mongoose.disconnect()</td><td>Cierra la conexión; sin esto, el programa se quedaría esperando y no terminaría</td></tr><tr><td>sembrar().catch(...)</td><td><code>sembrar</code> es una función <code>async</code> (S24): si algo falla dentro, el <code>.catch</code> muestra el error y sale con código 1</td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>El modelo <code>Producto</code> guarda <code>id</code>, <code>icono</code>, <code>nombre</code>, <code>descripcion</code>, <code>precio</code> e <code>imagen</code>. Cada documento sembrado recibe además un <code>_id</code> <strong>nuevo</strong>: por eso las direcciones de ficha de S29 (<code>/productos/&lt;_id&gt;</code>) de una base no sirven en la otra, ni después de volver a sembrar. Es normal.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Para correr el seed con un comando corto, se agrega una línea al <code>package.json</code> de <code>backend/</code>, dentro de <code>scripts</code>. Ojo con la <strong>coma</strong> al final de la línea <code>start</code>:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/package.json</span><span class="code-tag yellow">antes</span></div><pre>  "scripts": {
+  "dev":   "nodemon server.js",
+  "start": "node server.js"
+  },</pre></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">backend/package.json</span><span class="code-tag green">después — así queda</span></div><pre>  "scripts": {
+  "dev":   "nodemon server.js",
+<span class="edit-line">  "start": "node server.js",</span>
+<span class="edit-line">  "seed":  "node seed.js"</span>
+  },</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>"start": "node server.js",</td><td>Se agregó una <strong>coma</strong> al final: en un JSON, todos los elementos de una lista van separados por comas, menos el último</td></tr><tr><td>"seed":  "node seed.js"</td><td>Define el comando <code>npm run seed</code>, que ejecuta <code>node seed.js</code>. Va <strong>sin coma</strong> porque ahora es el último</td></tr></tbody></table></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Antes de sembrar, mira qué hay en la base. En Compass pulsa el ícono <strong>Refresh databases</strong> (las flechas circulares) junto a <code>TechStore Local</code> y despliega la base <strong>techstore</strong>:</p>
+<div class="table-wrap"><table><thead><tr><th>Colección en Compass</th><th>Para qué sirve</th><th>Documentos ahora</th></tr></thead><tbody><tr><td>productos</td><td>El catálogo de la tienda (modelo Producto)</td><td>0</td></tr><tr><td>usuarios</td><td>Las cuentas de usuario (S30)</td><td>0</td></tr><tr><td>mensajes</td><td>Los mensajes del formulario de contacto (S27)</td><td>0</td></tr><tr><td>ordens</td><td>Los pedidos</td><td>0</td></tr><tr><td>transaccions</td><td>Los pagos de Wompi</td><td>0</td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> la base <strong>techstore</strong> ya existe y tiene las <strong>5 colecciones</strong>, todas vacías. No las creaste tú: las creó el backend (Mongoose) cuando se conectó en modo local, una por cada modelo de <code>backend/models/</code>. Si falta alguna, el backend no llegó a conectarse en local: revisa el Paso 3.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Los nombres <code>ordens</code> y <code>transaccions</code> se ven raros: Mongoose pone en plural el nombre de cada modelo con reglas del inglés (<code>Orden</code> pasa a <code>ordens</code>, <code>Transaccion</code> a <code>transaccions</code>). No es un error y no se cambia.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">4</div><div class="step-body">
+<p>Ahora mismo tu <code>.env</code> dice <code>DB_MODO=local</code>, porque así lo dejaste al final del Paso 3. Primero prueba el <strong>freno</strong>: cambia <strong>temporalmente</strong> esa línea a <code>DB_MODO=atlas</code> y guarda con <code>Ctrl + S</code>. <strong>No reinicies</strong> el backend: el seed es un programa aparte y lee el <code>.env</code> cada vez que se ejecuta. En una terminal dentro de <code>backend/</code> (no hace falta detener el servidor):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — dentro de backend/</span></div><pre>npm run seed</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> el seed <strong>se niega</strong>: muestra "<svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> El seed solo corre con DB_MODO=local en el .env. No se hizo nada." y no toca nada. Tus productos de Atlas siguen intactos.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span><strong>Vuelve a poner <code>DB_MODO=local</code> y guarda enseguida</strong>, antes de seguir. Mientras el <code>.env</code> diga atlas, no edites ningún archivo de código: si <code>nodemon</code> reiniciara el backend en ese momento, arrancaría en atlas sin que lo notes.</span></div>
+<p>Con <code>DB_MODO=local</code> guardado otra vez, ejecuta el seed. Córrelo <strong>dos veces seguidas</strong>.</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> cada vez muestra <strong><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Productos sembrados en la base local: 6</strong>. La segunda vez sigue en 6, no en 12: borra y vuelve a insertar. Vuelve a Compass y pulsa otra vez <strong>Refresh databases</strong>: la colección <strong>productos</strong> ahora tiene <strong>6 documentos</strong> y las otras cuatro siguen con <strong>0</strong>. El seed solo llenó el catálogo.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Es normal que, además de tu mensaje, aparezca una línea que empieza con <code>injected env</code> y un consejo. La escribe <code>dotenv</code> (la librería que lee el <code>.env</code>) cada vez que se carga; no es un error.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO5 ════ -->
+  <section class="section" id="paso5" data-step="paso5">
+    <div class="section-header">
+      <span class="step-badge green">Paso 5 · Prueba</span>
+      <h2 class="section-title">Trabajar en local sin tocar Atlas</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Ya hay dos bases con el mismo catálogo y el interruptor para elegir. Ahora compruebas lo más importante: que lo que hagas en una <strong>no afecta</strong> a la otra.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Antes de probar, aprende <strong>la rutina para cambiar de entorno</strong>. Es <strong>siempre la misma</strong> y son tres pasos. La vas a repetir muchas veces en el resto de la Fase 5:</p>
+<div class="table-wrap"><table><thead><tr><th>Paso</th><th>Qué haces</th><th>Qué debes ver</th></tr></thead><tbody><tr><td>1. Cambiar el interruptor</td><td>En <code>backend/.env</code> pon <code>DB_MODO=local</code> o <code>DB_MODO=atlas</code> y guarda con <code>Ctrl + S</code></td><td>La pestaña de <code>.env</code> en VS Code muestra una <strong>X</strong> y no un círculo blanco (●). Si ves el círculo, el archivo no está guardado: pulsa <code>Ctrl + S</code></td></tr><tr><td>2. Reiniciar el backend</td><td>En la terminal donde corre el backend escribe <strong><code>rs</code></strong> y pulsa Enter (o <code>Ctrl + C</code> y <code>npm run dev</code>)</td><td>La terminal vuelve a arrancar: "Servidor en http://localhost:3000"</td></tr><tr><td>3. Confirmar</td><td>Lee el mensaje de arranque, o abre <code>localhost:3000</code> en el navegador</td><td>"Conectado a MongoDB (local)" o "(atlas)", y <code>"baseDeDatos"</code> con el mismo valor</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>El error más común: cambiar el <code>.env</code> y <strong>olvidar el paso 2</strong>. El backend sigue usando la base de antes y todo "parece" no funcionar. La señal para detectarlo es que el mensaje de la terminal <strong>no coincide</strong> con lo que escribiste en el <code>.env</code>.</span></div>
+<p><strong>¿En qué entorno estoy?</strong> Tres señales, de la más rápida a la más completa:</p>
+<div class="table-wrap"><table><thead><tr><th>Señal</th><th>Cómo mirarla</th><th>Qué dice</th></tr></thead><tbody><tr><td>Mensaje de arranque</td><td>La terminal del backend, al iniciar</td><td>"Conectado a MongoDB (local)" o "(atlas)"</td></tr><tr><td>La ruta de prueba</td><td>Abrir <code>localhost:3000</code> en el navegador</td><td><code>"baseDeDatos":"local"</code> o <code>"atlas"</code>, el valor con el que arrancó el servidor</td></tr><tr><td>Compass</td><td>El ícono y el color de la conexión</td><td>Una <strong>laptop</strong> y color verde: <code>TechStore Local</code>. Un <strong>servidor</strong> y color rojo: <code>TechStore Atlas</code>. Ahí ves los datos de <strong>cada</strong> base</td></tr></tbody></table></div>
+<p><strong>¿Cuál uso y cuándo?</strong></p>
+<div class="table-wrap"><table><thead><tr><th>Situación</th><th>Entorno</th><th>Por qué</th></tr></thead><tbody><tr><td>Desarrollar y probar el día a día</td><td><code>local</code></td><td>No depende de internet y los datos de prueba no ensucian nada</td></tr><tr><td>Probar registro, login y pagos de prueba (S30 a S33)</td><td><code>local</code></td><td>Los usuarios y pedidos de prueba se quedan en tu computador</td></tr><tr><td>Correr npm run seed o borrar datos</td><td><code>local</code> (obligatorio)</td><td>El seed borra datos: por eso se niega a correr en Atlas</td></tr><tr><td>Ver o publicar lo "real", o la demo final</td><td><code>atlas</code></td><td>Es la base que ve el público cuando el proyecto se publica</td></tr></tbody></table></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Comprueba que tienes <strong>los dos servidores corriendo</strong>: el <strong>backend</strong> en la terminal 1 y el <strong>frontend de React</strong> en la terminal 2 (<code>npm run dev</code> dentro de <code>frontend-react/</code>, en <code>localhost:5173</code>). Si cerraste el frontend, ábrelo de nuevo. Después aplica la rutina de cambio (pasos 1 a 3 de arriba) con <code>DB_MODO=local</code>: el backend se reinicia con <code>rs</code>; el frontend no se toca.</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> la terminal dice <strong><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Conectado a MongoDB (local)</strong> y <code>localhost:5173/productos</code> muestra tus <strong>6 productos</strong> con sus fotos, el buscador, el orden y el modal, igual que antes. El frontend no cambió: sigue pidiendo <code>localhost:3000/api/productos</code>, y el backend ahora responde con la base local.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Cambia un dato <strong>desde Compass</strong>. En la base <code>techstore</code>, colección <code>productos</code>, edita el documento del iPhone 15 Pro (el lápiz que aparece al pasar el mouse): cambia el campo <code>precio</code> a <code>$1.234.567</code> y pulsa <strong>Update</strong>. Recarga la tienda. <strong>No escribas comillas</strong>: el valor de un campo de texto ya aparece entre comillas, y tú solo cambias lo que hay <strong>dentro</strong> de ellas.</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> la tarjeta del iPhone muestra <strong>$1.234.567</strong>. Cambiaste un dato <strong>sin escribir una sola línea de código</strong> y sin que nadie más en el mundo lo viera.</span></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Para dejar todo como estaba, no hace falta deshacer cambio por cambio: con <code>DB_MODO=local</code> ejecuta <strong><code>npm run seed</code></strong> y los 6 productos vuelven a su estado original. Para eso sirve un seed.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">4</div><div class="step-body">
+<p>Ahora vuelve a Atlas: aplica la rutina de cambio con <code>DB_MODO=atlas</code> y recarga la tienda.</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> la terminal dice <strong><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Conectado a MongoDB (atlas)</strong> y el iPhone muestra su precio <strong>original</strong>. Los $1.234.567 solo existen en tu computador. Esa es la idea de dos entornos: puedes experimentar sin miedo.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span><strong>Un detalle de S29:</strong> las direcciones de ficha llevan el <code>_id</code>, y cada base tiene <code>_id</code> distintos. Si en modo atlas copias la dirección de una ficha (<code>/productos/6a72...</code>) y cambias a modo local, esa dirección dirá "Producto no encontrado". No es un error: ese <code>_id</code> no existe en la otra base.</span></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Para el resto de la Fase 5 (login, registro y pagos de prueba en S30 a S33), trabaja con <strong><code>DB_MODO=local</code></strong>: tus usuarios de prueba y pedidos de prueba no ensucian Atlas. Cambia a <code>atlas</code> solo cuando quieras ver o publicar lo "real".</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO6 ════ -->
+  <section class="section" id="paso6" data-step="paso6">
+    <div class="section-header">
+      <span class="step-badge extra">Paso 6 · Producción</span>
+      <h2 class="section-title">Llevar una colección de local a Atlas</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Las dos bases no se comunican entre sí. Para mover datos hay que <strong>sacarlos a un archivo</strong> y <strong>meterlos en el otro lado</strong>. Compass lo hace con dos botones. Hoy lo practicas con una colección de <strong>prueba</strong>, para no tocar tus productos reales de Atlas.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Exporta desde la base local. En Compass, conectado a <code>TechStore Local</code>, abre <code>techstore</code> → <code>productos</code> y sigue esta secuencia:</p>
+<div class="table-wrap"><table><thead><tr><th>Qué hacer</th><th>Detalle</th></tr></thead><tbody><tr><td>Pulsa EXPORT DATA ▾ y elige Export the full collection</td><td>Es el tercer botón de la barra de herramientas, dos casillas a la derecha del verde <strong>ADD DATA</strong>. Ruta alternativa: menú <strong>Collection → Export Collection</strong></td></tr><tr><td>Deja todos los campos seleccionados y pulsa Select output</td><td>Así se exportan los 6 productos completos</td></tr><tr><td>En Select export file type deja marcado JSON</td><td>No CSV: el JSON conserva los tipos de dato y el <code>_id</code></td></tr><tr><td>Pulsa Browse, elige el escritorio y llama al archivo productos_local.json</td><td>Después pulsa el botón verde <strong>Export</strong></td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>No confundas los botones: <strong>ADD DATA</strong> es solo para <strong>meter</strong> datos (insertar o importar), y <strong>EXPORT DATA</strong> para <strong>sacarlos</strong>. Los tres puntos <code>...</code> junto a "CONNECTIONS" exportan las <strong>conexiones</strong>, no los datos.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> el archivo <code>productos_local.json</code> existe en tu escritorio. Ábrelo con el Bloc de notas o VS Code: son tus 6 productos, cada uno con su <code>_id</code>.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Usa la conexión de <strong>tu</strong> Atlas. Si ya la tienes de la S10 (la que aparece en la lista con el nombre de tu cluster), <strong>no crees otra</strong>: ábrela y personalízala. Pasa el mouse sobre ella, pulsa los tres puntos <strong>...</strong> y elige <strong>Edit connection</strong>. Con la conexión abierta, Compass solo deja cambiar el nombre, el color y favorita, y no hace falta desconectar:</p>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Qué escribir</th></tr></thead><tbody><tr><td>Name</td><td><code>TechStore Atlas</code></td></tr><tr><td>Color</td><td>Elige <strong>rojo</strong>: así la conexión de producción se distingue de un vistazo de la local (verde)</td></tr></tbody></table></div>
+<p>Pulsa <strong>Save</strong>. Ahora la lista tiene <code>TechStore Local</code> (verde) y <code>TechStore Atlas</code> (rojo). Además del color, Compass distingue cada conexión por su <strong>ícono</strong>: una <strong>laptop</strong> para la local (vive en tu computador) y un <strong>servidor</strong> para Atlas. Si alguna vez dudas en cuál estás, mira el ícono y el color.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><strong>¿No tienes la conexión de Atlas?</strong> Créala con <strong>+ Add new connection</strong>, pega la cadena de Atlas (el valor de <code>MONGODB_URI_ATLAS</code> de tu <code>.env</code>, la que empieza con <code>mongodb+srv://</code>), pon el nombre y el color de arriba y pulsa <strong>Save &amp; Connect</strong>. <strong>Error frecuente:</strong> pegar la línea completa del <code>.env</code> con el nombre de la variable al principio (<code>MONGODB_URI_ATLAS=...</code>). El campo URI debe empezar <strong>exactamente</strong> con <code>mongodb+srv://</code>, sin comillas ni prefijo.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Esa cadena tiene tu contraseña de Atlas. Pégala tú mismo y no la envíes por mensajes ni la muestres en pantalla compartida. <strong>Antes de cada acción mira en qué conexión estás</strong>: el color te lo dice.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p><strong>Sin salir de Compass</strong> (no hace falta abrir la página de Atlas), selecciona la conexión <strong>TechStore Atlas</strong> (roja) en la columna izquierda, entra a tu base <code>techstore</code> y crea una colección nueva con el botón <strong>Create collection</strong>. Llámala <strong><code>productos_importados</code></strong> (no <code>productos</code>). Dentro de ella pulsa <strong>ADD DATA ▾ → Import JSON or CSV file</strong>, elige <code>productos_local.json</code> y pulsa <strong>Import</strong>.</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> la colección <code>productos_importados</code> de <strong>Atlas</strong> tiene <strong>6 documentos</strong>, con los mismos <code>_id</code> que los de la base local. Tu colección real <code>productos</code> de Atlas <strong>no cambió</strong>, y la tienda en modo atlas sigue mostrando lo de siempre.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Si hubieras importado sobre la colección <code>productos</code> real <strong>sin vaciarla antes</strong>, cada producto quedaría <strong>duplicado</strong>. Y borrar la colección antes de importar elimina lo que hubiera. Por eso se practica en una colección aparte. Con datos reales se hace una <strong>copia de seguridad</strong> antes de tocar nada.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">4</div><div class="step-body">
+<p>Limpia lo de práctica: en Atlas, en Compass (conexión <strong>TechStore Atlas</strong>), pasa el mouse sobre la colección <code>productos_importados</code>, pulsa los <strong>tres puntos</strong> (<strong>⋯</strong>) que aparecen a su derecha y elige <strong>Drop collection</strong>. Compass pide que escribas el nombre de la colección para confirmar: escríbelo y pulsa <strong>Drop Collection</strong>. Después borra de tu escritorio el archivo <code>productos_local.json</code>.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><strong>Lo que esta práctica NO mueve:</strong> los usuarios, las órdenes y los mensajes. Cada base tiene sus propias colecciones. Una cuenta que registres en local (S30) no existirá en Atlas, y al revés. Para exportar desde la terminal existen las "MongoDB Database Tools" (<code>mongoexport</code> y <code>mongoimport</code> para colecciones, <code>mongodump</code> y <code>mongorestore</code> para bases enteras); Compass hace lo mismo con botones.</span></div>
+<div class="table-wrap"><table><thead><tr><th>Prueba final</th><th>Resultado esperado</th></tr></thead><tbody><tr><td>DB_MODO=atlas y reiniciar</td><td>Mensaje "Conectado a MongoDB (atlas)" y tus productos de siempre</td></tr><tr><td>DB_MODO=local y reiniciar</td><td>Mensaje "Conectado a MongoDB (local)" y los 6 productos del seed</td></tr><tr><td>npm run seed con DB_MODO=atlas</td><td>Se niega; no borra nada</td></tr><tr><td>npm run seed con DB_MODO=local, dos veces</td><td>Siempre 6 productos, nunca 12</td></tr><tr><td>Precio editado en Compass (local)</td><td>Se ve en la tienda en modo local y <strong>no</strong> en modo atlas</td></tr><tr><td>Colección importada a Atlas</td><td>Aparece con 6 documentos; borrada después</td></tr></tbody></table></div>
+<div class="callout teal" style="margin-top:24px;"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg></span><span><strong>Próxima sesión S30 — Migrar Login y Registro:</strong> formularios controlados que hablan con <code>POST /api/auth/login</code> y <code>/registro</code>. Trabájala con <code>DB_MODO=local</code>: así los usuarios de prueba que registres no ensucian tu Atlas.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ CHECKLIST ════ -->
+  <section class="section" id="checklist" data-step="checklist">
+    <div class="section-header">
+      <span class="step-badge green">Cierre</span>
+      <h2 class="section-title">Checklist final de la sesión</h2>
+    </div>
+    <ul class="checklist" id="checklist-ul">
+      <li data-check="chk1"><span class="check-box"></span><span>Verificaste lo que ya tenías de la <strong>S10</strong> (Atlas, Compass y su conexión) y de la <strong>S12</strong> (backend con Mongoose), y completaste lo que faltaba</span></li>
+      <li data-check="chk2"><span class="check-box"></span><span><strong>MongoDB Community Server 7.0 o superior</strong> instalado y corriendo, y <strong>Compass</strong> conectado a <code>mongodb://127.0.0.1:27017</code></span></li>
+      <li data-check="chk3"><span class="check-box"></span><span>El <strong>.env</strong> tiene <code>DB_MODO</code>, <code>MONGODB_URI_LOCAL</code> y <code>MONGODB_URI_ATLAS</code>, y <strong>server.js</strong> elige según el modo y lo muestra al arrancar</span></li>
+      <li data-check="chk4"><span class="check-box"></span><span>Sabes <strong>cambiar de entorno</strong> (cambiar <code>DB_MODO</code>, reiniciar con <code>rs</code> y confirmar) y decir <strong>en cuál estás</strong> por el mensaje de arranque, por <code>localhost:3000</code> y por el color de la conexión en Compass</span></li>
+      <li data-check="chk5"><span class="check-box"></span><span><strong>npm run seed</strong> deja 6 productos en la base local, no se duplica al repetirlo y se niega a correr con <code>DB_MODO=atlas</code></span></li>
+      <li data-check="chk6"><span class="check-box"></span><span>La tienda muestra los productos de la <strong>base local</strong> con <code>DB_MODO=local</code> y los de <strong>Atlas</strong> con <code>DB_MODO=atlas</code>; un precio cambiado en Compass solo se ve en local</span></li>
+      <li data-check="chk7"><span class="check-box"></span><span>Una colección exportada de la base local aparece <strong>importada en Atlas</strong> (<code>productos_importados</code>) y fue borrada después</span></li>
+      <li data-check="chk8"><span class="check-box"></span><span>El <code>.env</code> no tiene líneas sueltas y no se compartió con nadie</span></li>
+    </ul>
+  </section>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="btn-enviar">
+      <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12" /> <path d="m17 8-5-5-5 5" /> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg><span>Enviar todo mi progreso</span>
+    </button>
+    <div class="submit-status" id="submit-status"></div>
+  </div>
+
+</main>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['c','x','a','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+
+
+const STEPS = ['paso0','paso1','paso2','paso3','paso4','paso5','paso6','checklist'];
+const KEY   = 'sxbd-progress';
+
+function getState() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} }
+
+function updateProgress() {
+  const state = getState();
+  const done  = STEPS.filter(s => state[s]).length;
+  const pct   = Math.round((done / STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-txt').textContent  = done + ' / ' + STEPS.length;
+}
+
+function renderButtons() {
+  const state = getState();
+  STEPS.forEach(id => {
+    const section = document.querySelector(`[data-step="${id}"]`);
+    if (!section || section.querySelector('.complete-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'complete-btn' + (state[id] ? ' done' : '');
+    btn.dataset.step = id;
+    btn.innerHTML = `<span class="btn-icon">${state[id] ? '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>' : '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>'}</span>
+      <span class="btn-txt">${state[id] ? '¡Paso completado!' : 'Marcar como completado'}</span>
+      <span class="btn-badge">LISTO</span>`;
+    if (!state[id]) btn.addEventListener('click', () => completeStep(id, btn));
+    section.appendChild(btn);
+    const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+    if (nav && state[id]) nav.classList.add('done');
+  });
+}
+
+function completeStep(id, btn) {
+  const state = getState(); state[id] = true; saveState(state);
+  btn.classList.add('done');
+  btn.querySelector('.btn-icon').innerHTML = '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+  btn.querySelector('.btn-txt').textContent  = '¡Paso completado!';
+  const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+  if (nav) nav.classList.add('done');
+  updateProgress();
+  launchConfetti(STEPS.filter(s => state[s]).length === STEPS.length);
+}
+
+function launchConfetti(big) {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#3b82f6','#2dd4bf','#22c55e','#f59e0b','#a78bfa','#f87171'];
+  const count  = big ? 180 : 60;
+  const parts  = Array.from({length: count}, () => ({
+    x: canvas.width * (big ? Math.random() : .5 + (Math.random()-.5)*.4),
+    y: big ? -10 : canvas.height * .4,
+    r: Math.random() * 7 + 3, color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: 0, tiltAngle: 0, tiltSpeed: Math.random()*.1+.05,
+    vx: Math.random()*4-2, vy: Math.random()*3+2
+  }));
+  let frame = 0; const total = big ? 160 : 80;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p => {
+      ctx.beginPath(); ctx.fillStyle = p.color;
+      ctx.ellipse(p.x, p.y, p.r, p.r*.4, p.tilt, 0, Math.PI*2); ctx.fill();
+      p.x += p.vx; p.y += p.vy; p.tiltAngle += p.tiltSpeed; p.tilt = Math.sin(p.tiltAngle)*12; p.vy += .08;
+    });
+    if (++frame < total) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+function getChecklistState() { try { return JSON.parse(localStorage.getItem('sxbd-checklist') || '{}'); } catch { return {}; } }
+function saveChecklistState(s) { try { localStorage.setItem('sxbd-checklist', JSON.stringify(s)); } catch {} }
+
+function renderChecklist() {
+  const state = getChecklistState();
+  document.querySelectorAll('#checklist-ul li').forEach(li => {
+    const id = li.dataset.check;
+    if (state[id]) { li.classList.add('marcado'); li.querySelector('.check-box').textContent = '✓'; }
+    li.addEventListener('click', () => {
+      const s = getChecklistState();
+      s[id] = !s[id];
+      saveChecklistState(s);
+      li.classList.toggle('marcado', s[id]);
+      li.querySelector('.check-box').textContent = s[id] ? '✓' : '';
+      const allChecked = Array.from(document.querySelectorAll('#checklist-ul li')).every(el => s[el.dataset.check]);
+      if (allChecked) launchConfetti(false);
+    });
+  });
+}
+
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+sections.forEach(s => obs.observe(s));
+
+renderButtons();
+updateProgress();
+renderChecklist();
+
+/* ═══ Selector de aprendiz + envío a Google Sheets (Apps Script) ═══ */
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbyhq0L17BN2xp5FnAHuRXugHBYE4P9-4DvdWU4mR-1FnVBGUoBCGIkZw5O2ZEVu7T8P/exec';
+const ARCHIVO_ACTUAL  = '02_GUIA_BASE_DATOS_LOCAL';
+const APRENDIZ_KEY    = 'sena-aprendiz-nombre';
+
+const APRENDIZ_TRIGGER = document.getElementById('aprendiz-trigger');
+const APRENDIZ_PANEL   = document.getElementById('aprendiz-panel');
+const APRENDIZ_BUSCAR  = document.getElementById('aprendiz-search');
+const APRENDIZ_TEXTO   = document.getElementById('aprendiz-trigger-text');
+const APRENDIZ_ITEMS   = Array.from(document.querySelectorAll('#aprendiz-list li'));
+const APRENDIZ_VACIO   = document.getElementById('aprendiz-empty');
+const APRENDIZ_LISTA   = document.getElementById('aprendiz-list');
+const selectAprendiz = { value: '', classList: APRENDIZ_TRIGGER.classList,
+  scrollIntoView: (o) => APRENDIZ_TRIGGER.scrollIntoView(o) };
+
+function tituloAprendiz(n) {
+  return n.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
+}
+function marcarAprendiz(nombre) {
+  selectAprendiz.value = nombre;
+  APRENDIZ_TEXTO.textContent = nombre ? tituloAprendiz(nombre) : 'Selecciona tu nombre';
+  APRENDIZ_TEXTO.classList.toggle('placeholder', !nombre);
+  APRENDIZ_ITEMS.forEach((li) => li.setAttribute('aria-selected', li.dataset.nombre === nombre ? 'true' : 'false'));
+}
+function posicionarAprendiz() {
+  const r = APRENDIZ_TRIGGER.getBoundingClientRect();
+  const ancho = Math.min(Math.max(r.width, 320), window.innerWidth - 16);
+  APRENDIZ_PANEL.style.width = ancho + 'px';
+  APRENDIZ_PANEL.style.left = Math.max(8, Math.min(r.left, window.innerWidth - ancho - 8)) + 'px';
+  APRENDIZ_PANEL.style.top = (r.bottom + 6) + 'px';
+  APRENDIZ_LISTA.style.maxHeight = Math.max(140, Math.min(260, window.innerHeight - r.bottom - 90)) + 'px';
+}
+function abrirAprendiz(abrir) {
+  APRENDIZ_PANEL.hidden = !abrir;
+  if (abrir) posicionarAprendiz();
+  APRENDIZ_TRIGGER.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+  if (abrir) { APRENDIZ_BUSCAR.value = ''; filtrarAprendices(); APRENDIZ_BUSCAR.focus(); }
+}
+function filtrarAprendices() {
+  const q = APRENDIZ_BUSCAR.value.toLowerCase().trim();
+  let visibles = 0;
+  APRENDIZ_ITEMS.forEach((li) => {
+    const ok = !q || li.dataset.nombre.toLowerCase().includes(q);
+    li.hidden = !ok;
+    if (ok) visibles++;
+  });
+  APRENDIZ_VACIO.hidden = visibles > 0;
+}
+function elegirAprendiz(nombre) {
+  marcarAprendiz(nombre);
+  try { localStorage.setItem(APRENDIZ_KEY, nombre); } catch {}
+  selectAprendiz.classList.remove('falta');
+  abrirAprendiz(false);
+  APRENDIZ_TRIGGER.focus();
+}
+APRENDIZ_TRIGGER.addEventListener('click', () => abrirAprendiz(APRENDIZ_PANEL.hidden));
+APRENDIZ_BUSCAR.addEventListener('input', filtrarAprendices);
+APRENDIZ_BUSCAR.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { abrirAprendiz(false); APRENDIZ_TRIGGER.focus(); }
+  if (e.key === 'Enter') {
+    const primero = APRENDIZ_ITEMS.find((li) => !li.hidden);
+    if (primero) elegirAprendiz(primero.dataset.nombre);
+  }
+});
+APRENDIZ_ITEMS.forEach((li) => li.addEventListener('click', () => elegirAprendiz(li.dataset.nombre)));
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.aprendiz-wrap')) abrirAprendiz(false);
+});
+window.addEventListener('resize', () => { if (!APRENDIZ_PANEL.hidden) posicionarAprendiz(); });
+APRENDIZ_TRIGGER.closest('.sidebar').addEventListener('scroll', () => { if (!APRENDIZ_PANEL.hidden) abrirAprendiz(false); });
+let nombreGuardado = '';
+try { nombreGuardado = localStorage.getItem(APRENDIZ_KEY) || ''; } catch {}
+if (APRENDIZ_ITEMS.some((li) => li.dataset.nombre === nombreGuardado)) marcarAprendiz(nombreGuardado);
+
+const btnEnviar = document.getElementById('btn-enviar');
+const statusEl  = document.getElementById('submit-status');
+
+btnEnviar.addEventListener('click', async () => {
+  const aprendiz = selectAprendiz.value;
+  if (!aprendiz) {
+    selectAprendiz.classList.add('falta');
+    statusEl.textContent = 'Selecciona tu nombre arriba antes de enviar.';
+    statusEl.className = 'submit-status err';
+    selectAprendiz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const state = getState();
+  const pasosCompletados = STEPS.filter(s => state[s]);
+
+  btnEnviar.disabled = true;
+  statusEl.textContent = 'Enviando...';
+  statusEl.className = 'submit-status';
+
+  try {
+    await fetch(URL_APPS_SCRIPT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        aprendiz: aprendiz,
+        archivo: ARCHIVO_ACTUAL,
+        completados: pasosCompletados.length,
+        total: STEPS.length,
+        pasos: pasosCompletados
+      })
+    });
+    statusEl.textContent = 'Progreso enviado — ' + pasosCompletados.length + '/' + STEPS.length + ' pasos.';
+    statusEl.className = 'submit-status ok';
+  } catch (err) {
+    statusEl.textContent = 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.';
+    statusEl.className = 'submit-status err';
+  } finally {
+    btnEnviar.disabled = false;
+  }
+});
+
+</script>
+</body>
+</html>

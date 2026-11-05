@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión extra: Base de datos local | SENA ADSO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sena-verde: #39a900;
+  --sena-verde-dark: #2d8400;
+  --sena-verde-glow: rgba(57,169,0,0.10);
+  --sena-verde-border: rgba(57,169,0,0.30);
+  --sena-naranja: #ff6b00;
+  --sena-naranja-glow: rgba(255,107,0,0.10);
+  --sena-naranja-border: rgba(255,107,0,0.30);
+  --texto: #1a1a2e;
+  --texto-dim: rgba(26,26,46,0.62);
+  --texto-dimmer: rgba(26,26,46,0.38);
+  --bg: #f8fafc;
+  --bg-alt: #f4f7f2;
+  --borde: #e2e8f0;
+  --acento-azul: #3b82f6;
+  --acento-azul-glow: rgba(59,130,246,0.10);
+  --acento-purpura: #8b5cf6;
+  --acento-purpura-glow: rgba(139,92,246,0.10);
+  --alerta-amarillo: #f59e0b;
+  --alerta-amarillo-glow: rgba(245,158,11,0.10);
+  --alerta-rojo: #ef4444;
+  --alerta-rojo-glow: rgba(239,68,68,0.10);
+  --acento-teal: #0ea5e9;
+  --acento-teal-glow: rgba(14,165,233,0.10);
+  --acento-teal-border: rgba(14,165,233,0.30);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter',sans-serif; color:var(--texto); background:var(--bg); line-height:1.6; overflow-x:hidden; }
+
+@media(min-width:600px){ .topbar-sub{display:block;} }
+@media(min-width:900px){ .topbar-nav{display:flex;} }
+
+/* Scroll continuo tipo landing: mismo fondo en toda la apertura, sin bloques de color alternos */
+.slide.bg-alt, .slide.bg-verde, .slide.bg-azul, .slide.bg-teal { background:var(--bg); }
+.slide-inner { max-width:1200px; margin:0 auto; }
+
+.bg-dots { position:absolute; inset:0; background-image:radial-gradient(var(--sena-verde-border) 1px, transparent 1px); background-size:28px 28px; pointer-events:none; opacity:0.35; }
+.bg-glow { position:absolute; width:600px; height:600px; border-radius:50%; filter:blur(120px); opacity:0.22; pointer-events:none; z-index:0; }
+.bg-glow.g1 { background:radial-gradient(circle, var(--sena-verde-glow), transparent 70%); top:-200px; left:-200px; }
+.bg-glow.g2 { background:radial-gradient(circle, var(--sena-naranja-glow), transparent 70%); bottom:-200px; right:-200px; }
+
+.portada-tag { display:inline-flex; align-items:center; gap:8px; background:var(--sena-verde-glow); border:1px solid var(--sena-verde-border); padding:10px 20px; border-radius:30px; font-size:12px; font-weight:700; color:var(--sena-verde-dark); letter-spacing:1.5px; margin-bottom:32px; position:relative; z-index:1; }
+.portada-tag .dot { width:6px; height:6px; background:var(--sena-verde); border-radius:50%; animation:blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.portada-titulo { font-family:'Syne',sans-serif; font-size:clamp(40px,7vw,68px); font-weight:800; line-height:1.1; margin-bottom:20px; color:var(--texto); position:relative; z-index:1; }
+.portada-titulo .linea2 { display:block; background:linear-gradient(135deg, var(--acento-teal), var(--acento-azul)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-titulo .linea3 { display:block; background:linear-gradient(135deg, var(--sena-naranja), var(--acento-purpura)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-desc { font-size:clamp(15px,2vw,18px); color:var(--texto-dim); max-width:680px; margin-bottom:40px; position:relative; z-index:1; line-height:1.7; }
+.portada-meta { display:flex; gap:16px; flex-wrap:wrap; position:relative; z-index:1; }
+.portada-meta-item { background:rgba(255,255,255,0.9); border:1px solid var(--borde); padding:10px 20px; border-radius:12px; font-size:14px; font-weight:600; color:var(--texto-dim); }
+
+.sec-header { margin-bottom:40px; position:relative; z-index:1; }
+.sec-tag { display:inline-block; font-size:11px; font-weight:700; padding:6px 14px; border-radius:20px; letter-spacing:1.2px; margin-bottom:14px; text-transform:uppercase; border:1px solid transparent; }
+.sec-tag.verde   { background:var(--sena-verde-glow); color:var(--sena-verde); border-color:var(--sena-verde-border); }
+.sec-tag.naranja { background:var(--sena-naranja-glow); color:var(--sena-naranja); border-color:var(--sena-naranja-border); }
+.sec-tag.azul    { background:var(--acento-azul-glow); color:var(--acento-azul); border-color:rgba(59,130,246,0.30); }
+.sec-tag.purpura { background:var(--acento-purpura-glow); color:var(--acento-purpura); border-color:rgba(139,92,246,0.30); }
+.sec-tag.amarillo{ background:var(--alerta-amarillo-glow); color:var(--alerta-amarillo); border-color:rgba(245,158,11,0.30); }
+.sec-tag.teal    { background:var(--acento-teal-glow); color:var(--acento-teal); border-color:var(--acento-teal-border); }
+.sec-titulo { font-family:'Syne',sans-serif; font-size:clamp(28px,4vw,42px); font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.sec-desc { font-size:clamp(15px,1.8vw,17px); color:var(--texto-dim); max-width:800px; line-height:1.7; }
+
+.info-box {
+  background:#fff;
+  border:1px solid var(--borde);
+  border-top:3px solid transparent;
+  border-radius:16px;
+  padding:22px 26px;
+  margin:20px 0;
+  position:relative;
+  z-index:1;
+  box-shadow:0 1px 2px rgba(15,23,42,.04), 0 16px 32px -20px rgba(15,23,42,.14);
+}
+.info-box.tip     { border-top-color:var(--sena-verde); }
+.info-box.warning { border-top-color:var(--alerta-amarillo); }
+.info-box.danger  { border-top-color:var(--alerta-rojo); }
+.info-box.info    { border-top-color:var(--acento-azul); }
+.info-box.teal    { border-top-color:var(--acento-teal); }
+.info-box.purpura { border-top-color:var(--acento-purpura); }
+
+.info-box-title { display:flex; align-items:center; gap:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:12px; color:var(--texto); }
+.info-box-title svg.ic { width:34px; height:34px; min-width:34px; padding:8px; border-radius:10px; box-sizing:border-box; stroke-width:2; vertical-align:middle; }
+.info-box.tip     .info-box-title svg.ic { background:var(--sena-verde-glow); color:var(--sena-verde-dark); }
+.info-box.warning .info-box-title svg.ic { background:var(--alerta-amarillo-glow); color:#92400e; }
+.info-box.danger  .info-box-title svg.ic { background:var(--alerta-rojo-glow); color:#991b1b; }
+.info-box.info    .info-box-title svg.ic { background:var(--acento-azul-glow); color:#1e40af; }
+.info-box.teal    .info-box-title svg.ic { background:var(--acento-teal-glow); color:#0369a1; }
+.info-box.purpura .info-box-title svg.ic { background:var(--acento-purpura-glow); color:#5b21b6; }
+.info-box-content { font-size:14px; color:var(--texto-dim); line-height:1.75; }
+.info-box-content p { margin:0 0 10px; }
+.info-box-content p:last-child { margin-bottom:0; }
+.ejemplo-chips { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+.ejemplo-chip { display:flex; align-items:center; gap:8px; background:var(--bg-alt); border:1px solid var(--borde); border-radius:10px; padding:8px 14px; font-size:12.5px; }
+.ejemplo-chip .flecha { color:var(--texto-dimmer); font-weight:700; }
+
+/* Grilla para cajas info-box que antes quedaban apiladas una debajo de otra */
+.info-box-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:20px 0; align-items:start; }
+.info-box-grid .info-box { margin:0; }
+@media(max-width:900px){ .info-box-grid { grid-template-columns:1fr; } }
+
+.concepto-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:20px; position:relative; z-index:1; margin-bottom:28px; }
+.concepto-card { background:#fff; border:2px solid var(--borde); border-radius:16px; padding:24px; }
+.concepto-icon  { font-size:36px; margin-bottom:12px; }
+.concepto-titulo{ font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--texto); margin-bottom:6px; }
+.concepto-desc  { font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.concepto-card.verde   { border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.concepto-card.azul    { border-color:rgba(59,130,246,0.25); background:var(--acento-azul-glow); }
+.concepto-card.teal    { border-color:var(--acento-teal-border); background:var(--acento-teal-glow); }
+.concepto-card.purpura { border-color:rgba(139,92,246,0.25); background:var(--acento-purpura-glow); }
+.concepto-card.naranja { border-color:var(--sena-naranja-border); background:var(--sena-naranja-glow); }
+.concepto-card.amarillo{ border-color:rgba(245,158,11,0.30); background:var(--alerta-amarillo-glow); }
+
+.tabla-wrap { overflow-x:auto; position:relative; z-index:1; margin:20px 0; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th { background:var(--sena-verde); color:#fff; padding:12px 16px; text-align:left; font-weight:700; }
+th:first-child { border-radius:8px 0 0 0; } th:last-child { border-radius:0 8px 0 0; }
+td { padding:12px 16px; border-bottom:1px solid var(--borde); vertical-align:top; }
+tr:nth-child(even) td { background:var(--bg-alt); }
+tr:hover td { background:var(--sena-verde-glow); }
+
+.paso-lista { display:flex; flex-direction:column; gap:0; position:relative; z-index:1; }
+.paso-item { display:flex; gap:24px; padding:28px 0; border-bottom:1px solid var(--borde); }
+.paso-item:last-child { border-bottom:none; }
+.paso-num { flex-shrink:0; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:#fff; }
+.paso-num.verde   { background:var(--sena-verde); }
+.paso-num.azul    { background:var(--acento-azul); }
+.paso-num.teal    { background:var(--acento-teal); }
+.paso-num.purpura { background:var(--acento-purpura); }
+.paso-num.naranja { background:var(--sena-naranja); }
+.paso-body { flex:1; }
+.paso-titulo { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--texto); margin-bottom:6px; }
+.paso-desc { font-size:14px; color:var(--texto-dim); line-height:1.7; margin-bottom:12px; }
+
+.flujo-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; margin:32px 0; position:relative; z-index:1; }
+.flujo-nodo { border-radius:12px; padding:16px 22px; text-align:center; border:2px solid; min-width:130px; }
+.flujo-nodo.verde   { background:var(--sena-verde-glow); border-color:var(--sena-verde-border); }
+.flujo-nodo.azul    { background:var(--acento-azul-glow); border-color:rgba(59,130,246,0.30); }
+.flujo-nodo.purpura { background:var(--acento-purpura-glow); border-color:rgba(139,92,246,0.30); }
+.flujo-nodo.naranja { background:var(--sena-naranja-glow); border-color:var(--sena-naranja-border); }
+.flujo-nodo.teal    { background:var(--acento-teal-glow); border-color:var(--acento-teal-border); }
+.flujo-ico { font-size:26px; margin-bottom:6px; }
+.flujo-lbl { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--texto-dimmer); margin-bottom:4px; }
+.flujo-nom { font-size:13px; font-weight:700; color:var(--texto); }
+.flujo-sub { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--texto-dimmer); margin-top:3px; }
+.flujo-arrow { font-size:22px; color:var(--sena-verde); font-weight:700; padding:0 4px; }
+
+.entregable-box { background:linear-gradient(135deg, var(--sena-verde-glow), var(--acento-teal-glow)); border:2px solid var(--sena-verde-border); border-radius:16px; padding:28px 32px; position:relative; z-index:1; margin-top:32px; }
+.entregable-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--sena-verde-dark); margin-bottom:16px; }
+.entregable-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.entregable-list li { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:var(--texto); }
+.entregable-list li::before { content:'✅'; flex-shrink:0; }
+
+
+/* Mockup de terminal para mostrar instalación */
+.term-mock { background:#1a1a2e; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); margin:20px 0; position:relative; z-index:1; }
+.term-header { background:#12121f; padding:10px 16px; display:flex; align-items:center; gap:8px; }
+.term-dot { width:11px; height:11px; border-radius:50%; }
+.term-dot.r { background:#ff5f57; } .term-dot.y { background:#febc2e; } .term-dot.g { background:#28c840; }
+.term-title { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#8892a4; }
+.term-body { padding:20px 22px; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.9; }
+.term-body .prompt { color:#4ade80; }
+.term-body .cmd { color:#e2e8f0; }
+.term-body .out { color:#8892a4; display:block; margin:2px 0 10px 0; }
+.term-body .ok { color:#4ade80; }
+
+/* Comparador de código lado a lado, con resaltado de sintaxis real */
+.code-compare { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:18px 0; position:relative; z-index:1; }
+@media(max-width:900px){ .code-compare{ grid-template-columns:1fr; } }
+
+.slide-2col { display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start; position:relative; z-index:1; }
+@media(max-width:900px){ .slide-2col{ grid-template-columns:1fr; } }
+.slide-2col-code { display:flex; flex-direction:column; gap:18px; }
+.slide-2col-code .code-editor { width:100%; }
+.code-editor { background:#1a1a2e; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+.code-editor-header { background:#12121f; padding:10px 16px; display:flex; align-items:center; gap:8px; }
+.code-editor-title { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#8892a4; flex:1; }
+.code-editor-badge { font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:5px; }
+.code-editor-badge.antes { background:rgba(248,113,113,.15); color:#f87171; }
+.code-editor-badge.despues { background:rgba(74,222,128,.15); color:#4ade80; }
+.code-editor-body { padding:10px 0; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.9; flex:1; overflow-x:auto; }
+.cl { display:grid; grid-template-columns:34px 1fr; column-gap:12px; padding:0 20px; white-space:pre; }
+.cl .ln { color:#4a5178; user-select:none; text-align:right; }
+.cl .code { color:#e2e8f0; }
+.indent-1 .code { padding-left:18px; }
+.indent-2 .code { padding-left:36px; }
+.cm { color:#565f89; font-style:italic; }
+.sel { color:#7dcfff; }
+.prop { color:#9ece6a; }
+.val { color:#e2e8f0; }
+.var { color:#e0af68; }
+.tag { color:#f7768e; }
+.attr { color:#e0af68; }
+.str { color:#9ece6a; }
+.punc { color:#8892a4; }
+
+@media(max-width:900px){ .flujo-row{flex-direction:column;} }
+@media(max-width:768px){ .slide{padding:60px 24px;} .topbar{padding:10px 20px;} }
+
+/* Iconos Lucide en línea (reemplazan a los emojis) */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
+
+/* ══ Estructura de presentación del portal (sidebar + insignias) ══ */
+/* ============================================================
+   SIDEBAR LATERAL MODERNO (ESTILO IDE / CASE / LUCIDE)
+   ============================================================ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 2px 0 20px rgba(15, 23, 42, 0.04);
+}
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.sidebar-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+}
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-logo {
+  background: var(--sena-verde);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px -2px rgba(57, 169, 0, 0.4);
+}
+.sidebar-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+.sidebar-sub {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 600;
+}
+.sidebar-toggle-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #64748b;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.sidebar-toggle-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+.floating-sidebar-toggle {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  z-index: 999;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  height: 38px;
+  padding: 0 14px 0 10px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.floating-sidebar-toggle:hover {
+  background: #ffffff;
+  color: var(--sena-verde-dark);
+  border-color: var(--sena-verde);
+  box-shadow: 0 8px 22px rgba(57, 169, 0, 0.2);
+  transform: translateY(-1px);
+}
+.sidebar.collapsed ~ .floating-sidebar-toggle,
+.floating-sidebar-toggle.visible {
+  display: inline-flex !important;
+  animation: fadeInToggle 0.25s ease-out forwards;
+}
+@keyframes fadeInToggle {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 10px;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.nav-group {
+  margin-bottom: 18px;
+}
+.nav-group-title {
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #94a3b8;
+  padding: 0 10px 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 11.8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  position: relative;
+}
+.nav-link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.nav-link.active {
+  background: rgba(57, 169, 0, 0.1);
+  color: var(--sena-verde-dark);
+  font-weight: 700;
+}
+.nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3.5px;
+  background: var(--sena-verde);
+  border-radius: 0 4px 4px 0;
+}
+.nav-link-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  min-width: 15px;
+}
+.nav-link.active .nav-link-num {
+  color: var(--sena-verde);
+}
+.nav-link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+.nav-link:hover .nav-link-icon {
+  color: #0f172a;
+}
+.nav-link.active .nav-link-icon {
+  color: var(--sena-verde-dark);
+}
+.nav-link-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-footer {
+  padding: 12px 14px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-corte-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,107,0,0.08);
+  border: 1px solid rgba(255,107,0,0.22);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #c2410c;
+}
+.sidebar-dashboard-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0284c7;
+  text-decoration: none;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+.sidebar-dashboard-link:hover {
+  background: rgba(2,132,199,0.08);
+}
+
+.main-content {
+  margin-left: 280px;
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--bg);
+}
+.main-content.expanded {
+  margin-left: 0;
+}
+
+.slide {
+  min-height: 100vh;
+  padding: 60px 48px;
+  position: relative;
+  scroll-margin-top: 20px;
+}
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1099;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 1024px) {
+  .sidebar { transform: translateX(-100%); z-index: 1200; }
+  .sidebar.open { transform: translateX(0); box-shadow: 10px 0 35px rgba(0, 0, 0, 0.25); }
+  .main-content { margin-left: 0 !important; }
+  .floating-sidebar-toggle { display: flex !important; z-index: 1050; }
+  .slide-block-badge { left: 80px; }
+}
+@media (max-width: 900px) {
+  .col-3 { grid-template-columns: 1fr; gap: 16px; }
+}
+@media (max-width: 768px) {
+  .slide { padding: 68px 18px 40px; }
+  .col-2 { grid-template-columns: 1fr; gap: 16px; }
+  .slide-block-badge { left: 70px; top: 16px; font-size: 9.5px; padding: 4px 10px; }
+  .slide-num-badge { right: 14px; top: 16px; font-size: 10px; padding: 4px 8px; }
+  .floating-sidebar-toggle { top: 12px; left: 14px; height: 34px; padding: 0 10px; font-size: 11px; }
+  .floating-sidebar-toggle span { display: none; }
+  .portada-meta-item { min-width: 100%; }
+  .ddl-modal-overlay { padding: 0; }
+  .ddl-modal-card {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    min-height: auto;
+    border-radius: 0;
+    border: none;
+  }
+}
+.slide-inner{max-width:1200px;margin:0 auto}
+.slide-num-badge{position:absolute;top:20px;right:24px;background:var(--sena-verde-glow);color:var(--sena-verde);font-size:11px;font-weight:700;padding:5px 12px;border-radius:18px;letter-spacing:1px;border:1px solid var(--sena-verde-border)}
+.slide-block-badge{position:absolute;top:20px;left:40px;font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:5px 14px;border-radius:18px}
+.slide-block-badge.contexto{background:var(--azul-glow);color:var(--azul)}
+.slide-block-badge.teoria{background:var(--sena-verde-glow);color:var(--sena-verde)}
+.slide-block-badge.practica{background:var(--sena-naranja-glow);color:var(--sena-naranja)}
+.slide-block-badge.taller{background:var(--purpura-glow);color:var(--purpura)}
+.slide-num-badge,.slide-block-badge{z-index:2;}
+:root{--azul:var(--acento-azul);--azul-glow:var(--acento-azul-glow);--purpura:var(--acento-purpura);--purpura-glow:var(--acento-purpura-glow);}
+.sidebar-title{font-size:13px;white-space:nowrap;}
+/* ── Ajuste de contenido junto al sidebar ── */
+.main-content{min-width:0;}
+.slide{overflow-x:clip;}
+.slide-2col{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+.slide-2col > *{min-width:0;}
+.code-editor-body,.term-body{overflow-x:auto;}
+.tabla-wrap{overflow-x:auto;}
+@media (max-width:1280px){ .slide-2col{grid-template-columns:minmax(0,1fr);} }
+.main-content.expanded .slide-block-badge{left:200px;}
+@media (max-width:1024px){ .main-content.expanded .slide-block-badge{left:80px;} }
+/* ── Reglas propias de esta apertura ── */
+.sec-tag.rojo{ background:var(--alerta-rojo-glow); color:var(--alerta-rojo); border-color:rgba(239,68,68,0.30); }
+.info-box.tip     .info-box-title{ color:var(--sena-verde-dark); }
+.info-box.warning .info-box-title{ color:#92400e; }
+.info-box.danger  .info-box-title{ color:#991b1b; }
+.info-box.info    .info-box-title{ color:#1e40af; }
+.info-box.teal    .info-box-title{ color:#0369a1; }
+.info-box.purpura .info-box-title{ color:#5b21b6; }
+.roadmap-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){.roadmap-grid{ grid-template-columns:1fr; }}
+.roadmap-card{ background:#fff; border:2px solid var(--borde); border-radius:18px; padding:28px 24px 24px; position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s; }
+.roadmap-card:hover{ transform:translateY(-4px); box-shadow:0 16px 32px rgba(14,165,233,.14); border-color:var(--acento-teal-border); }
+.roadmap-num{ position:absolute; top:-6px; right:4px; font-family:'Syne',sans-serif; font-size:72px; font-weight:800; color:var(--acento-teal); opacity:.10; line-height:1; pointer-events:none; }
+.roadmap-icon{ font-size:34px; margin-bottom:14px; display:flex; }
+.roadmap-tag{ display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--acento-teal); background:var(--acento-teal-glow); border:1px solid var(--acento-teal-border); padding:4px 10px; border-radius:20px; margin-bottom:12px; }
+.roadmap-titulo{ font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--texto); margin-bottom:10px; line-height:1.25; }
+.roadmap-desc{ font-size:13px; color:var(--texto-dim); line-height:1.65; }
+.rap-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){.rap-grid{ grid-template-columns:1fr; }}
+.rap-card{ background:#fff; border-radius:18px; padding:0; overflow:hidden; border:2px solid var(--borde); position:relative; transition:transform .2s, box-shadow .2s; }
+.rap-card:hover{ transform:translateY(-4px); box-shadow:0 18px 36px rgba(0,0,0,.09); }
+.rap-card-bar{ height:6px; width:100%; }
+.rap-card.done .rap-card-bar{ background:linear-gradient(90deg, var(--sena-verde), #6bd44e); }
+.rap-card.active .rap-card-bar{ background:linear-gradient(90deg, var(--acento-teal), var(--acento-azul)); }
+.rap-card.pending .rap-card-bar{ background:linear-gradient(90deg, var(--acento-teal), #7dd3fc); opacity:.6; }
+.rap-card.active{ border-color:var(--acento-teal); box-shadow:0 0 0 4px var(--acento-teal-glow), 0 18px 36px rgba(14,165,233,.14); }
+.rap-card-body{ padding:28px 26px 26px; }
+.rap-card-top{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+.rap-card-icon{ font-size:42px; line-height:1; display:flex; }
+.rap-card-status{ font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:5px 12px; border-radius:20px; white-space:nowrap; display:flex; align-items:center; gap:6px; }
+.rap-card.done .rap-card-status{ background:var(--sena-verde-glow); color:var(--sena-verde-dark); }
+.rap-card.active .rap-card-status{ background:var(--acento-teal-glow); color:#0369a1; }
+.rap-card.pending .rap-card-status{ background:var(--acento-teal-glow); color:#0369a1; opacity:.8; }
+.rap-card-id{ font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--texto-dimmer); margin-bottom:6px; text-transform:uppercase; }
+.rap-card-titulo{ font-family:'Syne',sans-serif; font-size:21px; font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.rap-card-desc{ font-size:13.5px; color:var(--texto-dim); line-height:1.6; }
+.rap-card.active .rap-card-icon{ animation: rapPulse 1.8s ease-in-out infinite; }
+@keyframes rapPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
+.dom-compare{ display:grid; grid-template-columns:1fr auto 1fr; gap:20px; align-items:center; margin:24px 0; position:relative; z-index:1; }
+@media(max-width:900px){.dom-compare{ grid-template-columns:1fr; }}
+.dom-box{ background:#fff; border:2px solid var(--borde); border-radius:16px; padding:22px; }
+.dom-box.mal{ border-color:rgba(239,68,68,.3); background:var(--alerta-rojo-glow); }
+.dom-box.bien{ border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.dom-box-title{ font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.dom-box-desc{ font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.dom-vs{ font-family:'Syne',sans-serif; font-weight:800; font-size:16px; color:var(--texto-dimmer); text-align:center; }
+.par-valor{ color:#0ea5e9; font-weight:800; }
+.par-funcion{ color:#d946ef; font-weight:800; }
+.par-inicial{ color:#f59e0b; font-weight:800; }
+.par-evento{ color:#22c55e; font-weight:800; }
+.par-handler{ color:#f97316; font-weight:800; }
+.par-dato{ color:#a855f7; font-weight:800; }
+.useState-split{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; position:relative; z-index:1; margin-bottom:24px; }
+@media(max-width:900px){.useState-split{ grid-template-columns:1fr; }}
+.useState-breakdown{ background:#fff; border:2px solid var(--borde); border-radius:14px; padding:18px 20px; }
+.useState-breakdown-label{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--texto-dimmer); text-align:center; margin-bottom:10px; letter-spacing:.04em; }
+.useState-breakdown-line{ font-family:'JetBrains Mono',monospace; font-size:13px; text-align:center; margin-bottom:8px; line-height:1.6; }
+.useState-breakdown-arrows{ display:flex; justify-content:center; gap:28px; margin:4px 0; font-size:16px; }
+.useState-breakdown-plain{ font-family:'JetBrains Mono',monospace; font-size:12.5px; text-align:center; line-height:1.6; }
+.tree-demo{ max-width:620px; margin:0 auto 24px; background:#fff; border:2px solid var(--borde); border-radius:16px; padding:28px; position:relative; z-index:1; }
+.tree-row{ display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.tree-node{ background:var(--bg-alt); border:2px solid var(--borde); border-radius:10px; padding:8px 14px; font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:var(--texto-dim); }
+.tree-node.origen{ background:var(--sena-verde-glow); border-color:var(--sena-verde-border); color:var(--sena-verde-dark); }
+.tree-node.destino{ background:var(--acento-azul-glow); border-color:rgba(59,130,246,.3); color:#1e40af; }
+.tree-node.pasa{ background:var(--alerta-amarillo-glow); border-color:rgba(245,158,11,.3); color:#92400e; animation: treePulse 1.6s ease-in-out infinite; }
+@keyframes treePulse{ 0%,100%{ opacity:1; } 50%{ opacity:.45; } }
+.tree-arrow-down{ text-align:center; font-size:18px; color:var(--texto-dimmer); margin:2px 0; }
+.tree-caption{ text-align:center; font-size:12px; color:var(--texto-dim); margin-top:14px; font-family:'JetBrains Mono',monospace; }
+.tree-direct{ position:absolute; left:50%; top:24px; bottom:24px; width:3px; background:var(--sena-verde); border-radius:4px; opacity:0; transition:opacity .3s; }
+.tree-direct.on{ opacity:.35; }
+
+/* ── Ajustes del deck con sidebar para las aperturas de la ficha 3229944 ── */
+.concepto-grid>*,.roadmap-grid>*,.rap-grid>*,.useState-split>*,.dom-compare>*,.info-box-grid>*,.paso-lista>*,.compare-grid>*{min-width:0;}
+.slide-inner{min-width:0;}
+.slide .code-editor{max-width:100%;}
+.slide pre,.slide .term-body{overflow-x:auto;}
+@media (max-width:1280px){
+  .useState-split,.dom-compare{grid-template-columns:minmax(0,1fr)!important;}
+  .dom-compare .dom-vs{display:none;}
+  .rap-grid,.roadmap-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:768px){
+  .rap-grid,.roadmap-grid{grid-template-columns:minmax(0,1fr);}
+}
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR LATERAL DE NAVEGACIÓN -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo">
+        <svg width="24" height="24" viewBox="0 0 64 62" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <g transform="translate(-377 -19)">
+            <path d="M409.164 19C412.922 19 415.992 22.09 415.992 25.8778 415.992 29.6656 412.932 32.7556 409.164 32.7556 405.397 32.7556 402.336 29.6656 402.336 25.8778 402.336 22.09 405.407 19 409.164 19"/>
+            <path d="M384.305 41.1884 384.305 41.2183C384.285 41.3379 384.275 41.4177 384.275 41.4675 384.275 41.8264 384.474 42.0855 384.873 42.265 385.282 42.4344 385.9 42.5241 386.747 42.5241 387.395 42.5241 387.893 42.4543 388.262 42.3148 388.631 42.1752 388.81 41.9759 388.81 41.7267 388.81 41.3479 388.082 41.0489 386.647 40.8096 386.478 40.7797 386.348 40.7598 386.268 40.7498 386.179 40.7299 386.039 40.71 385.86 40.6801 383.567 40.3013 382.092 39.8926 381.434 39.454 381.115 39.2347 380.876 38.9855 380.706 38.6965 380.547 38.4074 380.467 38.0785 380.467 37.7096 380.467 36.8125 380.995 36.1248 382.052 35.6563 383.109 35.1878 384.654 34.9486 386.677 34.9486 388.7 34.9486 390.166 35.1678 391.133 35.6064 392.1 36.045 392.578 36.7228 392.578 37.6399L392.578 37.7495 388.78 37.7495 388.78 37.7096C388.78 37.3907 388.591 37.1614 388.202 36.992 387.813 36.8325 387.255 36.7428 386.508 36.7428 385.929 36.7428 385.481 36.8026 385.182 36.9122 384.863 37.0318 384.713 37.1913 384.713 37.4006 384.713 37.7794 385.541 38.1084 387.195 38.3675 387.514 38.4174 387.764 38.4572 387.943 38.4871 389.119 38.6865 389.966 38.8559 390.465 38.9955 390.963 39.135 391.392 39.3045 391.761 39.4939 392.159 39.7132 392.478 39.9923 392.698 40.3312 392.917 40.6701 393.027 41.0389 393.027 41.4476 393.027 42.3746 392.448 43.0823 391.302 43.5907 390.156 44.0891 388.501 44.3383 386.348 44.3383 384.195 44.3383 382.67 44.099 381.723 43.6206 380.766 43.1421 380.298 42.3746 380.298 41.308L380.298 41.1685 384.305 41.1685ZM394.711 44.1987 394.711 35.0881 405.546 35.0881 405.546 37.0518 398.778 37.0518 398.778 38.5071 405.028 38.5071 405.028 40.4508 398.778 40.4508 398.778 42.2151 405.795 42.2151 405.795 44.2087 394.711 44.2087ZM407.5 44.1987 407.5 35.0881 412.643 35.0881 418.155 41.2084 418.155 35.0881 422.063 35.0881 422.063 44.1987 416.72 44.1987 411.387 38.0585 411.387 44.1987 407.49 44.1987ZM432.569 40.5604 430.625 37.2511 428.572 40.5604 432.579 40.5604ZM426.369 44.1987 422.292 44.1987 428.592 35.0881 433.107 35.0881 439.118 44.1987 434.592 44.1987 433.675 42.554 427.366 42.554 426.389 44.1987Z"/>
+            <path d="M389.309 76.3351 385.67 72.9161 396.735 53.6881C397.333 52.6415 396.585 51.3257 395.379 51.3257L377.267 51.3257 377.267 46.5113 406.413 46.5113 389.309 76.3351Z"/>
+            <path d="M428.701 76.3351 432.34 72.9161 421.275 53.6881C420.677 52.6415 421.425 51.3257 422.631 51.3257L440.743 51.3257 440.743 46.5113 411.597 46.5113 428.701 76.3351Z"/>
+            <path d="M408.965 51.5949C408.965 51.5949 409.005 51.5251 409.005 51.5251L425.432 78.7174 421.066 80.99 410.48 63.2373C409.852 62.1907 408.347 62.1907 407.729 63.2373 404.2 69.1981 397.213 80.99 397.213 80.99L392.947 78.8768C392.947 78.8768 408.088 53.09 408.965 51.5949"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <div class="sidebar-title">ADSO 3229944</div>
+        <div class="sidebar-sub">Base de datos local — Sesión extra</div>
+      </div>
+    </div>
+    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Ocultar menú lateral">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m8 9-3 3 3 3"/></svg>
+    </button>
+  </div>
+
+  <div class="sidebar-scroll">
+    <div class="nav-group">
+      <div class="nav-group-title"><svg class="ic" style="width:12px;height:12px" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /></svg> Contexto</div>
+      <a href="#portada" class="nav-link active">
+        <span class="nav-link-num">01</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg></span>
+        <span class="nav-link-text">Portada de la sesión</span>
+      </a>
+      <a href="#competencia" class="nav-link">
+        <span class="nav-link-num">02</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" /> <circle cx="12" cy="8" r="6" /></svg></span>
+        <span class="nav-link-text">Competencia y RAP</span>
+      </a>
+      <a href="#plan" class="nav-link">
+        <span class="nav-link-num">03</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /></svg></span>
+        <span class="nav-link-text">Plan de la sesión</span>
+      </a>
+      <a href="#logros" class="nav-link">
+        <span class="nav-link-num">04</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></svg></span>
+        <span class="nav-link-text">Logros de hoy</span>
+      </a>
+      <a href="#partida" class="nav-link">
+        <span class="nav-link-num">05</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></svg></span>
+        <span class="nav-link-text">De dónde partimos</span>
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title"><svg class="ic" style="width:12px;height:12px" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Conceptos</div>
+      <a href="#entornos" class="nav-link">
+        <span class="nav-link-num">06</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="18" r="3" /> <circle cx="6" cy="6" r="3" /> <path d="M13 6h3a2 2 0 0 1 2 2v7" /> <path d="M11 18H8a2 2 0 0 1-2-2V9" /></svg></span>
+        <span class="nav-link-text">Desarrollo y producción</span>
+      </a>
+      <a href="#conexion" class="nav-link">
+        <span class="nav-link-num">07</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22v-5" /> <path d="M15 8V2" /> <path d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z" /> <path d="M9 8V2" /></svg></span>
+        <span class="nav-link-text">La cadena de conexión</span>
+      </a>
+      <a href="#compass" class="nav-link">
+        <span class="nav-link-num">08</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /></svg></span>
+        <span class="nav-link-text">MongoDB Compass</span>
+      </a>
+      <a href="#modo" class="nav-link">
+        <span class="nav-link-num">09</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="12" r="3" /> <rect width="20" height="14" x="2" y="5" rx="7" /></svg></span>
+        <span class="nav-link-text">Elegir el entorno</span>
+      </a>
+      <a href="#cambio" class="nav-link">
+        <span class="nav-link-num">10</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4" /> <path d="M3 11v-1a4 4 0 0 1 4-4h14" /> <path d="m7 22-4-4 4-4" /> <path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg></span>
+        <span class="nav-link-text">Cambiar entre local y Atlas</span>
+      </a>
+      <a href="#donde" class="nav-link">
+        <span class="nav-link-num">11</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></svg></span>
+        <span class="nav-link-text">¿En qué entorno estoy?</span>
+      </a>
+      <a href="#seed" class="nav-link">
+        <span class="nav-link-num">12</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3" /> <path d="M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4" /> <path d="M5 21h14" /></svg></span>
+        <span class="nav-link-text">El script seed</span>
+      </a>
+      <a href="#exportar" class="nav-link">
+        <span class="nav-link-num">13</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 4 7l4 4" /> <path d="M4 7h16" /> <path d="m16 21 4-4-4-4" /> <path d="M20 17H4" /></svg></span>
+        <span class="nav-link-text">De local a Atlas</span>
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title"><svg class="ic" style="width:12px;height:12px" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" /></svg> Cierre</div>
+      <a href="#prerrequisitos" class="nav-link">
+        <span class="nav-link-num">14</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span>
+        <span class="nav-link-text">Prerrequisitos</span>
+      </a>
+      <a href="#resumen" class="nav-link">
+        <span class="nav-link-num">15</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" /> <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" /> <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></svg></span>
+        <span class="nav-link-text">Los conceptos nuevos de hoy</span>
+      </a>
+      <a href="#entregable" class="nav-link">
+        <span class="nav-link-num">16</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg></span>
+        <span class="nav-link-text">Entregable y cierre</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="../../explorar.html" class="sidebar-dashboard-link">
+      <svg class="ic" style="width:14px;height:14px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg>
+      Volver al Hub
+    </a>
+    <div class="sidebar-corte-badge">
+      <span>Sesión extra — Base de datos local</span>
+      <span>Ficha 3229944</span>
+    </div>
+  </div>
+</aside>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+<button class="floating-sidebar-toggle" id="floating-toggle" onclick="toggleSidebar()" title="Mostrar menú lateral (16 slides)" aria-label="Abrir menú">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg>
+  <span>Menú (16 slides)</span>
+</button>
+
+<main class="main-content" id="main-content">
+
+<!-- ══════════ SLIDE 1 — PORTADA DE LA SESIÓN ══════════ -->
+<section class="slide" id="portada">
+  <div class="slide-block-badge contexto">Apertura &amp; Presentación</div>
+  <div class="bg-dots"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="slide-inner" style="position:relative;z-index:1;">
+    <div class="portada-tag"><span class="dot"></span> SESIÓN EXTRA · FASE 5 REACT Y TAILWIND CSS</div>
+    <h1 class="portada-titulo">
+      TechStore Pro<br>
+      <span class="linea2">Base de datos local:</span>
+      <span class="linea3">MongoDB en tu computador</span>
+    </h1>
+    <p class="portada-desc">
+      Hasta hoy toda la información de TechStore vive en MongoDB Atlas, en internet. Antes de que empiecen los usuarios reales (S30) y los pagos (S32), aprendemos a trabajar con una base de datos instalada en tu propio computador, a verla con MongoDB Compass y a decidir con una sola línea del archivo .env cuál de las dos usa el proyecto.
+    </p>
+    <div class="portada-meta">
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /></svg> Sesión extra · fuera de numeración</div>
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 16h.01" /> <path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /> <path d="M21.946 12.013H2.054" /> <path d="M6 16h.01" /></svg> MongoDB local</div>
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></svg> Compass y seed</div>
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" /></svg> Fase 5 — React y Tailwind</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 01 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 2 — COMPETENCIA Y RAP ══════════ -->
+<section class="slide" id="competencia">
+  <div class="slide-block-badge contexto">Marco de formación</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Competencia 220501096</h2>
+      <p class="sec-desc">Construcción del software de acuerdo con el diseño establecido. Todo lo que hacemos en esta fase construye evidencia real para estos 5 Resultados de Aprendizaje.</p>
+    </div>
+    <div class="rap-grid">
+      <div class="rap-card done">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" /> <path d="M15 5.764v15" /> <path d="M9 3.236v15" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Cerrado</span>
+          </div>
+          <div class="rap-card-id">RAP1</div>
+          <div class="rap-card-titulo">Planear</div>
+          <div class="rap-card-desc">Planear actividades de construcción según el diseño establecido.</div>
+        </div>
+      </div>
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP2</div>
+          <div class="rap-card-titulo">Base de datos</div>
+          <div class="rap-card-desc">Construir la base de datos a partir del modelo de datos. Hoy se instala y se maneja una base real, local, con una herramienta gráfica.</div>
+        </div>
+      </div>
+      <div class="rap-card pending">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> En curso</span>
+          </div>
+          <div class="rap-card-id">RAP3</div>
+          <div class="rap-card-titulo">Componentes front-end</div>
+          <div class="rap-card-desc">Crear componentes front-end de acuerdo con el diseño. Hoy no se toca el frontend: seguirá leyendo los mismos datos.</div>
+        </div>
+      </div>
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z" /> <path d="M20.054 15.987H3.946" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP4</div>
+          <div class="rap-card-titulo">Codificar</div>
+          <div class="rap-card-desc">Codificar el software según el diseño establecido. Hoy: conexión configurable por entorno y un script de datos iniciales.</div>
+        </div>
+      </div>
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" /> <path d="M6.453 15h11.094" /> <path d="M8.5 2h7" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP5</div>
+          <div class="rap-card-titulo">Pruebas</div>
+          <div class="rap-card-desc">Realizar pruebas para verificar la funcionalidad. Hoy se prueba con datos que se pueden borrar y volver a crear sin miedo.</div>
+        </div>
+      </div>
+    </div>
+    <div class="info-box tip">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></svg> Dónde estamos hoy</div>
+      <div class="info-box-content">Una sesión extra, fuera de la numeración: el cronograma no se corre. Aporta evidencia a <strong>RAP2</strong> (una base de datos instalada, con su colección y sus documentos), a <strong>RAP4</strong> (código en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">backend/</code>) y a <strong>RAP5</strong> (pruebas sobre una base desechable).</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 02 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 3 — PLAN DE LA SESIÓN ══════════ -->
+<section class="slide" id="plan">
+  <div class="slide-block-badge contexto">Agenda</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Plan de la sesión</h2>
+      <p class="sec-desc">180 minutos para pasar de depender de internet a tener una base de datos propia, visible y reiniciable.</p>
+    </div>
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">1</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.296 3.464 3.02 3.956" /> <path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z" /> <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /> <path d="m6.18 5.276 3.1 3.899" /></svg></div>
+        <div class="roadmap-tag">0–25 min</div>
+        <div class="roadmap-titulo">Apertura</div>
+        <div class="roadmap-desc">Qué es una base local, en qué se diferencia de Atlas y por qué conviene tener las dos.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">2</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3" /> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <path d="m7 10 5 5 5-5" /></svg></div>
+        <div class="roadmap-tag">25–70 min</div>
+        <div class="roadmap-titulo">Instalar y conectar</div>
+        <div class="roadmap-desc">MongoDB Community Server como servicio y MongoDB Compass para verlo. Windows y Mac.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">3</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 17H5" /> <path d="M19 7h-9" /> <circle cx="17" cy="17" r="3" /> <circle cx="7" cy="7" r="3" /></svg></div>
+        <div class="roadmap-tag">70–105 min</div>
+        <div class="roadmap-titulo">Dos entornos en .env</div>
+        <div class="roadmap-desc">Las variables DB_MODO y las dos cadenas de conexión, la línea de server.js que elige y la rutina para cambiar de entorno.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">4</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3" /> <path d="M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4" /> <path d="M5 21h14" /></svg></div>
+        <div class="roadmap-tag">105–145 min</div>
+        <div class="roadmap-titulo">El script seed.js</div>
+        <div class="roadmap-desc">Cargar el catálogo de 6 productos en la base local con un comando, las veces que haga falta.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">5</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 4 7l4 4" /> <path d="M4 7h16" /> <path d="m16 21 4-4-4-4" /> <path d="M20 17H4" /></svg></div>
+        <div class="roadmap-tag">145–170 min</div>
+        <div class="roadmap-titulo">De local a Atlas</div>
+        <div class="roadmap-desc">Exportar una colección desde Compass e importarla a tu propio Atlas, sin tocar tus datos reales.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">6</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" /></svg></div>
+        <div class="roadmap-tag">170–180 min</div>
+        <div class="roadmap-titulo">Verificación y cierre</div>
+        <div class="roadmap-desc">Cambiar de entorno y comprobar qué base usa el proyecto en cada caso.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 03 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 4 — LOGROS DE HOY ══════════ -->
+<section class="slide" id="logros">
+  <div class="slide-block-badge contexto">Objetivos</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">¿Qué vamos a lograr?</h2>
+      <p class="sec-desc">Al terminar tendrás un entorno de desarrollo que funciona sin internet y que no ensucia los datos de producción.</p>
+    </div>
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">01</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 16h.01" /> <path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /> <path d="M21.946 12.013H2.054" /> <path d="M6 16h.01" /></svg></div>
+        <div class="roadmap-tag">Infraestructura</div>
+        <div class="roadmap-titulo">MongoDB en tu computador</div>
+        <div class="roadmap-desc">Un servidor de bases de datos corriendo como servicio y MongoDB Compass para explorar bases, colecciones y documentos.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">02</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="12" r="3" /> <rect width="20" height="14" x="2" y="5" rx="7" /></svg></div>
+        <div class="roadmap-tag">Configuración</div>
+        <div class="roadmap-titulo">Un interruptor entre entornos</div>
+        <div class="roadmap-desc">Con DB_MODO=local o DB_MODO=atlas el mismo proyecto usa una base u otra, sin cambiar código. Y siempre sabrás en cuál estás.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">03</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3" /> <path d="M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4" /> <path d="M5 21h14" /></svg></div>
+        <div class="roadmap-tag">Datos</div>
+        <div class="roadmap-titulo">Un seed repetible</div>
+        <div class="roadmap-desc">Un comando que borra y vuelve a crear el catálogo. Si algo se daña en pruebas, se reinicia en segundos.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 04 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 5 — DE DÓNDE PARTIMOS ══════════ -->
+<section class="slide" id="partida">
+  <div class="slide-block-badge contexto">Punto de partida</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Todo vive en Atlas</h2>
+      <p class="sec-desc">Hoy <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">server.js</code> lee una sola variable, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">MONGODB_URI</code>, que apunta a tu cluster en la nube. Funciona, pero tiene tres costos que van a crecer en las próximas sesiones.</p>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card rojo">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h.01" /> <path d="M8.5 16.429a5 5 0 0 1 7 0" /> <path d="M5 12.859a10 10 0 0 1 5.17-2.69" /> <path d="M19 12.859a10 10 0 0 0-2.007-1.523" /> <path d="M2 8.82a15 15 0 0 1 4.177-2.643" /> <path d="M22 8.82a15 15 0 0 0-11.288-3.764" /> <path d="m2 2 20 20" /></svg></div>
+        <div class="concepto-titulo">Depende de internet</div>
+        <div class="concepto-desc">Sin conexión estable, el backend no arranca. En el aula de Garzón eso puede pasar en el peor momento.</div>
+      </div>
+      <div class="concepto-card rojo">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6" /> <path d="M14 11v6" /> <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /> <path d="M3 6h18" /> <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg></div>
+        <div class="concepto-titulo">Datos de prueba en producción</div>
+        <div class="concepto-desc">En S30 se crean usuarios reales y en S32 pagos de prueba. Cada prueba llena Atlas de registros que luego hay que limpiar a mano.</div>
+      </div>
+      <div class="concepto-card rojo">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M4.929 4.929 19.07 19.071" /></svg></div>
+        <div class="concepto-titulo">Miedo a borrar</div>
+        <div class="concepto-desc">Una base compartida o en la nube se cuida. Una base propia se puede romper y rehacer, que es como se aprende.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="concepto-titulo">Lo que ya funciona</div>
+        <div class="concepto-desc">Mongoose, los modelos, las rutas y el frontend no cambian. Solo cambia <strong>a dónde</strong> se conecta el backend.</div>
+      </div>
+    </div>
+    <div class="info-box info">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Cada aprendiz tiene su propio Atlas</div>
+      <div class="info-box-content">Cada uno trabaja con su propio cluster y sus propios productos. Por eso la base local no se copia de nadie: se crea con un script desde el archivo <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">productos.json</code> que todos tienen en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">frontend/data/</code>.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 05 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 6 — DESARROLLO Y PRODUCCIÓN ══════════ -->
+<section class="slide" id="entornos">
+  <div class="slide-block-badge teoria">Concepto · Entornos</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Dos entornos, dos bases</h2>
+      <p class="sec-desc">Un proyecto serio no prueba sobre lo que usan los clientes. Se separan dos mundos con el mismo código y bases distintas.</p>
+    </div>
+    <div class="dom-compare" style="grid-template-columns:1fr auto 1fr;">
+      <div class="dom-box bien">
+        <div class="dom-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 16h.01" /> <path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /> <path d="M21.946 12.013H2.054" /> <path d="M6 16h.01" /></svg> Local — desarrollo</div>
+        <div class="dom-box-desc">Vive en tu computador. Gratis, rápida, sin internet. Es el campo de pruebas: aquí se registra "usuario1@prueba.com" mil veces y no pasa nada.</div>
+      </div>
+      <div class="dom-vs">≠</div>
+      <div class="dom-box mal">
+        <div class="dom-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></svg> Atlas — producción</div>
+        <div class="dom-box-desc">Vive en la nube. Es la que ve el mundo cuando el proyecto se publica. Se cuida: solo debe tener datos que importan.</div>
+      </div>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6" /> <path d="m8 6-6 6 6 6" /></svg></div>
+        <div class="concepto-titulo">El mismo código</div>
+        <div class="concepto-desc">Mongoose, los modelos y las rutas son idénticos. Lo único distinto es la dirección de la base, y esa dirección vive en el archivo .env.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v5a1 1 0 0 0 1 1h5" /> <path d="M4 12v6" /> <path d="M4 14h2" /> <path d="M9.65 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v4" /> <circle cx="4" cy="20" r="2" /></svg></div>
+        <div class="concepto-titulo">Por eso existe .env</div>
+        <div class="concepto-desc">Es el lugar para lo que cambia según el computador: direcciones, contraseñas, claves. Nunca se sube a GitHub (ya está en .gitignore).</div>
+      </div>
+      <div class="concepto-card purpura">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="12" r="3" /> <rect width="20" height="14" x="2" y="5" rx="7" /></svg></div>
+        <div class="concepto-titulo">Un interruptor</div>
+        <div class="concepto-desc">Una variable, DB_MODO, dice cuál de las dos direcciones usa el backend al arrancar.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 06 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 7 — LA CADENA DE CONEXIÓN ══════════ -->
+<section class="slide" id="conexion">
+  <div class="slide-block-badge teoria">Concepto · Cadena de conexión</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">La dirección de una base de datos</h2>
+      <p class="sec-desc">Mongoose se conecta con un texto llamado <strong>cadena de conexión</strong>. La de tu Atlas y la de tu base local se parecen, pero tienen diferencias que importan.</p>
+    </div>
+    <div class="code-editor" style="max-width:760px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">.env — las dos cadenas</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="par-valor">MONGODB_URI_ATLAS</span>=mongodb+srv://usuario:clave@cluster0.abcde.mongodb.net/techstore</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code"><span class="par-inicial">MONGODB_URI_LOCAL</span>=mongodb://127.0.0.1:27017/techstore</span></div>
+      </div>
+    </div>
+    <div class="useState-split">
+    <div class="code-editor" style="">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">La cadena local, pieza por pieza</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">mongodb://<span class="par-dato">127.0.0.1</span>:<span class="par-evento">27017</span>/<span class="par-funcion">techstore</span></span></div>
+      </div>
+    </div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="useState-breakdown">
+          <div class="useState-breakdown-label">// las 3 piezas, en palabras normales</div>
+          <div class="useState-breakdown-line"><span class="par-dato">127.0.0.1</span> = este mismo computador &nbsp;·&nbsp; <span class="par-evento">27017</span> = el puerto en el que escucha MongoDB &nbsp;·&nbsp; <span class="par-funcion">techstore</span> = el nombre de la base de datos</div>
+          <div class="useState-breakdown-arrows"><span class="par-dato">↓</span>
+            <span class="par-evento">↓</span>
+            <span class="par-funcion">↓</span></div>
+          <div class="useState-breakdown-plain">"Conéctate a <span class="par-dato">este computador</span>, por <span class="par-evento">el puerto 27017</span>, y usa la base <span class="par-funcion">techstore</span>."</div>
+        </div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><td>mongodb+srv://</td><td>Es el formato de Atlas: busca la dirección real del cluster por DNS y usa conexión cifrada. Lleva usuario y contraseña</td></tr>
+          <tr><td>mongodb://</td><td>Formato clásico, el de una base local. En desarrollo no lleva usuario ni contraseña</td></tr>
+          <tr><td>127.0.0.1</td><td>La dirección de "este mismo computador". <strong>Siempre funciona</strong>. <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">localhost</code> normalmente también, pero con algunas versiones de Node (17 a 19) se resuelve a la dirección IPv6 y MongoDB, por defecto, solo atiende IPv4</td></tr>
+          <tr><td>/techstore</td><td>El nombre de la base. Si no existe, se crea sola: el backend la crea al conectarse, junto con una colección vacía por cada modelo</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 07 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 8 — MONGODB COMPASS ══════════ -->
+<section class="slide" id="compass">
+  <div class="slide-block-badge teoria">Concepto · Compass</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Ver la base de datos con los ojos</h2>
+      <p class="sec-desc">Hasta ahora la base de datos era invisible: se llenaba y se leía desde el código. <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">MongoDB Compass</code> es la herramienta gráfica oficial: se conecta a una base y la muestra como carpetas.</p>
+    </div>
+    <div class="tree-demo">
+      <div class="tree-row"><div class="tree-node origen">Conexión — mongodb://127.0.0.1:27017</div></div>
+      <div class="tree-arrow-down">↓ contiene ↓</div>
+      <div class="tree-row"><div class="tree-node pasa">Base de datos — techstore</div></div>
+      <div class="tree-arrow-down">↓ contiene ↓</div>
+      <div class="tree-row"><div class="tree-node pasa">Colecciones — productos, usuarios, mensajes, ordens, transaccions</div></div>
+      <div class="tree-arrow-down">↓ contienen ↓</div>
+      <div class="tree-row"><div class="tree-node destino">Documentos — cada producto, cada usuario</div></div>
+      <div class="tree-caption">Es la misma jerarquía que ya conoces de Mongoose: modelo Producto → colección productos → un documento por producto. Mongoose pone los nombres en plural, en inglés: de ahí "ordens".</div>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /> <circle cx="12" cy="12" r="3" /></svg></div>
+        <div class="concepto-titulo">Ver</div>
+        <div class="concepto-desc">Cada documento aparece con sus campos. Puedes buscar con un filtro, por ejemplo { nombre: "iPhone 15 Pro" }.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg></div>
+        <div class="concepto-titulo">Editar</div>
+        <div class="concepto-desc">Cambia un precio directamente en un documento y recarga el catálogo: el cambio se ve de inmediato.</div>
+      </div>
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 4 7l4 4" /> <path d="M4 7h16" /> <path d="m16 21 4-4-4-4" /> <path d="M20 17H4" /></svg></div>
+        <div class="concepto-titulo">Exportar e importar</div>
+        <div class="concepto-desc">Saca una colección a un archivo JSON, o mete uno a otra base. Es el puente entre local y Atlas.</div>
+      </div>
+    </div>
+    <div class="info-box warning">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Con poder viene cuidado</div>
+      <div class="info-box-content">En Compass se puede borrar una colección entera con dos clics. Antes de borrar o editar, mira a qué conexión estás conectado. Por eso se le pone nombre y color a cada una: TechStore Local en verde y TechStore Atlas en rojo. Compass además muestra una laptop para la local y un servidor para Atlas.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 08 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 9 — ELEGIR EL ENTORNO ══════════ -->
+<section class="slide" id="modo">
+  <div class="slide-block-badge practica">Práctica · Una línea que elige</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Del .env a la conexión</h2>
+      <p class="sec-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">server.js</code> lee una variable y decide a qué base conectarse. Es el cambio de código más pequeño de la sesión.</p>
+    </div>
+    <div class="code-editor" style="max-width:760px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">.env — el interruptor</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="par-valor">DB_MODO</span>=local</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">MONGODB_URI_LOCAL=mongodb://127.0.0.1:27017/techstore</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">MONGODB_URI_ATLAS=mongodb+srv://usuario:clave@cluster0.abcde.mongodb.net/techstore</span></div>
+      </div>
+    </div>
+    <div class="useState-split">
+    <div class="code-editor" style="">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">server.js — la línea que elige</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> uri = <span class="par-dato">process.env.DB_MODO</span> === <span class="par-valor">"local"</span></span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  ? <span class="par-funcion">process.env.MONGODB_URI_LOCAL</span></span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">  : <span class="par-inicial">process.env.MONGODB_URI_ATLAS</span></span></div>
+      </div>
+    </div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="useState-breakdown">
+          <div class="useState-breakdown-label">// las 4 piezas, en palabras normales</div>
+          <div class="useState-breakdown-line"><span class="par-dato">process.env.DB_MODO</span> = lo que diga el .env &nbsp;·&nbsp; <span class="par-valor">"local"</span> = el valor que activa la base local &nbsp;·&nbsp; <span class="par-funcion">process.env.MONGODB_URI_LOCAL</span> = la dirección si es local &nbsp;·&nbsp; <span class="par-inicial">process.env.MONGODB_URI_ATLAS</span> = la dirección en cualquier otro caso</div>
+          <div class="useState-breakdown-arrows"><span class="par-dato">↓</span>
+            <span class="par-valor">↓</span>
+            <span class="par-funcion">↓</span>
+            <span class="par-inicial">↓</span></div>
+          <div class="useState-breakdown-plain">"<span class="par-dato">Si el .env dice</span> <span class="par-valor">local</span>, usa <span class="par-funcion">la base de tu computador</span>; si no, <span class="par-inicial">Atlas</span>."</div>
+        </div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>process.env.NOMBRE</td><td>Lee una variable del archivo .env (la carga <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">dotenv</code> en la primera línea de server.js)</td></tr>
+          <tr><td>condición ? A : B</td><td>El operador ternario que ya conoces de React: si la condición es cierta, A; si no, B</td></tr>
+          <tr><td>Atlas por defecto</td><td>Cualquier valor distinto de "local" (o ninguno) usa Atlas, que es lo que el proyecto ha hecho hasta hoy. Así nada se rompe si alguien olvida la variable</td></tr>
+          <tr><td>Se reinicia el servidor</td><td>El .env se lee <strong>solo al arrancar</strong>, y nodemon no lo vigila: tras cambiar DB_MODO escribe <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">rs</code> y Enter en la terminal del backend (o Ctrl + C y npm run dev)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 09 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 10 — CAMBIAR ENTRE LOCAL Y ATLAS ══════════ -->
+<section class="slide" id="cambio">
+  <div class="slide-block-badge practica">Práctica · Cambiar de entorno</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">La rutina de tres pasos</h2>
+      <p class="sec-desc">Cambiar de base de datos es siempre igual, y no toca el código. La vas a repetir muchas veces: aprenderla bien es el objetivo central de la sesión.</p>
+    </div>
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">1</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.364 13.634a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506l4.013-4.009a1 1 0 0 0-3.004-3.004z" /> <path d="M14.487 7.858A1 1 0 0 1 14 7V2" /> <path d="M20 19.645V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l2.516 2.516" /> <path d="M8 18h1" /></svg></div>
+        <div class="roadmap-tag">Interruptor</div>
+        <div class="roadmap-titulo">Cambiar el .env</div>
+        <div class="roadmap-desc">En backend/.env escribe DB_MODO=local o DB_MODO=atlas y guarda con Ctrl + S.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">2</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /></svg></div>
+        <div class="roadmap-tag">Reinicio</div>
+        <div class="roadmap-titulo">Reiniciar el backend</div>
+        <div class="roadmap-desc">En la terminal del backend escribe rs y pulsa Enter. Sin este paso, el cambio no se aplica.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">3</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" /> <path d="m16 9-5.5 5.5L8 12" /></svg></div>
+        <div class="roadmap-tag">Confirmación</div>
+        <div class="roadmap-titulo">Leer el mensaje</div>
+        <div class="roadmap-desc">La terminal dice Conectado a MongoDB (local) o (atlas). Si no coincide con lo que escribiste, falta reiniciar.</div>
+      </div>
+    </div>
+    <div class="code-editor" style="max-width:640px;margin:14px auto;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">El ciclo completo, de principio a fin</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"># 1) backend/.env</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code"><span class="par-valor">DB_MODO</span>=local            # o atlas</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">4</span><span class="code"># 2) en la terminal del backend: rs y Enter</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code"><span class="par-handler">rs</span></span></div>
+        <div class="cl"><span class="ln">6</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">7</span><span class="code"># 3) la terminal responde</span></div>
+        <div class="cl"><span class="ln">8</span><span class="code"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Conectado a MongoDB (<span class="par-dato">local</span>)</span></div>
+      </div>
+    </div>
+    <div class="info-box warning">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> El error más común</div>
+      <div class="info-box-content">Cambiar el .env y olvidar reiniciar. nodemon reinicia solo cuando cambia un archivo de código, pero <strong>no vigila el .env</strong>: el backend sigue usando la base de antes y todo "parece" no funcionar. La señal: el mensaje de la terminal no coincide con lo que escribiste.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 10 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 11 — ¿EN QUÉ ENTORNO ESTOY? ══════════ -->
+<section class="slide" id="donde">
+  <div class="slide-block-badge teoria">Concepto · Saber dónde estás</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Siempre debes saber en cuál estás</h2>
+      <p class="sec-desc">Trabajar en el entorno equivocado es el error más caro: borrar datos reales creyendo que eran de prueba. Hay tres señales, de la más rápida a la más completa.</p>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19h8" /> <path d="m4 17 6-6-6-6" /></svg></div>
+        <div class="concepto-titulo">1 · El mensaje de arranque</div>
+        <div class="concepto-desc">La terminal del backend, al iniciar: Conectado a MongoDB (local) o (atlas).</div>
+      </div>
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /> <path d="M2 12h20" /></svg></div>
+        <div class="concepto-titulo">2 · La ruta de prueba</div>
+        <div class="concepto-desc">Abre localhost:3000 en el navegador: la respuesta incluye "baseDeDatos": "local" o "atlas".</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /> <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg></div>
+        <div class="concepto-titulo">3 · El ícono y el color en Compass</div>
+        <div class="concepto-desc">TechStore Local lleva una laptop y color verde; TechStore Atlas, un servidor y color rojo: de un vistazo sabes en cuál base estás mirando.</div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Situación</th><th>Entorno</th><th>Por qué</th></tr></thead>
+        <tbody>
+          <tr><td>Desarrollar y probar el día a día</td><td><strong>local</strong></td><td>No depende de internet y los datos de prueba no ensucian nada</td></tr>
+          <tr><td>Registro, login y pagos de prueba (S30 a S33)</td><td><strong>local</strong></td><td>Los usuarios y pedidos de prueba se quedan en tu computador</td></tr>
+          <tr><td>Correr npm run seed o borrar datos</td><td><strong>local</strong> (obligatorio)</td><td>El seed borra datos: por eso se niega a correr con DB_MODO=atlas</td></tr>
+          <tr><td>Ver o publicar lo "real", o la demo final</td><td><strong>atlas</strong></td><td>Es la base que ve el público cuando el proyecto se publica</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 11 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 12 — EL SCRIPT SEED ══════════ -->
+<section class="slide" id="seed">
+  <div class="slide-block-badge teoria">Concepto · Datos iniciales</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Una base vacía necesita sembrarse</h2>
+      <p class="sec-desc">La base local nace vacía. Un <strong>seed</strong> (semilla) es un script que la llena con datos iniciales conocidos, las veces que haga falta.</p>
+    </div>
+    <div class="code-editor" style="max-width:760px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">backend/seed.js — la idea</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> productos = <span class="sel">require</span>(<span class="str">"../frontend/data/productos.json"</span>)</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">await Producto.<span class="par-funcion">deleteMany</span>({})</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">await Producto.<span class="par-funcion">insertMany</span>(productos)</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">console.<span class="sel">log</span>(<span class="str">"Productos sembrados:"</span>, productos.length)</span></div>
+      </div>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /> <path d="M3 3v5h5" /></svg></div>
+        <div class="concepto-titulo">Repetible</div>
+        <div class="concepto-desc">Primero borra lo que hay y luego inserta. Correrlo dos veces deja 6 productos, no 12. Si algo se daña, se vuelve a correr.</div>
+      </div>
+      <div class="concepto-card rojo">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="M12 8v4" /> <path d="M12 16h.01" /></svg></div>
+        <div class="concepto-titulo">Con freno de seguridad</div>
+        <div class="concepto-desc">El seed borra datos. Por eso se niega a correr si DB_MODO no es "local": así nunca se ejecuta por error contra Atlas.</div>
+      </div>
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /> <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></div>
+        <div class="concepto-titulo">Los _id cambian</div>
+        <div class="concepto-desc">Cada vez que se siembra, Mongo crea _id nuevos. Las direcciones /productos/&lt;_id&gt; de S29 guardadas en favoritos dejan de servir; es normal.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 12 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 13 — DE LOCAL A ATLAS ══════════ -->
+<section class="slide" id="exportar">
+  <div class="slide-block-badge teoria">Concepto · Mover datos</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Llevar datos de una base a otra</h2>
+      <p class="sec-desc">Las dos bases no se hablan entre sí: para mover información hay que sacarla a un archivo y meterla en el otro lado. Compass lo hace con dos botones.</p>
+    </div>
+    <div class="tree-demo">
+      <div class="tree-row"><div class="tree-node origen">Base local — colección productos</div></div>
+      <div class="tree-arrow-down">↓ Export collection → productos.json ↓</div>
+      <div class="tree-row"><div class="tree-node pasa">Archivo productos.json</div></div>
+      <div class="tree-arrow-down">↓ Import data (conectado a Atlas) ↓</div>
+      <div class="tree-row"><div class="tree-node destino">Atlas — colección nueva</div></div>
+      <div class="tree-caption">En la práctica de hoy se importa a una colección de prueba, no a la real.</div>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card rojo">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg></div>
+        <div class="concepto-titulo">Importar duplica</div>
+        <div class="concepto-desc">Si importas sobre la colección productos de Atlas sin vaciarla antes, tendrás cada producto dos veces. Hoy se usa una colección nueva para no tocar lo real.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <path d="M16 3.128a4 4 0 0 1 0 7.744" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <circle cx="9" cy="7" r="4" /></svg></div>
+        <div class="concepto-titulo">Los usuarios no viajan solos</div>
+        <div class="concepto-desc">Una cuenta creada en la base local no existe en Atlas, y viceversa. Cada base tiene su propia colección usuarios.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="5" x="2" y="3" rx="1" /> <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /> <path d="M10 12h4" /></svg></div>
+        <div class="concepto-titulo">Existe una vía profesional</div>
+        <div class="concepto-desc">mongodump y mongorestore (las "Database Tools") hacen lo mismo para bases enteras desde la terminal. Hoy usamos Compass; es lo mismo, con botones.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 13 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 14 — PRERREQUISITOS ══════════ -->
+<section class="slide" id="prerrequisitos">
+  <div class="slide-block-badge contexto">Antes de empezar</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Prerrequisitos</h2>
+      <p class="sec-desc">La sesión instala dos programas nuevos. Tu proyecto debe estar como quedó en S29.</p>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="concepto-titulo">Backend y frontend funcionando</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">backend/</code> con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">npm run dev</code> conectado a tu Atlas, y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">frontend-react/</code> con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">npm run dev</code> en localhost:5173, como en S29. Son dos terminales abiertas a la vez. Si hoy no conecta, resuélvelo primero.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="concepto-titulo">Atlas y Compass de la S10</div>
+        <div class="concepto-desc">Tu cluster, tu usuario y tu conexión de Atlas en Compass, y la cadena que ya tienes en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">MONGODB_URI</code> (S12). No se cambian: se renombran. La guía empieza verificando todo esto; si algo falta, te dice cómo hacerlo.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3" /> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <path d="m7 10 5 5 5-5" /></svg></div>
+        <div class="concepto-titulo">Permiso para instalar</div>
+        <div class="concepto-desc">Instalar MongoDB Community Server pide permisos de administrador en Windows y la contraseña del computador en Mac. Compass ya lo tienes instalado; si no, la guía te dice cómo.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 16h.01" /> <path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /> <path d="M21.946 12.013H2.054" /> <path d="M6 16h.01" /></svg></div>
+        <div class="concepto-titulo">Espacio y paciencia</div>
+        <div class="concepto-desc">Cerca de 1 GB libre. La descarga y la instalación son lo más lento de la sesión: se hacen primero.</div>
+      </div>
+    </div>
+    <div class="info-box warning">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Windows y Mac</div>
+      <div class="info-box-content">La guía trae los pasos de los dos sistemas. En Windows el servidor queda como un servicio que arranca solo; en Mac se instala con Homebrew y se inicia con un comando. Instala <strong>la versión 7.0 o superior</strong>.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 14 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 15 — LOS CONCEPTOS NUEVOS DE HOY ══════════ -->
+<section class="slide" id="resumen">
+  <div class="slide-block-badge contexto">Referencia rápida</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Los conceptos nuevos de hoy</h2>
+      <p class="sec-desc">Todo lo de S19 a S29 sigue funcionando igual. Esto es lo que se suma.</p>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Concepto</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><td>Entorno</td><td>Un lugar donde corre el proyecto: desarrollo (tu computador) o producción (lo que ve el público). Cada uno con su propia base</td></tr>
+          <tr><td>MongoDB Community Server</td><td>El programa que guarda las bases de datos. Se instala una vez y queda corriendo como servicio</td></tr>
+          <tr><td>MongoDB Compass</td><td>La herramienta gráfica para ver bases, colecciones y documentos, editarlos y exportarlos</td></tr>
+          <tr><td>Cadena de conexión</td><td>El texto que le dice a Mongoose a qué base conectarse: protocolo, servidor, puerto y nombre de la base</td></tr>
+          <tr><td>mongodb:// y mongodb+srv://</td><td>Local, sin usuario, y Atlas, con usuario y cifrado</td></tr>
+          <tr><td>127.0.0.1</td><td>Este mismo computador. Siempre funciona; localhost a veces falla con algunas versiones de Node</td></tr>
+          <tr><td>DB_MODO</td><td>La variable del .env que elige entre local y Atlas al arrancar el backend</td></tr>
+          <tr><td>Seed</td><td>Script que borra y vuelve a crear los datos iniciales. Repetible, y con freno para no correr contra Atlas</td></tr>
+          <tr><td>rs (nodemon)</td><td>Reinicio manual del backend. Es lo que aplica un cambio de DB_MODO, porque nodemon no vigila el .env</td></tr>
+          <tr><td>Export / Import</td><td>Sacar una colección a un archivo JSON y meterla en otra base. Importar sobre una colección con datos los duplica</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 15 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 16 — ENTREGABLE Y CIERRE ══════════ -->
+<section class="slide" id="entregable">
+  <div class="slide-block-badge contexto">Cierre · Sesión extra</div>
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">¡Empezamos!</h2>
+    </div>
+    <div class="entregable-box">
+      <div class="entregable-title">Criterios de evaluación</div>
+      <ul class="entregable-list">
+        <li>MongoDB Community Server 7.0 o superior instalado y corriendo, y Compass conectado a <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">mongodb://127.0.0.1:27017</code></li>
+        <li>El archivo .env tiene <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">DB_MODO</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">MONGODB_URI_LOCAL</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">MONGODB_URI_ATLAS</code>, y server.js elige la dirección según DB_MODO</li>
+        <li>El mensaje de arranque del backend dice a qué base se conectó, y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">localhost:3000</code> lo confirma con el campo baseDeDatos</li>
+        <li>Sabes cambiar de entorno (cambiar DB_MODO, reiniciar con rs y confirmar) y decir en cuál estás por tres señales distintas</li>
+        <li><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">npm run seed</code> deja 6 productos en la base local y se niega a correr si DB_MODO no es local</li>
+        <li>Con DB_MODO=local el catálogo de la tienda muestra los productos de la base local, y un precio cambiado en Compass se refleja en la tienda sin tocar Atlas</li>
+        <li>Con DB_MODO=atlas el catálogo vuelve a mostrar los datos de Atlas, sin cambiar código</li>
+        <li>Una colección exportada de la base local aparece importada en tu Atlas, en una colección de prueba</li>
+      </ul>
+    </div>
+    <div class="concepto-grid" style="margin-top:24px;grid-template-columns:minmax(240px,520px);">
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" /> <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg></div>
+        <div class="concepto-titulo">02 — Guía paso a paso</div>
+        <div class="concepto-desc">La parte <strong>obligatoria</strong> de hoy: instalar, conectar con Compass, dos entornos en .env, el seed y el paso a Atlas.</div>
+        <a href="../02_GUIA_BASE_DATOS_LOCAL/index.html" style="display:inline-block;margin-top:10px;color:#1e40af;font-weight:700;text-decoration:underline;font-size:13px;">Abrir guía →</a>
+      </div>
+    </div>
+    <div class="info-box teal">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg> Próxima sesión: S30</div>
+      <div class="info-box-content">Migrar Login y Registro: formularios controlados que hablan con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">POST /api/auth/login</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/registro</code>. Con la base local, los usuarios de prueba que registres no ensucian tu Atlas.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 16 / 16</div>
+</section>
+
+</main>
+
+<script>
+// Alternar sidebar (colapsado en escritorio, drawer en móvil)
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main-content');
+  const toggleBtn = document.getElementById('floating-toggle');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (window.innerWidth <= 1024) {
+    const abierto = sidebar.classList.toggle('open');
+    backdrop.classList.toggle('active', abierto);
+  } else {
+    const colapsado = sidebar.classList.toggle('collapsed');
+    main.classList.toggle('expanded', colapsado);
+    toggleBtn.classList.toggle('visible', colapsado);
+  }
+}
+
+// Cerrar el drawer al elegir un slide en móvil
+document.querySelectorAll('.sidebar .nav-link').forEach((link) => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 1024) {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarBackdrop').classList.remove('active');
+    }
+  });
+});
+
+// ScrollSpy: marca en el menú el slide visible
+const secciones = document.querySelectorAll('section.slide[id]');
+const enlaces = document.querySelectorAll('.sidebar .nav-link');
+const observador = new IntersectionObserver((entradas) => {
+  entradas.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const id = e.target.id;
+    enlaces.forEach((l) => {
+      const activo = l.getAttribute('href') === '#' + id;
+      l.classList.toggle('active', activo);
+      if (activo) l.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  });
+}, { root: null, rootMargin: '-15% 0px -65% 0px', threshold: 0 });
+secciones.forEach((s) => observador.observe(s));
+</script>
+</body>
+</html>
