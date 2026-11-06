@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revisión de backends del grupo | SENA ADSO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#F4F2EC; --surface:#ffffff; --surface2:#ECE9DF; --border:#e5e1d4;
+  --txt:#0f172a; --txt-muted:#334155; --txt-dim:#64748b;
+  --verde:#39a900; --verde-dark:#236b00; --teal:#018751; --teal-dark:#016a3f; --teal-bg:rgba(1,135,81,.09);
+  --naranja:#ff6b00; --naranja-dark:#c2410c; --naranja-bg:rgba(255,107,0,.10);
+  --azul:#0284c7; --azul-dark:#0369a1; --azul-bg:rgba(2,132,199,.10);
+  --purple:#8b5cf6; --purple-bg:rgba(139,92,246,.09);
+  --red:#dc2626; --red-bg:rgba(220,38,38,.08);
+  --yellow:#d97706; --yellow-bg:rgba(217,119,6,.10);
+  --green:#16a34a; --green-bg:rgba(22,163,74,.10);
+  --code-bg:#0d1117; --sidebar-w:290px; --top-h:62px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;}
+h1,h2,h3,.page-title,.proy-titulo{font-family:'Syne','Inter',sans-serif;}
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
+.tok{color:var(--green);} .terr{color:var(--red);}
+
+/* barra superior */
+.topbar{position:sticky;top:0;z-index:50;height:var(--top-h);background:rgba(255,255,255,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 28px;}
+.topbar-left{display:flex;align-items:center;gap:12px;min-width:0;}
+.sena-badge{background:linear-gradient(135deg,var(--verde),var(--verde-dark));color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;padding:5px 12px;border-radius:8px;letter-spacing:.5px;}
+.topbar-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;line-height:1.2;}
+.topbar-sub{font-size:11.5px;color:var(--txt-dim);}
+.topbar-actions{display:flex;gap:10px;flex-shrink:0;}
+.btn-top{display:inline-flex;align-items:center;gap:7px;font:700 12px 'Inter',sans-serif;padding:8px 14px;border-radius:20px;text-decoration:none;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--txt-muted);transition:all .15s;}
+.btn-top:hover{border-color:var(--teal);color:var(--teal);}
+.btn-top.print{color:var(--azul-dark);border-color:rgba(2,132,199,.3);}
+.btn-top.print:hover{background:var(--azul-bg);}
+
+/* layout */
+.layout{display:flex;max-width:1380px;margin:0 auto;}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;position:sticky;top:var(--top-h);height:calc(100vh - var(--top-h));overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:20px 0 32px;}
+.nav-section{padding:0 12px;margin-bottom:10px;}
+.nav-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;color:var(--txt-dim);font-size:13px;font-weight:500;text-decoration:none;transition:background .15s,color .15s;line-height:1.3;}
+.nav-item:hover{background:var(--teal-bg);color:var(--txt);}
+.nav-item.active{background:var(--teal-bg);color:var(--teal);font-weight:700;}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;}
+.nav-item.active .nav-dot{background:var(--teal);}
+.nav-dot.crit{background:var(--red);} .nav-dot.alta{background:var(--naranja);} .nav-dot.media{background:#eab308;} .nav-dot.baja{background:var(--green);}
+.leyenda{margin:14px 12px 0;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:11.5px;color:var(--txt-dim);display:flex;flex-direction:column;gap:6px;}
+.leyenda .nav-label{padding:0 0 2px;}
+.leyenda .prio{margin-right:6px;}
+.main{flex:1;min-width:0;padding:40px 48px 90px;max-width:960px;}
+
+/* encabezado */
+.page-header{margin-bottom:36px;scroll-margin-top:80px;}
+.page-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--purple);background:var(--purple-bg);border:1px solid rgba(139,92,246,.25);border-radius:30px;padding:5px 14px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;margin-bottom:14px;}
+.page-title{font-size:clamp(28px,3.6vw,40px);font-weight:800;line-height:1.15;letter-spacing:-.5px;text-wrap:balance;}
+.page-sub{font-size:16px;color:var(--txt-muted);margin-top:10px;}
+.meta-box{margin-top:22px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;}
+.ficha-l{font-size:10.5px;font-weight:700;color:var(--txt-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.ficha-v{font-size:13.5px;font-weight:700;color:var(--txt);line-height:1.4;}
+
+/* secciones */
+.seccion{margin-bottom:56px;scroll-margin-top:80px;}
+.sec-h2{display:flex;align-items:center;gap:10px;font-size:23px;font-weight:800;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.sec-h2 .ic{color:var(--teal);}
+.sub-h3{font-size:16px;font-weight:700;margin:24px 0 10px;font-family:'Syne',sans-serif;}
+p{margin-bottom:14px;font-size:14.5px;color:var(--txt-muted);}
+p strong,li strong{color:var(--txt);font-weight:600;}
+.nota{font-size:12.5px;color:var(--txt-dim);}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:1px 6px;border-radius:4px;color:var(--azul-dark);overflow-wrap:anywhere;}
+.separador{display:flex;align-items:center;gap:14px;margin:8px 0 36px;color:var(--txt-dim);font:800 11px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;}
+.separador::before,.separador::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* tablas */
+.table-wrap{overflow-x:auto;margin:16px 0;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--surface2);color:var(--txt-dim);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:top;overflow-wrap:anywhere;}
+tr:last-child td{border-bottom:none;}
+td:first-child{font-weight:600;}
+td.pn a{color:var(--teal);text-decoration:none;font-weight:700;}
+td.pn a:hover{text-decoration:underline;}
+table.resumen{min-width:640px;}
+.por{font-family:'Inter',sans-serif;font-size:.62em;font-weight:600;color:var(--txt-dim);background:var(--surface2);border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:0;white-space:nowrap;}
+
+/* prioridad */
+.prio{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 9px;border-radius:20px;white-space:nowrap;vertical-align:middle;}
+.prio.crit{background:var(--red-bg);color:#b91c1c;border:1px solid rgba(220,38,38,.3);}
+.prio.alta{background:var(--naranja-bg);color:var(--naranja-dark);border:1px solid rgba(255,107,0,.35);}
+.prio.media{background:var(--yellow-bg);color:#92400e;border:1px solid rgba(217,119,6,.3);}
+.prio.baja{background:var(--green-bg);color:#166534;border:1px solid rgba(22,163,74,.3);}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:baseline;}
+.dot.crit{background:var(--red);} .dot.alta{background:var(--naranja);} .dot.media{background:#eab308;} .dot.baja{background:var(--green);}
+
+/* avisos */
+.callout{display:flex;gap:10px;align-items:flex-start;padding:13px 16px;border-radius:10px;font-size:13.5px;margin:16px 0;line-height:1.55;}
+.callout>div{min-width:0;}
+.callout-icon{flex-shrink:0;margin-top:2px;display:flex;}
+.callout .ic{width:16px;height:16px;stroke-width:2.5;vertical-align:baseline;}
+.callout.info{background:var(--azul-bg);border:1px solid rgba(2,132,199,.22);color:#0c4a6e;}
+.callout.warn{background:var(--yellow-bg);border:1px solid rgba(217,119,6,.25);color:#92400e;}
+.callout.teal{background:var(--teal-bg);border:1px solid rgba(1,135,81,.25);color:#014d2e;}
+.callout strong{color:inherit;}
+.callout code{color:inherit;background:rgba(255,255,255,.6);}
+
+/* código */
+.code-wrap{margin:14px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.code-header{display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 14px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}
+.code-dot{width:10px;height:10px;border-radius:50%;display:block;}
+.code-dot.r{background:#ff5f57;} .code-dot.y{background:#febc2e;} .code-dot.g{background:#28c840;}
+.code-filename{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-dim);}
+pre{background:var(--code-bg);padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:#e2e8f0;white-space:pre-wrap;overflow-wrap:anywhere;}
+pre .c{color:#7c8696;}
+
+/* listas y checklists */
+ul.lista,ol.lista{margin:0 0 14px 22px;font-size:14.5px;color:var(--txt-muted);}
+ul.lista li,ol.lista li{margin-bottom:6px;}
+.checklist{list-style:none;display:flex;flex-direction:column;gap:10px;margin:14px 0;}
+.checklist li{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:12px 16px;font-size:13.5px;color:var(--txt-dim);cursor:pointer;transition:all .15s;}
+.checklist li:hover{border-color:var(--teal);}
+.checklist li.marcado{background:var(--teal-bg);border-color:rgba(1,135,81,.35);color:var(--txt);}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--teal);}
+.checklist li.marcado .check-box{border-color:var(--teal);background:var(--teal-bg);}
+.checklist li.marcado .check-box::after{content:'✓';}
+.checklist li strong{color:var(--txt);}
+.auto-progreso{display:flex;align-items:center;gap:14px;font-size:12px;font-weight:700;color:var(--teal);margin:6px 0 4px;}
+.barra{flex:1;height:7px;background:var(--surface2);border-radius:10px;overflow:hidden;}
+.barra-fill{height:100%;width:0;background:var(--teal);border-radius:10px;transition:width .35s ease;}
+
+/* lecciones */
+.leccion{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin:16px 0;}
+.leccion-head{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.leccion-head h3{font-size:17px;font-weight:800;line-height:1.25;}
+.leccion-n{width:30px;height:30px;border-radius:50%;background:var(--teal-bg);color:var(--teal);font:700 13px 'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(1,135,81,.25);}
+.leccion-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:10px 0 4px;}
+.lg{border-radius:10px;padding:12px 14px;font-size:13px;}
+.lg.mal{background:var(--red-bg);border:1px solid rgba(220,38,38,.18);}
+.lg.bien{background:var(--green-bg);border:1px solid rgba(22,163,74,.2);}
+.lg-t{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px;color:var(--txt);}
+.lg ul{margin:0 0 0 18px;color:var(--txt);} .lg li{margin-bottom:4px;}
+
+/* proyectos */
+.proy{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:30px 34px;margin-bottom:34px;scroll-margin-top:80px;box-shadow:0 10px 30px -10px rgba(15,23,42,.07);position:relative;overflow:hidden;}
+.proy::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--naranja),var(--naranja-dark));}
+.proy-head{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;margin-bottom:6px;}
+.proy-num{font:700 11px 'JetBrains Mono',monospace;color:var(--naranja-dark);background:var(--naranja-bg);border:1px solid rgba(255,107,0,.3);border-radius:6px;padding:3px 10px;letter-spacing:.04em;text-transform:uppercase;}
+.proy-titulo{font-size:28px;font-weight:800;line-height:1.1;}
+.proy-lema{font-size:15px;color:var(--txt-muted);margin:6px 0 16px;font-weight:500;}
+.ficha{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:8px;}
+.parte{margin-top:26px;}
+.parte-titulo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.tono-ok .parte-titulo .ic{color:var(--green);} .tono-crit .parte-titulo .ic{color:var(--red);} .tono-alta .parte-titulo .ic{color:var(--naranja);}
+.tono-warn .parte-titulo .ic{color:var(--yellow);} .tono-azul .parte-titulo .ic{color:var(--azul);} .tono-teal .parte-titulo .ic{color:var(--teal);}
+.tono-crit{background:linear-gradient(180deg,rgba(220,38,38,.05),transparent 90px);border-radius:12px;padding:6px 14px 2px;margin-left:-14px;margin-right:-14px;}
+.hallazgo{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 10px;font-size:15px;font-weight:700;margin:20px 0 8px;font-family:'Inter',sans-serif;line-height:1.4;}
+.hallazgo>span:last-child{flex:1;min-width:0;}
+
+@media (max-width:992px){
+  .sidebar{display:none;}
+  .main{padding:28px 20px 70px;}
+  .topbar{padding:0 16px;} .topbar-sub{display:none;}
+  .btn-top.print{display:none;}
+}
+@media (max-width:640px){
+  .proy{padding:22px 18px;border-radius:14px;}
+  .tono-crit{margin-left:-6px;margin-right:-6px;padding:4px 6px 2px;}
+  .proy-titulo{font-size:23px;}
+  .topbar-title{font-size:13px;}
+  .btn-top{padding:7px 11px;}
+}
+@media print{
+  .topbar,.sidebar{display:none !important;}
+  .main{max-width:100%;padding:0;}
+  body{background:#fff;}
+  .proy,.leccion{break-inside:avoid;box-shadow:none;}
+  .seccion{break-inside:auto;}
+}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-left"><span class="sena-badge">SENA</span><div><div class="topbar-title">Revisión de backends del grupo</div><div class="topbar-sub">Ficha 3229944 · Fase 5 · Noviembre 2026</div></div></div>
+  <div class="topbar-actions">
+    <a href="../../explorar.html" class="btn-top portal"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> Volver al Hub</a>
+    <button type="button" class="btn-top print" onclick="window.print()"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg> Imprimir / Guardar PDF</button>
+  </div>
+</header>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="nav-section"><div class="nav-label">Para empezar</div>
+    <a class="nav-item active" href="#inicio"><span class="nav-dot"></span>Cómo leer este manual</a>
+    <a class="nav-item" href="#resumen"><span class="nav-dot"></span>Resumen del grupo</a>
+    <a class="nav-item" href="#lecciones"><span class="nav-dot"></span>Lo que se repite</a>
+    <a class="nav-item" href="#buenas"><span class="nav-dot"></span>Buenas prácticas para copiar</a>
+  </div>
+  <div class="nav-section"><div class="nav-label">Los 7 proyectos</div>
+    <a class="nav-item" href="#ecovoz-andres"><span class="nav-dot alta"></span>EcoVoz · Andrés</a>
+    <a class="nav-item" href="#ecovoz-michel"><span class="nav-dot alta"></span>EcoVoz · Michel</a>
+    <a class="nav-item" href="#homi"><span class="nav-dot media"></span>HOMI</a>
+    <a class="nav-item" href="#nexo"><span class="nav-dot media"></span>NEXO</a>
+    <a class="nav-item" href="#comersail"><span class="nav-dot media"></span>CÓMERSAIL</a>
+    <a class="nav-item" href="#sema"><span class="nav-dot crit"></span>SEMA</a>
+    <a class="nav-item" href="#turisplay"><span class="nav-dot crit"></span>TurisPlay</a>
+  </div>
+  <div class="nav-section"><div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#autoevaluacion"><span class="nav-dot"></span>Revisa tu propio backend</a>
+    <a class="nav-item" href="#glosario"><span class="nav-dot"></span>Glosario</a>
+  </div>
+  <div class="leyenda"><div class="nav-label">Prioridad de un hallazgo</div>
+    <div><span class="prio crit">Crítica</span> falla de seguridad o módulo roto</div>
+    <div><span class="prio alta">Alta</span> algo no funcionará en producción</div>
+    <div><span class="prio media">Media</span> hueco frente al plan o riesgo al desplegar</div>
+    <div><span class="prio baja">Baja</span> limpieza de código</div>
+  </div>
+</aside>
+<main class="main">
+  <header class="page-header" id="inicio">
+    <div class="page-tag"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg> Sesión extra · Fuera de numeración</div>
+    <h1 class="page-title">Revisión de los backends del grupo</h1>
+    <p class="page-sub">Qué encontramos al leer, levantar y probar el servidor de cada proyecto, qué se repite y cómo corregirlo.</p>
+    <div class="meta-box">
+      <div><div class="ficha-l">Proyectos</div><div class="ficha-v">7 (EcoVoz tiene 2 versiones)</div></div>
+      <div><div class="ficha-l">Cómo se revisó</div><div class="ficha-v">Código + servidor real + pruebas en vivo</div></div>
+      <div><div class="ficha-l">Evaluado contra</div><div class="ficha-v">Guía "Backend Personal" y el plan de cada proyecto</div></div>
+      <div><div class="ficha-l">Fecha</div><div class="ficha-v">5 de noviembre de 2026</div></div>
+    </div>
+  </header>
+
+  <section class="seccion" id="como-leer">
+    <h2 class="sec-h2"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg> Cómo leer este manual</h2>
+    <p>Este manual junta en una sola página los informes de revisión de todos los proyectos. Es para <strong>aprender de todos</strong>: de lo que salió bien en otro proyecto y de lo que le pasó a otro equipo, que puede pasarte a ti.</p>
+    <div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span><div><strong>Cómo se hizo cada revisión:</strong> se leyó el código a fondo y se levantó el servidor real de cada proyecto con su propio <code>.env</code> para probarlo en vivo: registrarse, iniciar sesión, consultar y crear datos. Lo que el informe dice que "funciona" o "falla" se comprobó de verdad. Los usuarios y datos de prueba se borraron después, así que ninguna base quedó alterada.</div></div>
+    <div class="callout warn"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><div><strong>Cada informe está escrito para el equipo dueño del proyecto</strong>, por eso habla en segunda persona ("tu código"). Léelo como si fuera tuyo: casi todo aplica a cualquier backend.</div></div>
+    <h3 class="sub-h3">Los cuatro niveles de prioridad</h3>
+    <div class="table-wrap"><table><thead><tr><th>Nivel</th><th>Qué significa</th><th>Qué hacer</th></tr></thead><tbody>
+      <tr><td><span class="prio crit">Crítica</span></td><td>Una falla de seguridad o un módulo completo que no funciona</td><td>Corregir primero, antes de seguir agregando funciones</td></tr>
+      <tr><td><span class="prio alta">Alta</span></td><td>Algo que funciona en tu computador pero no funcionará en producción</td><td>Corregir antes de desplegar</td></tr>
+      <tr><td><span class="prio media">Media</span></td><td>Un hueco frente al plan de trabajo o un riesgo al desplegar</td><td>Planificarlo en el cronograma</td></tr>
+      <tr><td><span class="prio baja">Baja</span></td><td>Limpieza de código</td><td>Hacerlo cuando haya tiempo</td></tr>
+    </tbody></table></div>
+    <p>Los dos proyectos de <strong>EcoVoz</strong> los trabajan dos aprendices del mismo equipo, y cada uno creó su propia versión. Por eso hay un informe para cada una, y verás que sus problemas se parecen y se complementan.</p>
+  </section>
+
+  <section class="seccion" id="resumen">
+    <h2 class="sec-h2"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Resumen del grupo</h2>
+    <p>Una fila por proyecto: lo mejor que tiene, lo principal por corregir y el nivel más alto de sus hallazgos. Toca el nombre para ir a su informe completo.</p>
+    <div class="table-wrap"><table class="resumen"><thead><tr><th>Proyecto</th><th>Lo mejor</th><th>Lo principal por corregir</th><th>Prioridad</th></tr></thead><tbody><tr><td class="pn"><a href="#ecovoz-andres">EcoVoz <span class="por">versión de Andrés</span></a></td><td>Swagger, rate limiting, auditoría, moderación, PDF y sockets</td><td>Variables de correo: el código espera SMTP_* y el .env trae EMAIL_*</td><td><span class="prio alta">Alta</span></td></tr><tr><td class="pn"><a href="#ecovoz-michel">EcoVoz <span class="por">versión de Michel</span></a></td><td>Roles bien resueltos, helmet y cierre del servidor si falla la base</td><td>Variables de correo al revés: el código espera EMAIL_* y el .env trae SMTP_*</td><td><span class="prio alta">Alta</span></td></tr><tr><td class="pn"><a href="#homi">HOMI</a></td><td>Zod, helmet, rate limiting, sanitización y .env validado al arrancar</td><td>Mensajería, notificaciones y planes premium (ya documentados por el equipo)</td><td><span class="prio media">Media</span></td></tr><tr><td class="pn"><a href="#nexo">NEXO</a></td><td>Equipos, entornos, solicitudes y chat en tiempo real; creación en cascada</td><td>Gestión de usuarios para admin y módulo de notificaciones</td><td><span class="prio media">Media</span></td></tr><tr><td class="pn"><a href="#comersail">CÓMERSAIL</a></td><td>Modelo de negocio propio, control de acceso por dueño y reportes de caja y bodega</td><td>El require de clientes no coincide en mayúsculas con el archivo (falla en Linux)</td><td><span class="prio media">Media</span></td></tr><tr><td class="pn"><a href="#sema">SEMA</a></td><td>Autenticación multi-rol separada, chat con &quot;escribiendo&quot; y mensajes leídos, módulos propios</td><td>El registro acepta el rol que manda el cliente: se puede leer información privada de otros</td><td><span class="prio crit">Crítica</span></td></tr><tr><td class="pn"><a href="#turisplay">TurisPlay</a></td><td>Errores centralizados, ruta 404 general, controladores separados</td><td>Autoasignación de rol administrador en el registro y modelo Reserva roto</td><td><span class="prio crit">Crítica</span></td></tr></tbody></table></div>
+    <div class="callout teal"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>Lo que dicen los siete informes juntos:</strong> casi todos los proyectos superan lo que pedía la guía, con chat en tiempo real, moderación, auditoría o reportes de negocio. Los problemas que aparecen no son de falta de ganas ni de ambición: son <strong>detalles de configuración y de seguridad</strong> que se repiten, y se corrigen en pocas líneas.</div></div>
+  </section>
+
+  <section class="seccion" id="lecciones">
+    <h2 class="sec-h2"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg> Lo que se repite entre proyectos</h2>
+    <p>Siete aprendizajes que aparecen en más de un informe. Si los revisas en tu proyecto, te ahorras la mayoría de los hallazgos.</p>
+    <div class="leccion">
+  <div class="leccion-head"><span class="leccion-n">1</span><h3>Nunca confíes en lo que dice el cliente</h3></div>
+  <p>Si el registro lee el campo <code>rol</code> del cuerpo de la petición, cualquiera puede mandar <code>"rol": "administrador"</code> desde Postman. Es lo mismo que viste en S30 con TechStore Pro: el rol lo decide el servidor, nunca quien lo pide.</p>
+  <div class="leccion-grid">
+    <div class="lg mal"><div class="lg-t"><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Pasó en</div><ul><li>SEMA</li><li>TurisPlay</li></ul></div>
+    <div class="lg bien"><div class="lg-t"><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Bien resuelto en</div><ul><li>NEXO (fuerza <code>rol: "usuario"</code>)</li><li>EcoVoz de Michel (un admin autenticado promueve en <code>PUT /api/usuarios/:id/rol</code>)</li></ul></div>
+  </div>
+  <p class="nota">EcoVoz de Andrés usa claves secretas enviadas en el cuerpo: funciona para aprender, pero es delicado si la clave se filtra.</p>
+</div>
+<div class="leccion">
+  <div class="leccion-head"><span class="leccion-n">2</span><h3>El código y el .env deben hablar los mismos nombres</h3></div>
+  <p>Si el código lee <code>process.env.EMAIL_USER</code> y el <code>.env</code> define <code>SMTP_USER</code>, la variable queda <code>undefined</code> y el correo falla sin avisar. Elige un conjunto de nombres y úsalo igual en los dos lados.</p>
+  <div class="leccion-grid">
+    <div class="lg mal"><div class="lg-t"><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Pasó en</div><ul><li>EcoVoz de Andrés (código espera <code>SMTP_*</code>, el .env trae <code>EMAIL_*</code>)</li><li>EcoVoz de Michel (justo al revés)</li></ul></div>
+    <div class="lg bien"><div class="lg-t"><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Bien resuelto en</div><ul><li>HOMI valida el .env al arrancar y dice exactamente qué variable falta</li></ul></div>
+  </div>
+  <p class="nota">También hay variables que sobran: <code>ADMIN_SECRET</code> y <code>FUNCIONARIO_SECRET</code> sin usar en EcoVoz de Michel, y <code>SECRET_CREATE_USERS</code> en CÓMERSAIL.</p>
+</div>
+<div class="leccion">
+  <div class="leccion-head"><span class="leccion-n">3</span><h3>Esperar a la base de datos antes de recibir peticiones</h3></div>
+  <p>Si <code>app.listen()</code> corre sin esperar a que MongoDB conecte, el servidor dice "estoy corriendo" pero toda petición falla. Lo robusto es escuchar dentro del <code>.then()</code> de la conexión, o detener el servidor si no conecta.</p>
+  <div class="leccion-grid">
+    <div class="lg mal"><div class="lg-t"><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Pasó en</div><ul><li>CÓMERSAIL</li><li>SEMA</li></ul></div>
+    <div class="lg bien"><div class="lg-t"><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Bien resuelto en</div><ul><li>EcoVoz de Michel (<code>process.exit(1)</code> si falla la conexión)</li><li>HOMI (valida variables antes de arrancar)</li></ul></div>
+  </div>
+  <p class="nota">Atlas conecta rápido y casi nunca lo notarás, pero es una de esas cosas que separan un proyecto de práctica de uno listo para producción.</p>
+</div>
+<div class="leccion">
+  <div class="leccion-head"><span class="leccion-n">4</span><h3>Verifica quién es el dueño del recurso</h3></div>
+  <p>No basta con estar autenticado. Si <code>GET /api/reservas/:id</code> solo pide un token, cualquier usuario puede leer o cancelar la reserva de otro conociendo su id. Antes de devolver, editar o borrar hay que comparar el dueño con <code>req.usuario.id</code>. Este fallo se llama <strong>IDOR</strong>.</p>
+  <div class="leccion-grid">
+    <div class="lg mal"><div class="lg-t"><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Pasó en</div><ul><li>SEMA (un falso psicólogo lee estados emocionales ajenos con <code>?paciente=</code>)</li><li>TurisPlay (reservas sin verificar propiedad)</li></ul></div>
+    <div class="lg bien"><div class="lg-t"><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Bien resuelto en</div><ul><li>CÓMERSAIL (cada usuario solo ve y edita sus compras, filtrando por <code>creadoPor</code>)</li></ul></div>
+  </div>
+  
+</div>
+<div class="leccion">
+  <div class="leccion-head"><span class="leccion-n">5</span><h3>Prueba cada endpoint al menos una vez</h3></div>
+  <p>Un archivo puede parecer código válido y no ser lo que se esperaba. En TurisPlay, <code>models/Reserva.js</code> contenía un router en vez de un schema: el proyecto arrancaba sin errores y aun así <code>Reserva.create</code> no existía. Solo ejecutar la ruta lo destapa.</p>
+  <div class="leccion-grid">
+    <div class="lg mal"><div class="lg-t"><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Pasó en</div><ul><li>TurisPlay (<code>Reserva.create is not a function</code>)</li><li>CÓMERSAIL (<code>/api/analisis</code> da 404: nunca se montó)</li></ul></div>
+    
+  </div>
+  <p class="nota">Una colección de Postman con cada ruta es la forma más barata de no olvidar ninguna.</p>
+</div>
+<div class="leccion">
+  <div class="leccion-head"><span class="leccion-n">6</span><h3>Código muerto y código duplicado</h3></div>
+  <p>Un archivo que nadie importa confunde a quien lea el proyecto, y la misma lógica en dos lugares obliga a corregir dos veces. Importa lo que construiste o bórralo.</p>
+  <div class="leccion-grid">
+    <div class="lg mal"><div class="lg-t"><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Pasó en</div><ul><li>NEXO (<code>middleware/admin.js</code> nunca se usa)</li><li>CÓMERSAIL (<code>analisis.routes.js</code> sin montar)</li><li>TurisPlay (CRUD de sitios en <code>server.js</code> y en <code>routes/turisplay.js</code>; modelo de comentarios sin rutas)</li></ul></div>
+    
+  </div>
+  
+</div>
+<div class="leccion">
+  <div class="leccion-head"><span class="leccion-n">7</span><h3>Mayúsculas en los nombres de archivo</h3></div>
+  <p>Windows y macOS no distinguen <code>Clientes.routes.js</code> de <code>clientes.routes.js</code>; Linux sí. Un proyecto que funciona en tu computador puede no arrancar en Render, Railway o un VPS con un <code>Cannot find module</code>.</p>
+  <div class="leccion-grid">
+    <div class="lg mal"><div class="lg-t"><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Pasó en</div><ul><li>CÓMERSAIL (<code>require('./routes/clientes.routes')</code> frente a <code>Clientes.routes.js</code>)</li></ul></div>
+    
+  </div>
+  <p class="nota">La regla: el <code>require</code> debe coincidir letra por letra con el nombre real del archivo.</p>
+</div>
+  </section>
+
+  <section class="seccion" id="buenas">
+    <h2 class="sec-h2"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Buenas prácticas para copiar</h2>
+    <p>Lo que otros proyectos hicieron muy bien y puedes mirar para aplicarlo en el tuyo.</p>
+    <div class="table-wrap"><table><thead><tr><th>Buena práctica</th><th>Dónde verla</th><th>Por qué sirve</th></tr></thead><tbody><tr><td class="pn">Validar la entrada con esquemas (Zod)</td><td>HOMI</td><td>Las reglas viven en un solo lugar y es difícil olvidar un caso</td></tr><tr><td class="pn">Cabeceras de seguridad con <code>helmet()</code></td><td>HOMI, EcoVoz de Michel</td><td>Una línea que protege contra varios ataques comunes</td></tr><tr><td class="pn">Límite de peticiones (rate limiting)</td><td>HOMI, EcoVoz de Andrés</td><td>Frena la fuerza bruta en <code>/login</code> y el bombardeo de peticiones</td></tr><tr><td class="pn">Sanitizar entradas contra XSS e inyección NoSQL</td><td>HOMI</td><td>Limpia <code>&lt;script&gt;</code> y operadores de MongoDB metidos en un campo</td></tr><tr><td class="pn">Documentar la API con Swagger</td><td>EcoVoz de Andrés</td><td>Una página interactiva en <code>/api-docs</code> con todos los endpoints</td></tr><tr><td class="pn">Registro de auditoría (quién hizo qué y cuándo)</td><td>EcoVoz de Andrés</td><td>Trazabilidad típica de sistemas profesionales</td></tr><tr><td class="pn">Crear datos relacionados en cascada</td><td>NEXO</td><td>Al crear una iniciativa se crean su equipo y su entorno en la misma operación</td></tr><tr><td class="pn">Un modelo que responde al negocio real</td><td>CÓMERSAIL</td><td>El campesino es un registro sin contraseña: no todo es un "usuario"</td></tr><tr><td class="pn">Reportes con agregaciones de MongoDB</td><td>CÓMERSAIL</td><td>Caja del día y kilos en bodega con <code>aggregate</code></td></tr><tr><td class="pn">Manejo de errores centralizado y ruta 404 general</td><td>TurisPlay</td><td>Respuestas consistentes sin repetir <code>try/catch</code> en cada ruta</td></tr><tr><td class="pn">Cuentas privilegiadas en modelos separados, sin registro público</td><td>SEMA</td><td><code>AdministradorSENA</code> y <code>SuperAdministrador</code> solo inician sesión</td></tr><tr><td class="pn">Documentar lo pendiente</td><td>HOMI</td><td><code>tareas_pendientes.md</code> deja constancia honesta de lo que falta</td></tr></tbody></table></div>
+  </section>
+
+  <div class="separador"><span>Los informes de cada proyecto</span></div>
+  <section class="proy" id="ecovoz-andres" data-proy>
+  <div class="proy-head"><span class="proy-num">Proyecto 1 de 7</span><h2 class="proy-titulo">EcoVoz <span class="por">versión de Andrés</span></h2><span class="prio alta" title="Prioridad más alta de los hallazgos">Alta</span></div>
+  <p class="proy-lema">El backend más ambicioso en funciones extra. Un detalle de configuración rompe el envío de correos.</p>
+  <div class="ficha">
+    <div><div class="ficha-l">Revisado el</div><div class="ficha-v">5 de noviembre de 2026</div></div>
+    <div><div class="ficha-l">Evaluado contra</div><div class="ficha-v">Guía ADSO &quot;Backend Personal&quot; (plan de trabajo generado para EcoVoz)</div></div>
+    <div><div class="ficha-l">Prioridad más alta</div><div class="ficha-v"><span class="prio alta">Alta</span></div></div>
+  </div>
+  <div class="parte tono-ok"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>Lo que hiciste muy bien (¡y deberías sentir orgullo!)</span></h3>
+<h4 class="hallazgo"><span>1. Tu backend es el más completo en funcionalidades &quot;extra&quot; de todo el grupo</span></h4>
+<p>La guía pedía un CRUD simple de <code>Reporte</code> con auth JWT. Tú construiste:</p>
+<ul class="lista"><li><strong>Swagger</strong> en <code>/api-docs</code> — documentación interactiva de tu API, algo que ni siquiera se enseñó en clase.</li><li><strong>Rate limiting</strong> (<code>express-rate-limit</code>) — protección contra que alguien bombardee tu API con peticiones.</li><li><strong>Auditoría de acciones</strong> (<code>LogActividad.js</code>) — un registro de quién hizo qué y cuándo, típico de sistemas profesionales que necesitan trazabilidad.</li><li><strong>Moderación de reportes</strong> con campos de aprobación/rechazo.</li><li><strong>Historial de cambios de estado</strong> embebido en cada reporte.</li><li><strong>Subida de evidencias</strong> con <code>multer</code> + <code>sharp</code> (compresión de imágenes), generación de <strong>PDF</strong> y <strong>notificaciones en tiempo real</strong> con Socket.io.</li></ul>
+<p>Eso es un nivel de ambición que supera por mucho el alcance del ejercicio. Se nota que investigaste herramientas por tu cuenta.</p>
+<h4 class="hallazgo"><span>2. El flujo principal funciona de punta a punta</span></h4>
+<p>Probé en vivo: registro, login y <code>GET /api/reportes</code> — todo respondió bien, con <strong>23 reportes reales ya cargados</strong>, cada uno con su evidencia, su historial de moderación y su estado. Esto me dice que no solo escribiste el código: lo usaste de verdad durante el desarrollo.</p>
+<h4 class="hallazgo"><span>3. Validación consistente con <code>try/catch</code> y códigos de estado HTTP correctos</span></h4>
+<p>A lo largo de tus controladores usas bien los códigos (400 para errores de validación del cliente, 500 para errores del servidor, 201 para creación exitosa). Es una buena práctica que a veces se pasa por alto.</p>
+</div>
+<div class="parte tono-warn"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span>Qué revisar o mejorar</span></h3>
+<h4 class="hallazgo"><span class="prio alta">Alta</span><span>Prioridad alta — una funcionalidad que no va a funcionar en producción</span></h4>
+<p><strong>1. El envío de correos está roto por un desajuste de nombres entre tu código y tu <code>.env</code></strong></p>
+<p>Tu archivo <code>utils/emailService.js</code> espera estas variables:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">código</span></div><pre>SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM_NAME, SMTP_FROM_EMAIL</pre></div>
+<p>Pero tu <code>.env</code> actual tiene:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">código</span></div><pre>EMAIL_USER, EMAIL_PASS</pre></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>¿Por qué pasa esto?</strong> En algún momento probablemente cambiaste de una librería/enfoque de correo a otro (quizás copiaste código de otra fuente que usaba nombres distintos) y el <code>.env</code> se quedó con la versión vieja. Lo confirmé al arrancar tu servidor: apareció el error <code>ECONNREFUSED 127.0.0.1:587</code>, que significa que tu código intentó conectarse a un servidor SMTP en tu propia máquina (porque <code>SMTP_HOST</code> estaba vacío) en vez de conectarse al servidor real de correo.</div></div>
+<p><strong>Cómo arreglarlo:</strong> elige un solo conjunto de nombres (te recomiendo quedarte con <code>SMTP_*</code> porque es más estándar) y actualiza tu <code>.env</code> para que coincida exactamente con lo que lee <code>emailService.js</code>.</p>
+<p><strong>2. Variables <code>FUNCIONARIO_SECRET</code> y <code>ADMIN_SECRET</code> usadas en el código pero ausentes del <code>.env</code></strong></p>
+<p>En <code>controllers/authController.js</code> tu código compara una clave secreta enviada por el cliente contra <code>process.env.FUNCIONARIO_SECRET</code> y <code>process.env.ADMIN_SECRET</code> para permitir crear cuentas privilegiadas. Como esas variables no están en tu <code>.env</code>, esa comparación siempre será contra <code>undefined</code>, lo que en la práctica bloquea la creación de esas cuentas por esa vía (en este caso el &quot;bug&quot; termina siendo más seguro que inseguro, pero probablemente no era tu intención).</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>Nota de seguridad:</strong> este patrón de &quot;clave secreta compartida en el body de la petición&quot; funciona, pero es delicado — cualquiera que conozca esa clave (por ejemplo, si queda en un commit de git) puede crear una cuenta de funcionario o admin. Es un enfoque aceptable para un proyecto de aprendizaje, pero en producción real se prefiere que solo un admin ya autenticado pueda promover a otros usuarios (como lo hizo Michel en su versión de Ecovoz, con <code>PUT /api/usuarios/:id/rol</code>).</div></div>
+<h4 class="hallazgo"><span class="prio media">Media</span><span>Prioridad media — hueco frente al plan de trabajo</span></h4>
+<p><strong>3. No existe un endpoint <code>/api/categorias</code></strong></p>
+<p>Tu plan de trabajo pedía una colección <code>categorias</code> separada y administrable. En tu implementación, &quot;categoría&quot; terminó siendo solo un campo de texto libre dentro de <code>Reporte</code> (<code>categoria: String</code>), sin CRUD propio ni control de qué categorías son válidas.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>¿Por qué importa?</strong> Sin una lista controlada de categorías, cualquier usuario puede escribir cualquier texto como categoría (con errores de tipeo, mayúsculas distintas, etc.), lo que hace mucho más difícil filtrar o generar estadísticas confiables después. No es grave para un MVP, pero es algo a tener en cuenta si el proyecto crece.</div></div>
+</div>
+<div class="parte tono-azul"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg><span>Resumen de lo que probé en vivo</span></h3>
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Resultado</th></tr></thead><tbody><tr><td>Arranque del servidor + conexión a MongoDB Atlas</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Sin errores</td></tr><tr><td>Envío de correo (SMTP)</td><td><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <code>ECONNREFUSED</code> — nombres de variables no coinciden</td></tr><tr><td><code>POST /api/auth/registro</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Usuario creado correctamente</td></tr><tr><td><code>POST /api/auth/login</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Token JWT válido recibido</td></tr><tr><td><code>GET /api/reportes</code> (público)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> 23 reportes reales, con evidencias e historial</td></tr><tr><td><code>GET /api/categorias</code></td><td><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> 404 — la ruta no existe</td></tr></tbody></table></div>
+<p class="nota">Limpié el usuario de prueba que creé — tu base de datos quedó intacta.</p>
+</div>
+<div class="parte tono-teal"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><span>Próximos pasos sugeridos</span></h3>
+<ul class="checklist"><li data-k="rev:ecovoz-andres:0"><span class="check-box"></span><span>Unificar los nombres de las variables de correo entre <code>emailService.js</code> y tu <code>.env</code> (recomendado: usar <code>SMTP_*</code>).</span></li><li data-k="rev:ecovoz-andres:1"><span class="check-box"></span><span>Definir <code>FUNCIONARIO_SECRET</code> y <code>ADMIN_SECRET</code> en tu <code>.env</code> si quieres usar ese flujo, o considera migrar a un endpoint de &quot;promover rol&quot; protegido por un admin ya autenticado (más seguro).</span></li><li data-k="rev:ecovoz-andres:2"><span class="check-box"></span><span>Si el tiempo lo permite, convierte <code>categoria</code> en una colección real con su propio CRUD.</span></li><li data-k="rev:ecovoz-andres:3"><span class="check-box"></span><span>Aprovecha que ya tienes Swagger funcionando: documenta los endpoints que vas agregando a medida que los escribes, no al final.</span></li></ul>
+</div>
+<div class="callout teal"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>En resumen:</strong> este es el backend más ambicioso técnicamente del grupo — Swagger, auditoría, PDF, sockets, moderación. El problema del correo es un detalle de configuración, no un error de diseño, y se arregla en cinco minutos una vez identificado. ¡Excelente trabajo!</div></div>
+</section>
+<section class="proy" id="ecovoz-michel" data-proy>
+  <div class="proy-head"><span class="proy-num">Proyecto 2 de 7</span><h2 class="proy-titulo">EcoVoz <span class="por">versión de Michel</span></h2><span class="prio alta" title="Prioridad más alta de los hallazgos">Alta</span></div>
+  <p class="proy-lema">Un backend sólido y con buenas decisiones de seguridad. El único problema real es el correo.</p>
+  <div class="ficha">
+    <div><div class="ficha-l">Revisado el</div><div class="ficha-v">5 de noviembre de 2026</div></div>
+    <div><div class="ficha-l">Evaluado contra</div><div class="ficha-v">Guía ADSO &quot;Backend Personal&quot; (plan de trabajo generado para EcoVoz)</div></div>
+    <div><div class="ficha-l">Prioridad más alta</div><div class="ficha-v"><span class="prio alta">Alta</span></div></div>
+  </div>
+  <div class="parte tono-ok"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>Lo que hiciste muy bien (¡y deberías sentir orgullo!)</span></h3>
+<h4 class="hallazgo"><span>1. Tu <code>config/db.js</code> tiene un detalle que mucha gente pasa por alto</span></h4>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>catch (error) {
+    console.error('❌ Error de conexión a MongoDB:', error.message);
+    process.exit(1); <span class="c">// Detiene el servidor si falla la conexión</span>
+}</pre></div>
+<p>Si la conexión a MongoDB falla, <strong>tu servidor se detiene</strong> en vez de quedar &quot;vivo&quot; aceptando peticiones que de todos modos van a fallar. Esto parece un detalle menor, pero evita una categoría entera de bugs confusos (una API que responde pero todas sus rutas fallan sin explicación clara). Vale la pena mencionar que Andrés, trabajando el mismo proyecto, no tiene esta protección.</p>
+<h4 class="hallazgo"><span>2. Usas <code>helmet()</code> para cabeceras HTTP de seguridad</span></h4>
+<p>Es una librería que añade automáticamente varias cabeceras HTTP que protegen contra ataques comunes (como que tu sitio se pueda cargar dentro de un <code>&lt;iframe&gt;</code> ajeno, o que el navegador intente &quot;adivinar&quot; el tipo de un archivo de forma insegura). Ni la guía ni la clase lo pedían — lo agregaste tú.</p>
+<h4 class="hallazgo"><span>3. Gestión de roles bien resuelta con <code>PUT /api/usuarios/:id/rol</code></span></h4>
+<p>En vez de depender de que alguien se autoasigne un rol al registrarse (que es justo el problema de seguridad que encontré en otros dos proyectos del grupo), tu sistema obliga a que <strong>un admin ya autenticado</strong> sea quien promueva a otro usuario a <code>funcionario</code> o <code>admin</code>. Esta es la forma correcta de resolver este problema — ¡felicitaciones, lo hiciste bien sin que nadie te lo advirtiera!</p>
+<h4 class="hallazgo"><span>4. El flujo completo funciona de punta a punta</span></h4>
+<p>Probé en vivo: registro, login, <code>GET /api/reportes</code> (con 20+ reportes reales ya cargados, incluyendo flujo de moderación) y <code>GET /api/comentarios/:reporteId</code>. Todo respondió correctamente.</p>
+</div>
+<div class="parte tono-warn"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span>Qué revisar o mejorar</span></h3>
+<h4 class="hallazgo"><span class="prio alta">Alta</span><span>Prioridad alta — una funcionalidad que no va a funcionar en producción</span></h4>
+<p><strong>1. El envío de correos está roto por un desajuste de nombres entre tu código y tu <code>.env</code></strong></p>
+<p>Tu <code>routes/auth.js</code> usa estas variables para recuperación de contraseña:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>user: process.env.EMAIL_USER,
+pass: process.env.EMAIL_PASS</pre></div>
+<p>Pero tu <code>.env</code> actual tiene:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">código</span></div><pre>SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM_NAME, SMTP_FROM_EMAIL</pre></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>Dato curioso:</strong> es exactamente el problema inverso al de Andrés en su versión de Ecovoz — ¡él tiene el código esperando <code>EMAIL_*</code> y el <code>.env</code> con <code>SMTP_*</code>, y tú al revés! Probablemente compartieron o se inspiraron en configuraciones distintas sin alinear nombres. Para arreglarlo, elige un solo conjunto de nombres (recomendado: <code>EMAIL_USER</code>/<code>EMAIL_PASS</code>, que es lo que ya usa tu código) y ajusta el <code>.env</code> para que coincida.</div></div>
+<h4 class="hallazgo"><span class="prio media">Media</span><span>Prioridad media — detalle de diseño a tener en cuenta</span></h4>
+<p><strong>2. <code>ADMIN_SECRET</code> y <code>FUNCIONARIO_SECRET</code> en tu <code>.env</code> no se usan en ningún lado</strong></p>
+<p>Las tienes definidas, pero no encontré ninguna línea de código que las lea (<code>process.env.ADMIN_SECRET</code> no aparece en ningún archivo). Esto no rompe nada — son variables &quot;de adorno&quot; que probablemente planeabas usar para un flujo de registro privilegiado y terminaste resolviéndolo de otra forma (la ruta de cambio de rol que mencioné arriba, que es mejor). Puedes borrarlas del <code>.env</code> sin problema, o dejarlas documentadas como &quot;no usadas actualmente&quot; para no confundir a quien lea tu proyecto después.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>¿Cómo se crea el primer administrador entonces?</strong> Como no hay ninguna ruta pública para registrarse como admin (correctamente), el primer usuario admin del sistema tiene que crearse manualmente en la base de datos (por ejemplo, desde MongoDB Compass, cambiando el campo <code>rol</code> a <code>&quot;admin&quot;</code> después de que esa persona se registre normalmente). Es un paso manual único al arrancar el proyecto — totalmente normal, solo asegúrate de documentarlo para ti mismo.</div></div>
+<h4 class="hallazgo"><span class="prio baja">Baja</span><span>Prioridad baja — nada más que destacar</span></h4>
+<p>No encontré bugs funcionales ni problemas de seguridad adicionales. El resto del código que revisé (middleware de auth, control de acceso en rutas de admin) está limpio y hace lo que dice que hace.</p>
+</div>
+<div class="parte tono-azul"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg><span>Resumen de lo que probé en vivo</span></h3>
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Resultado</th></tr></thead><tbody><tr><td>Arranque del servidor + conexión a MongoDB Atlas</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Sin errores (con <code>process.exit(1)</code> si falla, buena práctica)</td></tr><tr><td><code>POST /api/auth/registro</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Usuario creado correctamente</td></tr><tr><td><code>POST /api/auth/login</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Token JWT válido recibido</td></tr><tr><td><code>GET /api/reportes</code> (público)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Datos reales con moderación aplicada</td></tr><tr><td><code>GET /api/comentarios/:reporteId</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Responde correctamente</td></tr><tr><td>Envío de correo (recuperación de contraseña)</td><td><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Fallará — nombres de variables no coinciden con el <code>.env</code></td></tr></tbody></table></div>
+<p class="nota">Limpié el usuario de prueba que creé — tu base de datos quedó intacta.</p>
+</div>
+<div class="parte tono-teal"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><span>Próximos pasos sugeridos</span></h3>
+<ul class="checklist"><li data-k="rev:ecovoz-michel:0"><span class="check-box"></span><span>Unificar los nombres de las variables de correo entre <code>routes/auth.js</code> y tu <code>.env</code> (recomendado: quedarte con <code>EMAIL_USER</code>/<code>EMAIL_PASS</code>, que es lo que ya usa tu código).</span></li><li data-k="rev:ecovoz-michel:1"><span class="check-box"></span><span>Eliminar o documentar <code>ADMIN_SECRET</code>/<code>FUNCIONARIO_SECRET</code> ya que no se usan.</span></li><li data-k="rev:ecovoz-michel:2"><span class="check-box"></span><span>Documenta en tu README el paso manual de &quot;cómo crear el primer admin&quot;, para que no se te olvide a ti mismo ni a quien revise el proyecto.</span></li></ul>
+</div>
+<div class="callout teal"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>En resumen:</strong> tu backend es sólido, con buenas decisiones de seguridad (roles bien gestionados, <code>helmet</code>, manejo correcto de fallos de conexión) que muchos otros proyectos no tuvieron. El único problema real es el correo, que es una corrección de cinco minutos. ¡Muy buen trabajo!</div></div>
+</section>
+<section class="proy" id="homi" data-proy>
+  <div class="proy-head"><span class="proy-num">Proyecto 3 de 7</span><h2 class="proy-titulo">HOMI</h2><span class="prio media" title="Prioridad más alta de los hallazgos">Media</span></div>
+  <p class="proy-lema">El más sólido en arquitectura y seguridad. Lo pendiente está identificado por el propio equipo.</p>
+  <div class="ficha">
+    <div><div class="ficha-l">Revisado el</div><div class="ficha-v">5 de noviembre de 2026</div></div>
+    <div><div class="ficha-l">Evaluado contra</div><div class="ficha-v">Guía ADSO &quot;Backend Personal&quot; (plan de trabajo generado para HOMI)</div></div>
+    <div><div class="ficha-l">Prioridad más alta</div><div class="ficha-v"><span class="prio media">Media</span></div></div>
+  </div>
+  <div class="parte tono-ok"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>Lo que hiciste muy bien (¡y deberías sentir orgullo!)</span></h3>
+<p>Tu backend es, en términos de <strong>arquitectura y seguridad</strong>, el más sólido de todo el grupo que revisé. Vamos por partes:</p>
+<h4 class="hallazgo"><span>1. Validación de entrada con Zod en vez de validaciones sueltas</span></h4>
+<p>Usas la librería <strong>Zod</strong> para definir &quot;esquemas&quot; que describen exactamente qué forma debe tener cada petición (qué campos son obligatorios, qué tipo de dato, qué longitud mínima de contraseña, etc.) antes de que el código siquiera toque la base de datos. Lo comprobé en vivo: cuando intenté registrarme sin enviar <code>departamento</code> ni <code>municipio</code>, tu API me rechazó con un mensaje claro en vez de dejarme pasar o crashear.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>¿Por qué es mejor que validar &quot;a mano&quot; con <code>if</code>?</strong> Porque centralizas las reglas en un solo lugar (el esquema), en vez de repetir <code>if (!campo) return res.status(400)...</code> en cada ruta. Es más fácil de mantener y mucho más difícil de olvidar un caso.</div></div>
+<h4 class="hallazgo"><span>2. Seguridad HTTP de nivel profesional</span></h4>
+<ul class="lista"><li><strong><code>helmet()</code></strong> para cabeceras de seguridad.</li><li><strong>Rate limiting</strong> global y específico (por ejemplo, un límite más estricto para <code>/login</code> y para cambio de contraseña, evitando ataques de fuerza bruta).</li><li><strong>Sanitización de entradas</strong> contra XSS e inyección NoSQL (<code>sanitizarEntradas.js</code>) — esto limpia cosas como <code>&lt;script&gt;</code> o caracteres especiales de MongoDB que alguien podría meter en un campo de texto para intentar manipular tus consultas.</li></ul>
+<p>Ninguna de estas tres cosas se enseñó en la guía base. Las investigaste y las aplicaste tú solo.</p>
+<h4 class="hallazgo"><span>3. Tu servidor valida que el <code>.env</code> esté completo <em>antes</em> de arrancar</span></h4>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET', 'PORT','NODE_ENV'];
+const validarEnv = () =&gt; {
+    const faltantes = requiredEnvVars.filter(v =&gt; !process.env[v]);
+    if (faltantes.length &gt; 0) {
+        console.error(`❌ Faltan variables de entorno: ${faltantes.join(', ')}`);
+        process.exit(1);
+    }
+};</pre></div>
+<p>Esto evita el clásico problema de &quot;el servidor arrancó pero todo falla raro porque falta una variable&quot; — en vez de eso, te dice exactamente qué falta y se detiene, dándote un error claro de inmediato.</p>
+<h4 class="hallazgo"><span>4. Control de acceso correcto en el punto donde más importa</span></h4>
+<p>Probé esto en vivo: me registré como usuario normal (sin verificar), e intenté publicar una propiedad con <code>POST /api/properties</code>. Tu API respondió:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">json</span></div><pre>{&quot;error&quot;:&quot;Acceso denegado - Requiere verificación de cuenta o rol de administrador.&quot;}</pre></div>
+<p>Esto es exactamente lo que debe pasar: nadie puede publicar inmuebles sin pasar por un proceso de verificación. En un sistema de arriendo, donde la confianza es el problema central que tu propio plan de trabajo identifica, esto es la decisión de seguridad más importante del proyecto — y la implementaste bien.</p>
+<h4 class="hallazgo"><span>5. Un sistema de confianza y moderación que no pedía nadie</span></h4>
+<p>Construiste <code>reports</code> (denuncias), <code>infractions</code> (catálogo de infracciones con gravedad y multa asociada) y <code>fines</code> (multas aplicadas a usuarios reportados), además de <code>likes</code>, <code>comments</code>, <code>companies</code> y <code>owners</code>. Es un sistema de moderación completo que va mucho más allá del plan — demuestra que pensaste en cómo se comporta la gente en una plataforma real, no solo en el CRUD básico.</p>
+<h4 class="hallazgo"><span>6. Eres honesto contigo mismo sobre lo que falta</span></h4>
+<p>Tu archivo <code>tareas_pendientes.md</code> documenta claramente que la mensajería y las notificaciones quedaron para después. Eso no es un defecto — es una señal de buena gestión de proyecto: priorizaste lo que más importaba (seguridad, verificación, moderación) y dejaste constancia de lo que falta, en vez de dejarlo como un hueco silencioso.</p>
+</div>
+<div class="parte tono-warn"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span>Qué revisar o mejorar</span></h3>
+<h4 class="hallazgo"><span class="prio media">Media</span><span>Prioridad media — lo que ya sabes que falta (según tu propio documento)</span></h4>
+<p><strong>1. Mensajería entre arrendador y arrendatario</strong> Tu plan de trabajo la incluye (<code>conversaciones</code>, con mensajes, remitente, fecha de envío). Tú mismo lo documentaste como pendiente. Dos modelos por crear: uno para la &quot;conversación&quot; entre dos usuarios y otro para los mensajes individuales.</p>
+<p><strong>2. Notificaciones</strong> También documentado como pendiente. Avisar a un usuario cuando, por ejemplo, su propiedad fue aprobada o alguien le escribió.</p>
+<p><strong>3. Planes premium / suscripciones</strong> El plan menciona dar mayor visibilidad a propiedades destacadas mediante un plan pago — no vi modelo ni rutas para esto todavía.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div>No lo tomes como una crítica — es simplemente el &quot;después&quot; que tú mismo planeaste. Lo incluyo aquí para que quede documentado junto con el resto de la revisión.</div></div>
+<h4 class="hallazgo"><span class="prio baja">Baja</span><span>Prioridad baja — nada más que destacar</span></h4>
+<p>No encontré errores de seguridad ni bugs funcionales en lo que sí está implementado. El código que revisé (middlewares, validadores, controladores de <code>properties</code>, <code>owners</code>, <code>infractions</code>) está limpio y hace exactamente lo que dice que hace.</p>
+</div>
+<div class="parte tono-azul"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg><span>Resumen de lo que probé en vivo</span></h3>
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Resultado</th></tr></thead><tbody><tr><td>Arranque del servidor + conexión a MongoDB</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Sin errores</td></tr><tr><td>Validación de <code>.env</code> incompleto</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> (lo verifiqué leyendo <code>config/env.js</code>, tu <code>.env</code> sí estaba completo)</td></tr><tr><td><code>POST /api/auth/registro</code> (sin <code>departamento</code>/<code>municipio</code>)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Rechazado correctamente con mensaje claro</td></tr><tr><td><code>POST /api/auth/registro</code> (con todos los campos)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Usuario creado</td></tr><tr><td><code>POST /api/auth/login</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Token JWT válido recibido</td></tr><tr><td><code>GET /api/auth/perfil</code> (con token)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Devuelve datos correctos</td></tr><tr><td><code>GET /api/properties</code> (público)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Datos reales con propietario poblado</td></tr><tr><td><code>POST /api/properties</code> (usuario no verificado)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Correctamente rechazado (403)</td></tr><tr><td><code>GET /api/owners</code> (usuario no admin)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Correctamente rechazado (403)</td></tr></tbody></table></div>
+<p class="nota">Limpié el usuario de prueba que creé — tu base de datos quedó intacta.</p>
+</div>
+<div class="parte tono-teal"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><span>Próximos pasos sugeridos</span></h3>
+<ul class="checklist"><li data-k="rev:homi:0"><span class="check-box"></span><span>Implementar el modelo y rutas de mensajería (conversaciones + mensajes), siguiendo tu propio plan en <code>tareas_pendientes.md</code>.</span></li><li data-k="rev:homi:1"><span class="check-box"></span><span>Implementar notificaciones — puedes reutilizar patrones que ya usaste en <code>reports</code>/<code>fines</code>.</span></li><li data-k="rev:homi:2"><span class="check-box"></span><span>Si el tiempo lo permite, el módulo de planes premium (aunque sea una versión simple: un campo <code>destacado: Boolean</code> en <code>Properties</code> sería un primer paso razonable antes de construir todo el sistema de pagos).</span></li></ul>
+</div>
+<div class="callout teal"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>En resumen:</strong> tu backend es un ejemplo de buenas prácticas de seguridad y arquitectura — validación con Zod, rate limiting, sanitización, control de acceso bien pensado y honestidad sobre lo que falta. Lo que queda pendiente está claramente identificado por ti mismo. ¡Excelente trabajo, de verdad!</div></div>
+</section>
+<section class="proy" id="nexo" data-proy>
+  <div class="proy-head"><span class="proy-num">Proyecto 4 de 7</span><h2 class="proy-titulo">NEXO</h2><span class="prio media" title="Prioridad más alta de los hallazgos">Media</span></div>
+  <p class="proy-lema">Va mucho más allá de la guía. Faltan dos piezas frente a su propio plan.</p>
+  <div class="ficha">
+    <div><div class="ficha-l">Revisado el</div><div class="ficha-v">5 de noviembre de 2026</div></div>
+    <div><div class="ficha-l">Evaluado contra</div><div class="ficha-v">Guía ADSO &quot;Backend Personal&quot; (plan de trabajo generado para NEXO)</div></div>
+    <div><div class="ficha-l">Prioridad más alta</div><div class="ficha-v"><span class="prio media">Media</span></div></div>
+  </div>
+  <div class="parte tono-ok"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>Lo que hiciste muy bien (¡y deberías sentir orgullo!)</span></h3>
+<h4 class="hallazgo"><span>1. Tu backend va más allá de lo que pedía la guía</span></h4>
+<p>La guía base solo te pedía CRUD de <code>Iniciativa</code> + auth con JWT. Tú construiste todo un ecosistema: <strong>equipos</strong> (<code>Equipo.js</code>), <strong>entornos de trabajo</strong> (<code>Entorno.js</code>), <strong>solicitudes/postulaciones</strong> (<code>Solicitud.js</code>) y <strong>mensajería en tiempo real con Socket.io</strong>. Eso es trabajo de verdad, no copiar y pegar la plantilla.</p>
+<h4 class="hallazgo"><span>2. El flujo de creación en cascada está muy bien pensado</span></h4>
+<p>Cuando alguien crea una iniciativa (<code>POST /api/iniciativas</code>), tu código automáticamente crea el <code>Equipo</code> y el <code>Entorno</code> asociados en la misma operación. Esto evita que queden &quot;iniciativas huérfanas&quot; sin equipo — es el tipo de consistencia de datos que se nota en un backend maduro.</p>
+<h4 class="hallazgo"><span>3. Iniciativas privadas con código de acceso</span></h4>
+<p>La funcionalidad de <code>visibilidad: 'privada'</code> + <code>codigoAcceso</code> (tipo &quot;NEXO-XXXX&quot;) para unirse a una iniciativa cerrada no estaba en el plan — la agregaste tú. Es una buena decisión de producto.</p>
+<h4 class="hallazgo"><span>4. Seguridad básica bien resuelta en el registro</span></h4>
+<p>En <code>routes/auth.js</code>, el endpoint de registro <strong>fuerza siempre</strong> <code>rol: 'usuario'</code> sin importar qué mande el cliente en el body. Esto es importante: evita que cualquiera se autoasigne el rol de administrador al registrarse. (Vas a ver más abajo que este mismo punto falló en otros proyectos del grupo — tú lo hiciste bien desde el principio.)</p>
+<h4 class="hallazgo"><span>5. Probé el flujo completo y funcionó sin errores</span></h4>
+<p>Con tu <code>.env</code> real, levanté el servidor, me conecté a tu MongoDB Atlas, me registré, inicié sesión, consulté mi perfil con token, listé iniciativas públicas y creé una iniciativa nueva (que generó automáticamente su equipo y entorno). Todo respondió correctamente a la primera.</p>
+</div>
+<div class="parte tono-warn"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span>Qué revisar o mejorar</span></h3>
+<h4 class="hallazgo"><span class="prio media">Media</span><span>Prioridad media — funcionalidad incompleta frente a tu propio plan</span></h4>
+<p><strong>1. Falta la gestión de usuarios para administradores</strong> Tu plan de trabajo (generado a partir de tu diagrama de colecciones) contempla que un admin pueda listar, editar y eliminar usuarios. Hoy no existe ningún archivo <code>usuarios.routes.js</code> ni rutas <code>GET /api/usuarios</code>, <code>PUT /api/usuarios/:id</code>, <code>DELETE /api/usuarios/:id</code>. Solo tienes <code>GET /api/auth/usuario/:id</code> para ver el perfil público de alguien, que no es lo mismo.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>¿Por qué importa?</strong> Sin esto, un administrador no tiene forma de moderar la plataforma (por ejemplo, suspender a un usuario problemático) salvo entrando directamente a la base de datos. Es un hueco funcional, no de seguridad.</div></div>
+<p><strong>2. El módulo de notificaciones no existe</strong> Tu diagrama de colecciones incluye <code>notificaciones</code> (con campos como <code>tipo</code>, <code>mensaje</code>, <code>leida</code>), pero no hay ni modelo <code>Notificacion.js</code> ni rutas <code>/api/notificaciones</code>. Como tienes mensajería en tiempo real con Socket.io, sería el complemento natural: avisar a un usuario cuando alguien se postula a su iniciativa, por ejemplo.</p>
+<h4 class="hallazgo"><span class="prio baja">Baja</span><span>Prioridad baja — limpieza de código</span></h4>
+<p><strong>3. Middleware <code>admin.js</code> nunca se usa (código muerto)</strong> Creaste <code>middleware/admin.js</code> con la función <code>verificarAdmin</code>, pero en ningún archivo de rutas lo importas. La única verificación de rol admin que existe (en <code>DELETE /api/iniciativas/:id</code>) la hiciste manualmente con un <code>if (req.usuario.rol !== 'admin')</code> directo dentro de la ruta, en vez de usar tu propio middleware.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>¿Qué es &quot;código muerto&quot;?</strong> Es código que escribiste pero que el programa nunca ejecuta. No es un error que rompa nada, pero confunde a quien lea tu proyecto después (¿por qué existe este archivo si no se usa?) y es una oportunidad perdida de reutilizar lo que ya construiste. Te recomiendo importar <code>verificarAdmin</code> en esa ruta en vez de repetir la lógica a mano.</div></div>
+<p><strong>4. No encontré una colección de Postman documentada</strong> El módulo 6 de la guía pide <code>nexo_API.postman_collection.json</code> con el token automatizado en el script de Tests. No la vi en el repositorio — si ya la tienes, asegúrate de subirla; si no, es la última pieza que te falta para el cronograma.</p>
+</div>
+<div class="parte tono-azul"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg><span>Resumen de lo que probé en vivo</span></h3>
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Resultado</th></tr></thead><tbody><tr><td>Arranque del servidor + conexión a MongoDB Atlas</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Sin errores</td></tr><tr><td><code>POST /api/auth/registro</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Usuario creado correctamente</td></tr><tr><td><code>POST /api/auth/login</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Token JWT válido recibido</td></tr><tr><td><code>GET /api/auth/perfil</code> (con token)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Devuelve los datos correctos</td></tr><tr><td><code>GET /api/iniciativas</code> (público)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Lista datos reales ya cargados</td></tr><tr><td><code>POST /api/iniciativas</code> (con token)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Crea iniciativa + equipo + entorno en cascada</td></tr><tr><td><code>GET /api/usuarios</code> (listar, admin)</td><td><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> No existe la ruta</td></tr></tbody></table></div>
+<p class="nota">Limpié todos los datos de prueba que inserté — tu base de datos quedó intacta.</p>
+</div>
+<div class="parte tono-teal"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><span>Próximos pasos sugeridos</span></h3>
+<ul class="checklist"><li data-k="rev:nexo:0"><span class="check-box"></span><span>Crear <code>routes/usuarios.routes.js</code> con listar/editar/eliminar usuarios (protegido con <code>verificarAdmin</code>).</span></li><li data-k="rev:nexo:1"><span class="check-box"></span><span>Crear el modelo y las rutas de <code>Notificacion</code> — aprovecha que ya tienes Socket.io configurado.</span></li><li data-k="rev:nexo:2"><span class="check-box"></span><span>Usar tu <code>middleware/admin.js</code> en vez de repetir la verificación de rol a mano.</span></li><li data-k="rev:nexo:3"><span class="check-box"></span><span>Subir tu colección de Postman documentada (Módulo 6 de la guía).</span></li></ul>
+</div>
+<div class="callout teal"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>En resumen:</strong> tu backend está muy por encima del nivel esperado en arquitectura y en las funcionalidades que sí implementaste. Lo que falta no son errores — son piezas que aún no has construido. Con la gestión de usuarios y las notificaciones, tu proyecto queda prácticamente completo frente a tu propio plan de trabajo. ¡Buen trabajo!</div></div>
+</section>
+<section class="proy" id="comersail" data-proy>
+  <div class="proy-head"><span class="proy-num">Proyecto 5 de 7</span><h2 class="proy-titulo">CÓMERSAIL</h2><span class="prio media" title="Prioridad más alta de los hallazgos">Media</span></div>
+  <p class="proy-lema">Buen criterio de diseño: entendió el problema real y lo modeló bien. Un detalle antes de desplegar.</p>
+  <div class="ficha">
+    <div><div class="ficha-l">Revisado el</div><div class="ficha-v">5 de noviembre de 2026</div></div>
+    <div><div class="ficha-l">Evaluado contra</div><div class="ficha-v">Guía ADSO &quot;Backend Personal&quot; (plan de trabajo generado para CÓMERSAIL)</div></div>
+    <div><div class="ficha-l">Prioridad más alta</div><div class="ficha-v"><span class="prio media">Media</span></div></div>
+  </div>
+  <div class="parte tono-ok"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>Lo que hiciste muy bien (¡y deberías sentir orgullo!)</span></h3>
+<h4 class="hallazgo"><span>1. No copiaste la plantilla — diseñaste tu propio modelo de negocio</span></h4>
+<p>La guía te daba un ejemplo genérico de &quot;producto admin/cliente&quot;. Tú entendiste que tu negocio real (compra de café y cacao a campesinos) no encaja en ese molde, y construiste algo distinto y coherente:</p>
+<ul class="lista"><li><strong><code>Cliente</code></strong> = el campesino al que le compras café o cacao. Ojo: <strong>no tiene cuenta ni contraseña</strong>, porque no necesita iniciar sesión — es solo un registro que el usuario del local agrega. Es una decisión de diseño correcta: no todo en una base de datos tiene que ser un &quot;usuario&quot;.</li><li><strong><code>Compra</code></strong> = la transacción, con productos embebidos (café/cacao), cálculo automático de valores y estados (<code>pendiente</code>, <code>pagada</code>, <code>cancelada</code>).</li><li><strong>Reportes de <code>caja</code></strong> (cierre de un día: cuánto se pagó, cuánto queda pendiente) y <strong><code>bodega</code></strong> (kilos recibidos por producto) — funcionalidades de negocio real que no estaban ni insinuadas en la guía.</li></ul>
+<p>Esto demuestra que entendiste el problema que estabas resolviendo, no solo el ejercicio técnico. Es exactamente el tipo de pensamiento que se espera de quien desarrolla backend: traducir una necesidad real a un modelo de datos que tenga sentido.</p>
+<h4 class="hallazgo"><span>2. Control de acceso bien pensado, no copiado</span></h4>
+<p>No usaste &quot;admin crea todo, cliente ve todo&quot; como en el ejemplo de la guía. En cambio:</p>
+<ul class="lista"><li>El usuario del local solo ve y edita <strong>sus propias</strong> compras (filtrando por <code>creadoPor</code>).</li><li>Los reportes agregados (<code>/resumen</code>, <code>/resumen/usuarios</code>) son exclusivos de admin.</li><li>Las consultas de caja/bodega son útiles sin necesidad de ser admin, porque cualquier usuario necesita saber &quot;¿cuánto llevo comprado hoy?&quot;.</li></ul>
+<h4 class="hallazgo"><span>3. Probé el flujo de negocio completo y funcionó perfecto</span></h4>
+<p>Registro → login → crear cliente (campesino) → registrar una compra de 10kg de café a $5.000/kg → consultar <code>/compras/bodega</code> (mostró correctamente 10 kilos recibidos) → consultar <code>/compras/caja</code> del día (mostró correctamente $50.000 pagados). Los cálculos agregados con MongoDB (<code>aggregate</code>) funcionan sin errores.</p>
+</div>
+<div class="parte tono-warn"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span>Qué revisar o mejorar</span></h3>
+<h4 class="hallazgo"><span class="prio media">Media</span><span>Prioridad media — un problema que puede darte un dolor de cabeza al desplegar</span></h4>
+<p><strong>1. El nombre del archivo de rutas de clientes no coincide con cómo lo importas</strong></p>
+<p>En <code>server.js</code> tienes:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>const clientesRoutes = require('./routes/clientes.routes');</pre></div>
+<p>Pero el archivo real se llama <code>Clientes.routes.js</code> (con <strong>C mayúscula</strong>).</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>¿Por qué esto &quot;funciona&quot; en tu computador pero puede fallar en otro lado?</strong> Windows y macOS no distinguen entre mayúsculas y minúsculas en los nombres de archivo (<code>clientes.routes.js</code> y <code>Clientes.routes.js</code> son &quot;el mismo archivo&quot; para ellos). Pero la gran mayoría de servidores donde se despliega una app Node.js corren <strong>Linux</strong>, que sí distingue mayúsculas de minúsculas. Si subes este proyecto a un hosting como Render, Railway o un VPS con Linux, tu servidor <strong>no va a arrancar</strong> — vas a ver un error <code>Cannot find module './routes/clientes.routes'</code>.</div></div>
+<p><strong>Cómo arreglarlo:</strong> cambia el <code>require</code> para que coincida exactamente, letra por letra, con el nombre real del archivo (<code>./routes/Clientes.routes</code>), o renombra el archivo a minúsculas. Cualquiera de las dos soluciones funciona, pero deben coincidir.</p>
+<h4 class="hallazgo"><span class="prio baja">Baja</span><span>Prioridad baja — limpieza de código</span></h4>
+<p><strong>2. <code>routes/analisis.routes.js</code> existe pero nunca se usa</strong></p>
+<p>Creaste ese archivo de rutas pero no lo importaste ni montaste en <code>server.js</code>. Si probaste <code>GET /api/analisis</code>, verías un 404 — no porque esté mal programado, sino porque nunca le diste la orden a Express de conectarlo. Si ya no lo necesitas, bórralo; si sí lo necesitas, solo falta un <code>app.use('/api/analisis', require('./routes/analisis.routes'))</code>.</p>
+<p><strong>3. <code>SECRET_CREATE_USERS</code> está en tu <code>.env</code> pero no se usa en ningún lado del código</strong></p>
+<p>No es un error, solo una variable que quedó de un plan anterior. Puedes eliminarla del <code>.env</code> para mantenerlo limpio, o dejarla si planeas usarla pronto.</p>
+<p><strong>4. El servidor empieza a escuchar peticiones sin esperar a que MongoDB se conecte</strong></p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>mongoose.connect(process.env.MONGODB_URI)
+.then(() =&gt; console.log('Conectado exitosamente a MongoDB Atlas'))
+.catch((err) =&gt; console.error('Error al conectar a MongoDB:', err));
+<span class="c">// ...</span>
+app.listen(PORT, ...) <span class="c">// esto corre inmediatamente, sin esperar el .then()</span></pre></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>¿Por qué importa?</strong> Si por alguna razón la conexión a Mongo tarda unos segundos o falla, tu servidor igual dice &quot;estoy corriendo&quot; y acepta peticiones — pero esas peticiones van a fallar porque todavía no hay base de datos conectada. En la práctica casi nunca lo vas a notar (Atlas conecta rápido), pero es más robusto mover el <code>app.listen()</code> dentro del <code>.then()</code>, como lo hizo Michel en su proyecto Ecovoz.</div></div>
+</div>
+<div class="parte tono-azul"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg><span>Resumen de lo que probé en vivo</span></h3>
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Resultado</th></tr></thead><tbody><tr><td>Arranque del servidor + conexión a MongoDB Atlas</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Sin errores</td></tr><tr><td><code>POST /api/auth/registro</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Usuario creado correctamente</td></tr><tr><td><code>POST /api/auth/login</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Token JWT válido recibido</td></tr><tr><td><code>POST /api/clientes</code> (crear campesino)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Cliente creado correctamente</td></tr><tr><td><code>POST /api/compras</code> (registrar compra de café)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Calculó valores correctamente</td></tr><tr><td><code>GET /api/compras/bodega</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Agregación de kilos correcta</td></tr><tr><td><code>GET /api/compras/caja</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Reporte de caja del día correcto</td></tr><tr><td><code>GET /api/analisis</code></td><td><svg class="ic terr" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> 404 — ruta no montada en <code>server.js</code></td></tr></tbody></table></div>
+<p class="nota">Limpié el usuario, cliente y compra de prueba que creé — tu base de datos quedó intacta.</p>
+</div>
+<div class="parte tono-teal"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><span>Próximos pasos sugeridos</span></h3>
+<ul class="checklist"><li data-k="rev:comersail:0"><span class="check-box"></span><span>Corregir el <code>require</code> de <code>clientes.routes</code> para que coincida exactamente con el nombre real del archivo (<code>Clientes.routes.js</code>) — importante antes de desplegar en un servidor Linux.</span></li><li data-k="rev:comersail:1"><span class="check-box"></span><span>Montar <code>analisis.routes.js</code> en <code>server.js</code> si planeas usarlo, o eliminarlo si no.</span></li><li data-k="rev:comersail:2"><span class="check-box"></span><span>Eliminar <code>SECRET_CREATE_USERS</code> del <code>.env</code> si no la vas a usar.</span></li><li data-k="rev:comersail:3"><span class="check-box"></span><span>Mover <code>app.listen()</code> dentro del <code>.then()</code> de <code>mongoose.connect()</code> para que el servidor no acepte peticiones antes de tener base de datos.</span></li></ul>
+</div>
+<div class="callout teal"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>En resumen:</strong> este es uno de los proyectos con mejor criterio de diseño del grupo — no por tener más funciones, sino por haber entendido el problema real y modelarlo bien. El único punto que debes corregir <strong>antes de desplegar</strong> es el nombre del archivo de rutas de clientes. ¡Excelente trabajo!</div></div>
+</section>
+<section class="proy" id="sema" data-proy>
+  <div class="proy-head"><span class="proy-num">Proyecto 6 de 7</span><h2 class="proy-titulo">SEMA</h2><span class="prio crit" title="Prioridad más alta de los hallazgos">Crítica</span></div>
+  <p class="proy-lema">Arquitectura ambiciosa y bien pensada, con una falla de seguridad crítica y muy común que se corrige en pocas líneas.</p>
+  <div class="ficha">
+    <div><div class="ficha-l">Revisado el</div><div class="ficha-v">5 de noviembre de 2026</div></div>
+    <div><div class="ficha-l">Evaluado contra</div><div class="ficha-v">Guía ADSO &quot;Backend Personal&quot; (plan de trabajo generado para SEMA)</div></div>
+    <div><div class="ficha-l">Prioridad más alta</div><div class="ficha-v"><span class="prio crit">Crítica</span></div></div>
+  </div>
+  <div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span><div><strong>Antes de leer.</strong> Este informe sale de leer tu código a fondo <strong>y</strong> de levantar tu servidor real con tu <code>.env</code> para probarlo en vivo. Hay un hallazgo importante de seguridad en este informe — lo vas a ver resaltado al principio, no para alarmarte, sino porque es justo el tipo de cosa que quien trabaja en backend de forma profesional aprende a detectar con el tiempo, y mejor aprenderlo ahora, en un proyecto de práctica, que después en un proyecto real. <strong>Es un problema común y se corrige con pocas líneas.</strong></div></div>
+<div class="parte tono-ok"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>Lo que hiciste muy bien (¡y deberías sentir orgullo!)</span></h3>
+<p>Antes de ir al problema de seguridad, quiero que quede clara una cosa: <strong>este es uno de los proyectos más ambiciosos y completos de todo el grupo.</strong> El plan de trabajo de SEMA era el más extenso (9 colecciones), y tú implementaste casi todo.</p>
+<h4 class="hallazgo"><span>1. Autenticación separada por tipo de usuario, bien aislada</span></h4>
+<p>Tienes tres flujos de login completamente independientes: <code>auth.js</code> (usuarios), <code>auth-psicologo.js</code> (psicólogos) y <code>auth-admin.js</code> (administradores SENA / super administradores). Los administradores y super administradores viven en <strong>modelos de MongoDB completamente separados</strong> (<code>AdministradorSENA</code>, <code>SuperAdministrador</code>), sin ninguna ruta pública para crearlos — solo pueden iniciar sesión, lo que significa que esas cuentas se crean manualmente (por ejemplo, con tu script <code>seed-admins.js</code>). Esa parte del diseño es exactamente como debe ser.</p>
+<h4 class="hallazgo"><span>2. Chat en tiempo real con funciones avanzadas</span></h4>
+<p>Implementaste Socket.io con:</p>
+<ul class="lista"><li>Indicador de &quot;está escribiendo...&quot; (<code>escribiendo</code> / <code>dejo_de_escribir</code>).</li><li>Confirmación de mensajes leídos (<code>mensajes_vistos</code>), que además actualiza la base de datos (<code>Mensaje.updateMany</code>).</li></ul>
+<p>Esto es una funcionalidad de nivel de app comercial (piensa en WhatsApp o Messenger) que no estaba pedida en la guía.</p>
+<h4 class="hallazgo"><span>3. Construiste módulos completos que no pedía el plan</span></h4>
+<p><code>habitos.js</code> (seguimiento de hábitos saludables) y <code>comunidad.js</code> (publicaciones tipo foro, con su modelo <code>Publicacion.js</code>) son funcionalidades que tú agregaste por iniciativa propia, pensando en el bienestar integral del usuario más allá de solo &quot;registrar un estado emocional&quot;.</p>
+<h4 class="hallazgo"><span>4. El flujo principal funciona de punta a punta</span></h4>
+<p>Probé en vivo: registro, login, creación de un estado emocional. Todo respondió correctamente y sin errores.</p>
+</div>
+<div class="parte tono-crit"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span>Lo más importante de este informe: una falla de seguridad crítica</span></h3>
+<h4 class="hallazgo"><span>¿Qué encontré?</span></h4>
+<p>Puedo crear una cuenta de &quot;psicólogo&quot; <strong>yo mismo</strong>, sin que ningún administrador me apruebe, y con esa cuenta <strong>leer los registros emocionales privados de cualquier otro usuario de la plataforma.</strong></p>
+<h4 class="hallazgo"><span>¿Cómo lo probé? (en un entorno controlado, con datos de prueba que luego borré)</span></h4>
+<ol class="lista"><li>Me registré como un usuario normal (<code>POST /api/auth/registro</code>) y guardé un estado emocional de prueba (&quot;ansioso... información clínica privada de prueba&quot;).</li><li>Me registré una <strong>segunda vez</strong>, pero esta vez agregué <code>&quot;rol&quot;: &quot;psicologo&quot;</code> dentro del cuerpo de la petición de registro — algo que cualquier persona puede hacer con herramientas como Postman o incluso la consola del navegador, sin necesitar ningún conocimiento avanzado.</li><li>Con el token de esa segunda cuenta (que nunca fue revisada ni aprobada por nadie), llamé a <code>GET /api/estados-emocionales?paciente=&lt;id-del-primer-usuario&gt;</code>.</li><li><strong>La API me devolvió el estado emocional privado de la primera cuenta, completo.</strong></li></ol>
+<h4 class="hallazgo"><span>¿Por qué pasa esto? (explicación técnica, paso a paso)</span></h4>
+<p><strong>Paso 1 — El registro confía ciegamente en lo que el cliente le envía.</strong></p>
+<p>En <code>routes/auth.js</code>, tu endpoint de registro hace esto:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>const { ..., rol = 'usuario' } = req.body;
+<span class="c">// ...</span>
+const usuario = new Usuario({ ..., rol });</pre></div>
+<p>Esto significa: &quot;si el que me está hablando (el cliente) me manda un campo <code>rol</code>, úsalo; si no, pon <code>usuario</code> por defecto&quot;. El problema es que <strong>el cliente no es de confianza</strong>. Cualquier persona que use tu API puede mandar el campo que quiera en el body de una petición HTTP — no hay nada que se lo impida, porque HTTP es solo texto viajando por internet, y tú decides si confías en ese texto o no.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>Analogía:</strong> es como si en la entrada de un evento le preguntaras a cada persona &quot;¿eres organizador?&quot; y le creyeras la respuesta sin pedirle una credencial. La solución no es &quot;confiar menos&quot; en general — es simplemente <strong>nunca preguntarle al visitante qué permisos tiene</strong>. Los permisos los decide el sistema (o un administrador), nunca la persona que los está pidiendo.</div></div>
+<p><strong>Paso 2 — El modelo <code>Usuario</code> permite ese valor.</strong></p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>rol: {
+    type: String,
+    enum: ['usuario', 'psicologo', 'administrador'],
+    default: 'usuario'
+}</pre></div>
+<p>Mongoose valida que el valor esté dentro de esta lista (<code>enum</code>), pero no valida <em>quién</em> lo está pidiendo. Como <code>'psicologo'</code> está en la lista permitida, la petición pasa sin problema.</p>
+<p><strong>Paso 3 — Varias rutas confían en ese rol para dar acceso a datos de otros usuarios.</strong></p>
+<p>En <code>routes/estados-emocionales.js</code>:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>const rol = req.usuario.rol || req.usuario.tipo;
+if (rol === 'psicologo' &amp;&amp; req.query.paciente) {
+    targetUserId = req.query.paciente; <span class="c">// &lt;- aquí usa el ID de OTRO usuario</span>
+}</pre></div>
+<p>Como mi token (autogenerado, sin aprobación de nadie) dice <code>rol: 'psicologo'</code>, esta condición se cumple, y la ruta me deja pedir los datos de cualquier <code>paciente</code> que yo quiera, solo cambiando el <code>id</code> en la URL.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>Este segundo problema tiene nombre propio: se llama IDOR</strong> (<em>Insecure Direct Object Reference</em> — &quot;referencia directa insegura a un objeto&quot;). Pasa cuando una API confía en un identificador que viene en la petición (como <code>?paciente=123</code>) sin verificar que quien lo pide tenga realmente derecho a ver ese recurso. Es una de las vulnerabilidades más comunes en aplicaciones web reales — está en el top 10 de OWASP (una lista mundialmente reconocida de los riesgos de seguridad más importantes en apps web). No es un error &quot;tonto&quot; ni algo exclusivo de estudiantes: es un error que se cuela incluso en apps grandes si no se piensa con cuidado.</div></div>
+<h4 class="hallazgo"><span>¿Por qué esto es especialmente grave en SEMA?</span></h4>
+<p>Porque el dato que queda expuesto no es un producto de una tienda ni un comentario público — es el <strong>registro emocional privado</strong> de jóvenes que confiaron en la plataforma precisamente porque se supone que es un &quot;espacio seguro para expresar cómo se sienten&quot; (palabras de tu propia descripción del proyecto). Es exactamente el tipo de información que este sistema existe para proteger.</p>
+<h4 class="hallazgo"><span>¿Cómo se arregla?</span></h4>
+<p>Dos cambios, ambos sencillos:</p>
+<p><strong>1. En <code>routes/auth.js</code>, el registro público NUNCA debe confiar en un <code>rol</code> enviado por el cliente:</strong></p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre><span class="c">// ANTES (vulnerable)</span>
+const { nombre, documento, email, password, ..., rol = 'usuario' } = req.body;
+const usuario = new Usuario({ ..., rol });
+
+<span class="c">// DESPUÉS (correcto)</span>
+const { nombre, documento, email, password, ... } = req.body; <span class="c">// ya no se lee &quot;rol&quot; del body</span>
+const usuario = new Usuario({ ..., rol: 'usuario' }); <span class="c">// siempre forzado</span></pre></div>
+<p><strong>2. Las cuentas de psicólogo deben crearse solo por un administrador ya autenticado</strong> (igual a como ya hiciste bien con <code>AdministradorSENA</code>/<code>SuperAdministrador</code> — solo falta aplicar el mismo criterio a <code>Psicologo</code>). Si ya tienes un modelo <code>Psicologo.js</code> separado y una ruta de login exclusiva (<code>auth-psicologo.js</code>), probablemente lo más limpio es que <strong>tampoco exista un registro público de psicólogos</strong>: que un admin los dé de alta desde un endpoint protegido con <code>verificarSuperAdmin</code> o <code>verificarAdminSENA</code>.</p>
+</div>
+<div class="parte tono-warn"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span>Otras cosas a revisar (menor prioridad frente a lo anterior)</span></h3>
+<h4 class="hallazgo"><span class="prio baja">Baja</span><span>Patrón de servidor</span></h4>
+<p><code>server.listen()</code> se ejecuta sin esperar a que la conexión a MongoDB se confirme (similar a lo que vimos en otros proyectos). No es grave porque Atlas conecta rápido, pero es más robusto esperar la confirmación de conexión antes de aceptar peticiones.</p>
+</div>
+<div class="parte tono-azul"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg><span>Resumen de lo que probé en vivo</span></h3>
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Resultado</th></tr></thead><tbody><tr><td>Arranque del servidor + conexión a MongoDB Atlas</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Sin errores</td></tr><tr><td><code>POST /api/auth/registro</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Usuario creado correctamente</td></tr><tr><td><code>POST /api/auth/login</code></td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Token JWT válido recibido</td></tr><tr><td><code>POST /api/estados-emocionales</code> (registrar estado propio)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Funciona correctamente</td></tr><tr><td>Autoregistro con <code>&quot;rol&quot;:&quot;psicologo&quot;</code></td><td><span class="dot crit" title="Prioridad crítica"></span> <strong>Aceptado sin ninguna validación</strong></td></tr><tr><td><code>GET /api/estados-emocionales?paciente=&lt;id-ajeno&gt;</code> con ese rol falso</td><td><span class="dot crit" title="Prioridad crítica"></span> <strong>Devolvió datos privados de otro usuario</strong></td></tr></tbody></table></div>
+<p class="nota">Limpié todos los usuarios y el estado emocional de prueba que creé — tu base de datos quedó intacta, y ningún dato real de otro usuario fue alterado, solo leído durante la prueba.</p>
+</div>
+<div class="parte tono-teal"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><span>Próximos pasos sugeridos (en orden de urgencia)</span></h3>
+<ul class="checklist"><li data-k="rev:sema:0"><span class="check-box"></span><span><strong>Urgente:</strong> en <code>routes/auth.js</code>, forzar siempre <code>rol: 'usuario'</code> en el registro público, ignorando cualquier valor de <code>rol</code> que venga del cliente.</span></li><li data-k="rev:sema:1"><span class="check-box"></span><span><strong>Urgente:</strong> revisar el modelo <code>Usuario</code> — probablemente el <code>enum</code> de rol ni siquiera debería incluir <code>'psicologo'</code> ni <code>'administrador'</code>, ya que esos tipos de cuenta tienen sus propios modelos (<code>Psicologo</code>, <code>AdministradorSENA</code>, <code>SuperAdministrador</code>).</span></li><li data-k="rev:sema:2"><span class="check-box"></span><span>Crear un endpoint protegido (solo admin) para dar de alta psicólogos, en vez de depender del registro público.</span></li><li data-k="rev:sema:3"><span class="check-box"></span><span>Revisar <code>habitos.js</code> y <code>citas.js</code>, que usan el mismo patrón <code>rol === 'psicologo'</code> — una vez corregido el problema de raíz en el registro, estas rutas quedan seguras automáticamente, pero vale la pena releerlas para confirmar que no haya otro camino de autoasignación de rol que se me haya escapado.</span></li><li data-k="rev:sema:4"><span class="check-box"></span><span>Mover <code>server.listen()</code> dentro del callback de conexión exitosa a MongoDB.</span></li></ul>
+</div>
+<div class="callout teal"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>En resumen:</strong> la arquitectura general de SEMA es ambiciosa y está muy bien pensada — autenticación multi-rol separada, chat en tiempo real, módulos adicionales por iniciativa propia. El problema de seguridad que encontré es serio, pero es <strong>extremadamente común</strong> incluso en aplicaciones reales, y la solución es simple: nunca confiar en el rol que el cliente dice tener. Corrígelo, vuelve a probarlo, y vas a tener un proyecto del que puedes sentir mucho orgullo. Este tipo de hallazgo — encontrarlo, entenderlo y corregirlo — es, de hecho, una de las lecciones más valiosas que te vas a llevar de todo el curso.</div></div>
+</section>
+<section class="proy" id="turisplay" data-proy>
+  <div class="proy-head"><span class="proy-num">Proyecto 7 de 7</span><h2 class="proy-titulo">TurisPlay</h2><span class="prio crit" title="Prioridad más alta de los hallazgos">Crítica</span></div>
+  <p class="proy-lema">Base organizada, pero dos problemas impiden que se vea ese trabajo: seguridad en el registro y reservas que no funcionan.</p>
+  <div class="ficha">
+    <div><div class="ficha-l">Revisado el</div><div class="ficha-v">5 de noviembre de 2026</div></div>
+    <div><div class="ficha-l">Evaluado contra</div><div class="ficha-v">No se encontró un PDF de plan de trabajo en la carpeta — esta revisión se hizo directamente sobre el código.</div></div>
+    <div><div class="ficha-l">Prioridad más alta</div><div class="ficha-v"><span class="prio crit">Crítica</span></div></div>
+  </div>
+  <div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span><div><strong>Antes de leer.</strong> Este informe sale de leer tu código a fondo <strong>y</strong> de levantar tu servidor real con tu <code>.env</code> para probarlo en vivo. Hay dos hallazgos importantes en este informe: uno de seguridad y uno funcional. Ambos tienen solución simple, y te explico el porqué de cada uno con calma — no para alarmarte, sino para que entiendas exactamente qué pasó y cómo evitarlo en el futuro.</div></div>
+<div class="parte tono-ok"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>Lo que hiciste muy bien</span></h3>
+<h4 class="hallazgo"><span>1. Manejo de errores centralizado</span></h4>
+<p>Tienes un middleware de errores (<code>manejadorErrores.js</code>) que captura cualquier error que ocurra en las rutas y responde de forma consistente, con <code>timestamp</code> incluido. Es una buena práctica: evita que tengas que repetir el mismo bloque <code>try/catch</code> con el mismo formato de respuesta en cada ruta.</p>
+<h4 class="hallazgo"><span>2. Ruta &quot;catch-all&quot; para endpoints no encontrados</span></h4>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>app.use((req, res) =&gt; {
+  res.status(404).json({ error: 'Ruta no encontrada en la API de TurisPlaY' });
+});</pre></div>
+<p>Esto le da a quien consuma tu API (por ejemplo, el frontend) un mensaje claro en vez de un error genérico de Express cuando pide una ruta que no existe.</p>
+<h4 class="hallazgo"><span>3. Separación en controladores</span></h4>
+<p>Tienes <code>auth.controller.js</code>, <code>reservas.controller.js</code> y <code>sitios.controller.js</code> separando la lógica de negocio de las rutas — aunque (como vas a ver abajo) terminaste con lógica duplicada entre <code>server.js</code> y las rutas modulares, la intención de organizar el código por responsabilidad es correcta y es el camino hacia un proyecto más mantenible.</p>
+<h4 class="hallazgo"><span>4. Validación de campos obligatorios en el modelo <code>Sitio</code></span></h4>
+<p>Cuando probé crear un sitio turístico sin el campo <code>categoria</code>, tu API lo rechazó correctamente con un mensaje claro (<code>&quot;categoria: La categoría es obligatoria&quot;</code>) en vez de guardar datos incompletos en la base de datos. Esa validación a nivel de modelo Mongoose está bien implementada.</p>
+</div>
+<div class="parte tono-crit"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span>Hallazgo de seguridad: cualquiera puede autoasignarse como administrador</span></h3>
+<h4 class="hallazgo"><span>¿Qué encontré?</span></h4>
+<p>Me registré como un usuario cualquiera, pero en el cuerpo de la petición de registro agregué <code>&quot;rol&quot;: &quot;administrador&quot;</code>. Mi cuenta quedó creada con ese rol — <strong>sin que ningún administrador real lo aprobara.</strong> Con el token de esa cuenta, pude crear un sitio turístico usando <code>POST /api/sitios</code>, una ruta que se supone <strong>&quot;solo administrador&quot;</strong>.</p>
+<h4 class="hallazgo"><span>¿Por qué pasa esto?</span></h4>
+<p>En <code>routes/auth.js</code>:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>const { nombre, email, password, departamento, municipio, rol } = req.body;
+<span class="c">// ...</span>
+const usuario = await Usuario.create({
+  ...,
+  rol: rol || 'turista'
+});</pre></div>
+<p>Tu código le pregunta al cliente (quien hace la petición) qué rol quiere tener, y le cree. El problema de fondo es el mismo en espíritu que cuando alguien llena un formulario de &quot;¿eres mayor de edad?&quot; con una casilla que él mismo marca — nada impide que marque que sí aunque no lo sea. <strong>El servidor nunca debe dejar que el cliente decida sus propios permisos.</strong></p>
+<p>Para hacerlo peor en este caso específico, tu modelo <code>Usuario</code> tiene en su <code>enum</code> de roles permitidos:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>rol: {
+  type: String,
+  enum: ['administrador', 'admin', 'cliente', 'turista'],
+  default: 'turista'
+}</pre></div>
+<p>Y tu middleware <code>verificarAdmin</code> acepta exactamente esos dos valores (<code>'administrador'</code> o <code>'admin'</code>) como válidos para dar acceso total. Es decir: el valor que un atacante necesita para hacerse pasar por admin está <strong>literalmente documentado en tu propio modelo</strong>, a un paso de distancia.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>Este tipo de falla se llama &quot;escalada de privilegios&quot;</strong> (<em>privilege escalation</em>): cuando un usuario sin permisos especiales logra obtener permisos que no le corresponden. Es una de las fallas de seguridad más buscadas en cualquier auditoría, porque las consecuencias son directas: quien la explota puede hacer lo que quiera con los datos.</div></div>
+<h4 class="hallazgo"><span>¿Cómo se arregla?</span></h4>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre><span class="c">// ANTES (vulnerable)</span>
+const { nombre, email, password, departamento, municipio, rol } = req.body;
+const usuario = await Usuario.create({ ..., rol: rol || 'turista' });
+
+<span class="c">// DESPUÉS (correcto)</span>
+const { nombre, email, password, departamento, municipio } = req.body; <span class="c">// ya no se lee &quot;rol&quot;</span>
+const usuario = await Usuario.create({ ..., rol: 'turista' }); <span class="c">// siempre forzado</span></pre></div>
+<p>El primer usuario administrador del sistema debe crearse manualmente (por ejemplo, cambiando el campo <code>rol</code> directamente en MongoDB Compass después de registrarte normalmente), nunca a través de un endpoint público. Si en el futuro necesitas que un admin cree a otro admin, lo correcto es un endpoint como <code>PUT /api/usuarios/:id/rol</code> que <strong>solo un admin ya autenticado</strong> pueda usar — justo como lo resolvió correctamente Michel en su proyecto Ecovoz, que puedes usar de referencia.</p>
+</div>
+<div class="parte tono-crit"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span>Hallazgo funcional: el módulo de reservas no funciona en absoluto</span></h3>
+<h4 class="hallazgo"><span>¿Qué encontré?</span></h4>
+<p>Al intentar crear una reserva (<code>POST /api/reservas</code>), la API respondió:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">json</span></div><pre>{&quot;error&quot;:&quot;Reserva.create is not a function&quot;}</pre></div>
+<p>Esto significa que <strong>ninguna reserva puede crearse, leerse, actualizarse ni eliminarse</strong>, en toda la plataforma, en este momento.</p>
+<h4 class="hallazgo"><span>¿Por qué pasa esto?</span></h4>
+<p>Fui a revisar <code>models/Reserva.js</code>, esperando encontrar un <em>schema</em> de Mongoose (la definición de qué campos tiene una reserva: fecha, usuario, sitio, etc.). En cambio, encontré <strong>el código de un router de Express</strong> — rutas con <code>router.get(...)</code>, <code>router.post(...)</code>, incluso con un <code>require('../models/Reserva')</code> apuntando a sí mismo.</p>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>¿Cómo pasa esto en la práctica?</strong> Lo más probable es que, en algún momento, copiaste y pegaste el contenido equivocado en ese archivo — quizás tenías dos pestañas abiertas (una con tu router de reservas y otra con el modelo) y guardaste el contenido de una en el archivo de la otra. Es un error muy fácil de cometer y muy fácil de no notar, porque <strong>el proyecto sigue arrancando sin errores</strong> — Node.js no se queja al importar un archivo que exporta un router en vez de un modelo, el error solo aparece cuando intentas <em>usar</em> ese archivo como si fuera un modelo (<code>Reserva.create(...)</code>).</div></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><div><strong>Por qué es importante probar cada endpoint al menos una vez:</strong> este es exactamente el tipo de bug que un code review por lectura (sin ejecutar el código) puede pasar por alto fácilmente, porque el archivo <em>parece</em> código válido de JavaScript — y lo es, solo que no es lo que se esperaba en ese lugar. La única forma segura de confirmar que algo funciona es ejecutarlo.</div></div>
+<h4 class="hallazgo"><span>¿Cómo se arregla?</span></h4>
+<p>Reemplaza el contenido de <code>models/Reserva.js</code> por un <em>schema</em> real de Mongoose, por ejemplo:</p>
+<div class="code-wrap"><div class="code-header"><span class="code-dots"><i class="code-dot r"></i><i class="code-dot y"></i><i class="code-dot g"></i></span><span class="code-filename">js</span></div><pre>const mongoose = require('mongoose');
+
+const reservaSchema = new mongoose.Schema({
+  usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
+  sitio: { type: mongoose.Schema.Types.ObjectId, ref: 'Sitio', required: true },
+  fecha: { type: Date, required: true },
+  personas: { type: Number, required: true },
+  estado: { type: String, enum: ['pendiente', 'confirmada', 'cancelada'], default: 'pendiente' }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Reserva', reservaSchema);</pre></div>
+<p>(Ajusta los campos a lo que realmente necesites.) El archivo de rutas (<code>routes/reservas.js</code>), que sí está bien escrito, volverá a funcionar automáticamente en cuanto el modelo exista de verdad.</p>
+</div>
+<div class="parte tono-warn"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span>Otros puntos a revisar (menor prioridad)</span></h3>
+<h4 class="hallazgo"><span class="prio media">Media</span><span>Falta de verificación de propiedad en <code>routes/reservas.js</code></span></h4>
+<p>Una vez corrijas el modelo, ten en cuenta que <code>GET/PUT/DELETE /api/reservas/:id</code> no comprueban que la reserva le pertenezca al usuario que hace la petición — solo exigen <em>estar</em> autenticado, no ser <em>el dueño</em> de ese recurso específico. Esto es el mismo problema de <strong>IDOR</strong> mencionado en el informe de SEMA: cualquier usuario logueado podría leer, modificar o cancelar la reserva de otra persona con solo conocer (o adivinar) su ID. La corrección es simple: antes de devolver/editar/borrar, comparar <code>reserva.usuario.toString() === req.usuario.id</code>.</p>
+<h4 class="hallazgo"><span class="prio baja">Baja</span><span>CRUD de sitios duplicado</span></h4>
+<p>El CRUD completo de <code>/api/sitios</code> existe <strong>dos veces</strong>: una copia directamente en <code>server.js</code> (sección 4) y otra en <code>routes/turisplay.js</code>, montada en <code>/api/turisplay/sitios</code>. Ambas hacen exactamente lo mismo. Te recomiendo quedarte con una sola versión (la de <code>routes/turisplay.js</code>, por estar mejor organizada) y borrar la de <code>server.js</code>, para no tener que mantener el mismo código en dos lugares.</p>
+<h4 class="hallazgo"><span class="prio baja">Baja</span><span>Modelo de comentarios sin usar</span></h4>
+<p><code>models/comentarios.js</code> tiene un schema completo y bien definido (referencias a usuario y sitio incluidas), pero no existe ninguna ruta que lo use. Si la funcionalidad de comentarios está planeada, falta crear <code>routes/comentarios.js</code>.</p>
+</div>
+<div class="parte tono-azul"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg><span>Resumen de lo que probé en vivo</span></h3>
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Resultado</th></tr></thead><tbody><tr><td>Arranque del servidor + conexión a MongoDB Atlas</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Sin errores</td></tr><tr><td><code>POST /api/auth/registro</code> con <code>&quot;rol&quot;:&quot;administrador&quot;</code></td><td><span class="dot crit" title="Prioridad crítica"></span> <strong>Aceptado sin validación</strong></td></tr><tr><td><code>POST /api/sitios</code> con ese token falso de &quot;admin&quot;</td><td><span class="dot crit" title="Prioridad crítica"></span> <strong>Creó el sitio exitosamente</strong> (acceso no autorizado)</td></tr><tr><td><code>POST /api/reservas</code> (crear reserva)</td><td><span class="dot crit" title="Prioridad crítica"></span> <strong>Error: <code>Reserva.create is not a function</code></strong> — módulo roto</td></tr><tr><td><code>GET /api/sitios</code> (público)</td><td><svg class="ic tok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Responde correctamente</td></tr></tbody></table></div>
+<p class="nota">Limpié todos los usuarios y el sitio de prueba que creé — tu base de datos quedó intacta.</p>
+</div>
+<div class="parte tono-teal"><h3 class="parte-titulo"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><span>Próximos pasos sugeridos (en orden de urgencia)</span></h3>
+<ul class="checklist"><li data-k="rev:turisplay:0"><span class="check-box"></span><span><strong>Urgente:</strong> en <code>routes/auth.js</code>, forzar siempre <code>rol: 'turista'</code> en el registro, ignorando cualquier <code>rol</code> enviado por el cliente.</span></li><li data-k="rev:turisplay:1"><span class="check-box"></span><span><strong>Urgente:</strong> reemplazar el contenido de <code>models/Reserva.js</code> por un schema real de Mongoose — ahora mismo el módulo de reservas (probablemente tu funcionalidad más importante) no funciona en absoluto.</span></li><li data-k="rev:turisplay:2"><span class="check-box"></span><span>Agregar verificación de propiedad (<code>reserva.usuario.toString() === req.usuario.id</code>) en las rutas de reservas protegidas.</span></li><li data-k="rev:turisplay:3"><span class="check-box"></span><span>Eliminar el CRUD de sitios duplicado en <code>server.js</code>, dejando solo el de <code>routes/turisplay.js</code>.</span></li><li data-k="rev:turisplay:4"><span class="check-box"></span><span>Crear las rutas de comentarios, o eliminar el modelo si ya no lo vas a usar.</span></li></ul>
+</div>
+<div class="callout teal"><span class="callout-icon"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>En resumen:</strong> tienes una base de código organizada (controladores separados, manejo de errores centralizado), pero dos problemas te están impidiendo demostrar ese trabajo: la escalada de privilegios en el registro y el modelo de reservas roto. Ambos son arreglos de pocas líneas. Una vez corregidos, prueba de nuevo el flujo completo (registrarte, crear un sitio como admin real, hacer una reserva) para confirmar que todo encaja. ¡Ánimo, la base está ahí!</div></div>
+</section>
+
+  <section class="seccion" id="autoevaluacion">
+    <h2 class="sec-h2"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg> Revisa tu propio backend</h2>
+    <p>Con lo que aprendiste de los siete informes, revisa tu proyecto. Lo que marques se guarda en este navegador.</p>
+    <div class="auto-progreso"><span id="auto-txt">0 de 10</span><div class="barra"><div class="barra-fill" id="auto-fill"></div></div></div>
+    <ul class="checklist"><li data-k="rev:auto:0"><span class="check-box"></span><span>El registro <strong>ignora el <code>rol</code></strong> que manda el cliente y lo fija el servidor.</span></li><li data-k="rev:auto:1"><span class="check-box"></span><span>Los nombres de variables de mi <code>.env</code> son <strong>los mismos</strong> que lee mi código (<code>process.env.X</code>).</span></li><li data-k="rev:auto:2"><span class="check-box"></span><span>No hay variables en el <code>.env</code> que nadie use ni variables en el código que no existan en el <code>.env</code>.</span></li><li data-k="rev:auto:3"><span class="check-box"></span><span>Mi servidor <strong>espera la conexión a la base</strong> antes de escuchar, o se detiene si falla.</span></li><li data-k="rev:auto:4"><span class="check-box"></span><span>En las rutas con <code>:id</code> compruebo que el recurso <strong>pertenece</strong> a quien lo pide (<code>req.usuario.id</code>).</span></li><li data-k="rev:auto:5"><span class="check-box"></span><span>Probé <strong>cada endpoint</strong> al menos una vez en Postman, también los que "no tocan lo importante".</span></li><li data-k="rev:auto:6"><span class="check-box"></span><span>Todo archivo de rutas, modelo o middleware que creé está <strong>importado y montado</strong>; no queda código muerto.</span></li><li data-k="rev:auto:7"><span class="check-box"></span><span>Los <code>require</code> coinciden <strong>letra por letra</strong> (mayúsculas incluidas) con los nombres de archivo.</span></li><li data-k="rev:auto:8"><span class="check-box"></span><span>No hay dos copias de la misma lógica (por ejemplo, un CRUD repetido en <code>server.js</code> y en una ruta).</span></li><li data-k="rev:auto:9"><span class="check-box"></span><span>Documenté cómo se crea el <strong>primer administrador</strong> y qué falta por construir.</span></li></ul>
+  </section>
+
+  <section class="seccion" id="glosario">
+    <h2 class="sec-h2"><svg class="ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg> Glosario</h2>
+    <div class="table-wrap"><table><thead><tr><th>Término</th><th>Significado</th></tr></thead><tbody><tr><td class="pn">Endpoint</td><td>Una dirección de la API a la que se le pide algo, como <code>POST /api/auth/registro</code></td></tr><tr><td class="pn">Middleware</td><td>Una función que se ejecuta antes de la ruta, por ejemplo para comprobar el token o el rol</td></tr><tr><td class="pn">JWT</td><td>El token firmado que el servidor entrega al iniciar sesión y que el cliente manda en cada petición</td></tr><tr><td class="pn">Escalada de privilegios</td><td>Obtener permisos que no te corresponden, como hacerte administrador en el registro</td></tr><tr><td class="pn">IDOR</td><td>Leer o cambiar el recurso de otra persona porque la API confía en el id de la URL sin verificar el dueño</td></tr><tr><td class="pn">Rate limiting</td><td>Poner un tope de peticiones por tiempo para frenar abusos y fuerza bruta</td></tr><tr><td class="pn">Sanitizar</td><td>Limpiar lo que llega del cliente antes de usarlo</td></tr><tr><td class="pn">Zod</td><td>Librería para describir con esquemas qué forma debe tener cada petición</td></tr><tr><td class="pn">Código muerto</td><td>Código que escribiste pero que el programa nunca ejecuta</td></tr><tr><td class="pn">Variable de entorno</td><td>Un valor de configuración del <code>.env</code>, que el código lee con <code>process.env</code></td></tr><tr><td class="pn">Socket.io</td><td>Librería para comunicación en tiempo real, como chat y notificaciones</td></tr><tr><td class="pn">Swagger</td><td>Herramienta que genera documentación interactiva de la API</td></tr><tr><td class="pn">Agregación</td><td>Consulta de MongoDB que agrupa y calcula, como la suma de la caja del día</td></tr></tbody></table></div>
+    <p class="nota">Manual de la revisión de backends. Ficha 3229944 · SENA ADSO.</p>
+  </section>
+</main>
+</div>
+<script>
+// Lista de chequeo con memoria en el navegador + resaltado del índice al hacer scroll.
+function leer() { try { return JSON.parse(localStorage.getItem('rev-backends') || '{}'); } catch { return {}; } }
+function guardar(s) { try { localStorage.setItem('rev-backends', JSON.stringify(s)); } catch {} }
+
+function pintarProgreso() {
+  const items = document.querySelectorAll('#autoevaluacion .checklist li');
+  const ok = document.querySelectorAll('#autoevaluacion .checklist li.marcado').length;
+  const t = document.getElementById('auto-txt'); const f = document.getElementById('auto-fill');
+  if (t) t.textContent = ok + ' de ' + items.length;
+  if (f) f.style.width = (items.length ? Math.round((ok / items.length) * 100) : 0) + '%';
+}
+
+const estado = leer();
+document.querySelectorAll('.checklist li[data-k]').forEach((li) => {
+  if (estado[li.dataset.k]) li.classList.add('marcado');
+  li.addEventListener('click', () => {
+    li.classList.toggle('marcado');
+    const s = leer(); if (li.classList.contains('marcado')) s[li.dataset.k] = 1; else delete s[li.dataset.k];
+    guardar(s); pintarProgreso();
+  });
+});
+pintarProgreso();
+
+const enlaces = [...document.querySelectorAll('.sidebar .nav-item')];
+const secciones = enlaces.map((a) => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+function resaltar() {
+  let actual = secciones[0] && secciones[0].id;
+  const y = window.scrollY + 120;
+  secciones.forEach((s) => { if (s.offsetTop <= y) actual = s.id; });
+  enlaces.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + actual));
+}
+window.addEventListener('scroll', resaltar, { passive: true });
+resaltar();
+
+</script>
+</body>
+</html>
