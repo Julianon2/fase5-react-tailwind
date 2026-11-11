@@ -19,7 +19,7 @@
   --code-bg:#0d1117; --sidebar-w:260px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;display:flex;min-height:100vh;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;display:flex;min-height:100vh;user-select:none;}
 
 .sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:0;left:0;bottom:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:24px 0 40px;display:flex;flex-direction:column;}
 .sidebar-brand{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
@@ -350,8 +350,8 @@ pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
 <div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span><strong>NaN</strong> significa "Not a Number" (no es un número). Si alguna vez ves <code>NaN</code> en la pantalla de la tienda, casi siempre es un texto que se intentó usar como número.</span></div>
 </div></div>
 <div class="step-item"><div class="step-num">2</div><div class="step-body">
-<p>La solución es quitar del texto todo lo que no son dígitos (el <code>$</code> y los puntos) y convertir lo que queda. Crea el archivo <code>src/precio.js</code> con este contenido completo:</p>
-<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/precio.js</span><span class="code-tag green">archivo nuevo — contenido completo</span></div><pre><span class="c">// El precio llega como texto: "$8.999.000". Para sumar hay que volverlo número.</span>
+<p>La solución es quitar del texto todo lo que no son dígitos (el <code>$</code> y los puntos) y convertir lo que queda. Este es el <strong>primer archivo <code>.js</code></strong> del proyecto: hasta ahora todo terminaba en <code>.jsx</code>. Lleva <code>.js</code> porque solo tiene funciones, sin JSX; los componentes siguen siendo <code>.jsx</code>. Para mantener el orden, las funciones auxiliares van en su propia carpeta: dentro de <code>src</code>, crea una carpeta nueva llamada <code>utils</code> (clic derecho sobre <code>src</code> → <strong>New Folder</strong>). Dentro de <code>utils</code> crea el archivo <code>precio.js</code> con este contenido completo:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/utils/precio.js</span><span class="code-tag green">archivo nuevo — contenido completo</span></div><pre><span class="c">// El precio llega como texto: "$8.999.000". Para sumar hay que volverlo número.</span>
 <span class="k">export</span> <span class="k">function</span> <span class="f">precioANumero</span>(precio) {
   <span class="k">return</span> <span class="f">Number</span>(precio.<span class="f">replace</span>(/[$.]/g, <span class="s">""</span>));
 }
@@ -520,7 +520,7 @@ localStorage.<span class="f">setItem</span>(<span class="s">"carrito"</span>, JS
 <span class="k">import</span> { Link, useNavigate } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
 <span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
 <span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"./AuthContext.jsx"</span>;
-<span class="k">import</span> { precioANumero, formatearPrecio } <span class="k">from</span> <span class="s">"./precio.js"</span>;
+<span class="k">import</span> { precioANumero, formatearPrecio } <span class="k">from</span> <span class="s">"./utils/precio.js"</span>;
 
 <span class="k">function</span> <span class="f">Carrito</span>() {
   <span class="k">const</span> { items, cambiarCantidad, quitarDelCarrito, vaciarCarrito } =
@@ -1504,7 +1504,7 @@ git push</pre></div>
     </div>
     <ul class="checklist" id="checklist-ul">
       <li data-check="chk1"><span class="check-box"></span><span><strong>Carrito en blanco</strong> antes de empezar, y entendiste por qué <code>Number("$8.999.000")</code> da <code>NaN</code></span></li>
-      <li data-check="chk2"><span class="check-box"></span><span><strong>precio.js</strong> existe con <code>precioANumero</code> y <code>formatearPrecio</code></span></li>
+      <li data-check="chk2"><span class="check-box"></span><span><strong>src/utils/precio.js</strong> existe con <code>precioANumero</code> y <code>formatearPrecio</code></span></li>
       <li data-check="chk3"><span class="check-box"></span><span><strong>CartContext</strong> guarda una fila por producto con <code>cantidad</code>, quita por <code>id</code> y se guarda solo con <code>useEffect</code></span></li>
       <li data-check="chk4"><span class="check-box"></span><span><strong>/carrito</strong> muestra la lista, cambia cantidades con + y −, quita productos, vacía con confirmación y calcula subtotales y total sin <code>NaN</code></span></li>
       <li data-check="chk5"><span class="check-box"></span><span><strong>Navbar</strong>: "Carrito ( N )" es un enlace a /carrito y cuenta unidades; el botón Vaciar ya no está</span></li>
@@ -1524,6 +1524,12 @@ git push</pre></div>
 </main>
 
 <script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && ['c','x','a','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+});
 
 const STEPS = ['paso1','paso2','paso3','paso4','paso5','paso6','paso7','paso8','checklist'];
 const KEY   = 's31-progress';

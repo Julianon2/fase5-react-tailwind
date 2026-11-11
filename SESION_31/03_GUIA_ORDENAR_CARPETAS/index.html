@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Paso a Paso S31 — Ordenar en carpetas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#F4F2EC; --surface:#ffffff; --surface2:#ECE9DF; --border:#e5e1d4;
+  --txt:#0f172a; --txt-dim:#64748b;
+  --accent:#0284c7; --accent-glow:rgba(2,132,199,.10);
+  --green:#16a34a; --green-bg:rgba(22,163,74,.10);
+  --red:#dc2626; --red-bg:rgba(220,38,38,.08);
+  --yellow:#d97706; --yellow-bg:rgba(217,119,6,.10);
+  --purple:#7c3aed; --purple-bg:rgba(124,58,237,.08);
+  --teal:#018751; --teal-bg:rgba(1,135,81,.09);
+  --code-bg:#0d1117; --sidebar-w:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.7;display:flex;min-height:100vh;}
+
+.sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:0;left:0;bottom:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:24px 0 40px;display:flex;flex-direction:column;}
+.sidebar-brand{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-brand .curso{font-size:11px;color:var(--teal);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.sidebar-brand h1{font-size:14px;font-weight:700;color:var(--txt);margin-top:4px;line-height:1.3;}
+.sidebar-brand .ficha{font-size:11px;color:var(--txt-dim);margin-top:2px;}
+.progress-wrap{padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-dim);margin-bottom:8px;}
+.progress-label span:last-child{color:var(--teal);font-weight:700;}
+.progress-bar-bg{height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--teal);border-radius:10px;transition:width .4s ease;width:0%;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--txt-dim);font-size:13px;font-weight:500;text-decoration:none;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--accent-glow);color:var(--txt);}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);}
+.nav-item.active .nav-dot{background:var(--accent);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .15s;}
+.nav-item:hover .nav-dot{background:var(--txt-dim);}
+.nav-item.done{color:var(--teal);}
+.nav-item.done .nav-dot{background:var(--teal);}
+
+.main{margin-left:var(--sidebar-w);flex:1;padding:48px 56px 80px;max-width:820px;}
+
+.page-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+.page-tag{font-size:11px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.page-title{font-size:28px;font-weight:700;color:var(--txt);line-height:1.2;text-wrap:balance;}
+.page-subtitle{font-size:14px;color:var(--txt-dim);margin-top:8px;}
+.page-warning{margin-top:20px;background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--yellow);font-weight:500;}
+
+.intro-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px 36px;margin-bottom:52px;}
+.intro-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+.intro-title{font-size:20px;font-weight:800;color:var(--txt);line-height:1.25;margin-bottom:10px;}
+.intro-sub{font-size:14px;color:var(--txt-dim);margin-bottom:20px;line-height:1.6;}
+.intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.intro-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.intro-item-icon{font-size:22px;margin-bottom:8px;display:flex;}
+.intro-item-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-dim);margin-bottom:4px;}
+.intro-item-desc{font-size:13px;color:var(--txt);font-weight:500;line-height:1.4;}
+
+.section{margin-bottom:56px;scroll-margin-top:32px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.step-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,.3);border-radius:6px;padding:3px 10px;white-space:nowrap;letter-spacing:.04em;flex-shrink:0;}
+.step-badge.green{background:var(--green-bg);color:var(--green);border-color:rgba(34,197,94,.3);}
+.step-badge.yellow{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,158,11,.3);}
+.step-badge.extra{background:var(--purple-bg);color:var(--purple);border-color:rgba(167,139,250,.3);}
+.step-badge.teal{background:var(--teal-bg);color:var(--teal);border-color:rgba(45,212,191,.3);}
+.section-title{font-size:20px;font-weight:700;color:var(--txt);text-wrap:balance;}
+
+.step-list{display:flex;flex-direction:column;gap:20px;}
+.step-item{display:flex;gap:16px;}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-body p{color:var(--txt);font-size:14px;}
+.step-body strong{color:var(--txt);font-weight:600;}
+
+.code-wrap{margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.code-header{display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 14px;border-bottom:1px solid var(--border);}
+.code-dots{display:flex;gap:5px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-dot.r{background:#ff5f57;} .code-dot.y{background:#febc2e;} .code-dot.g{background:#28c840;}
+.code-filename{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-dim);flex:1;}
+.code-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.code-tag.blue{background:rgba(59,130,246,.15);color:var(--accent);}
+.code-tag.green{background:var(--green-bg);color:var(--green);}
+.code-tag.yellow{background:var(--yellow-bg);color:var(--yellow);}
+.code-tag.purple{background:var(--purple-bg);color:var(--purple);}
+pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;color:#abb2bf;}
+pre .c{color:#5c6370;} pre .k{color:#c678dd;} pre .s{color:#98c379;}
+pre .f{color:#61afef;} pre .n{color:#e5c07b;} pre .y{color:#d19a66;}
+pre .edit{color:#fbbf24;background:rgba(245,158,11,.12);border-radius:3px;padding:0 2px;}
+
+.callout{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:8px;font-size:13px;margin:14px 0;line-height:1.5;}
+.callout.ok{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout.err{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);color:var(--red);}
+.callout.warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.2);color:var(--yellow);}
+.callout.info{background:var(--accent-glow);border:1px solid rgba(59,130,246,.2);color:#0369a1;}
+.callout.teal{background:var(--teal-bg);border:1px solid rgba(45,212,191,.2);color:var(--teal);}
+.callout.tip{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.callout-icon{font-size:15px;flex-shrink:0;margin-top:1px;display:flex;}
+.callout strong{color:inherit;font-weight:600;}
+
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--surface2);color:var(--txt-dim);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--txt);vertical-align:top;}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);}
+tr:last-child td{border-bottom:none;}
+
+.checklist{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.checklist li{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--txt-dim);cursor:pointer;transition:all .15s;}
+.checklist li:hover{border-color:var(--teal);}
+.checklist li.marcado{background:var(--teal-bg);border-color:rgba(45,212,191,.35);color:var(--txt);}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--teal);}
+.checklist li.marcado .check-box{border-color:var(--teal);background:var(--teal-bg);}
+.checklist li strong{color:var(--txt);font-weight:600;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:1px 6px;border-radius:4px;color:#0369a1;}
+
+.subsec{margin:28px 0 16px;}
+.subsec-title{font-size:15px;font-weight:700;color:var(--txt);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+
+.complete-btn{display:flex;align-items:center;gap:10px;margin-top:28px;padding:14px 20px;background:var(--teal-bg);border:1px solid rgba(45,212,191,.3);border-radius:10px;color:var(--teal);font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:all .2s;font-family:'Inter',sans-serif;}
+.complete-btn:hover{border-color:var(--teal);}
+.complete-btn.done{cursor:default;}
+.complete-btn .btn-icon{font-size:18px;}
+.complete-btn .btn-txt{flex:1;text-align:left;}
+.complete-btn .btn-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(45,212,191,.15);color:var(--teal);opacity:0;}
+.complete-btn.done .btn-badge{opacity:1;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+
+.submit-wrap{margin-top:28px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+.submit-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 20px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.submit-btn:hover{background:#2f6fe0;transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.submit-status{margin-top:10px;font-size:12.5px;text-align:center;color:var(--txt-dim);}
+.submit-status.ok{color:var(--green);}
+.submit-status.err{color:var(--red);}
+
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+.callout-icon svg{width:16px;height:16px;stroke-width:2.5;}
+.intro-item-icon svg{width:22px;height:22px;stroke-width:2;}
+.page-warning{display:flex;align-items:center;gap:8px;}
+.page-warning svg{width:16px;height:16px;stroke-width:2.5;flex-shrink:0;}
+.submit-btn svg{width:18px;height:18px;stroke-width:2.5;}
+.nav-ref{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;color:var(--yellow);font-size:12.5px;font-weight:600;text-decoration:none;border:1px dashed rgba(245,158,11,.4);}
+.nav-ref:hover{background:var(--yellow-bg);}
+.nav-ref svg{width:14px;height:14px;stroke-width:2.5;flex-shrink:0;}
+pre .edit-line{display:inline-block;width:calc(100% + 40px);box-sizing:border-box;margin:0 -20px;padding:0 20px;background:rgba(250,204,21,.18);box-shadow:inset 3px 0 0 #facc15;}
+.leyenda-edit{margin:8px 0 0;font-size:12.5px;color:var(--txt-dim);display:flex;align-items:center;gap:8px;}
+.leyenda-muestra{display:inline-block;width:22px;height:12px;border-radius:2px;background:rgba(250,204,21,.35);box-shadow:inset 3px 0 0 #facc15;}
+.cambios{margin:16px 0;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:16px 18px;}
+.cambios-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt);}
+.cambios-sub{font-size:13px;color:var(--txt-dim);margin:4px 0 6px;}
+.cambio{display:flex;gap:12px;margin-top:14px;align-items:flex-start;}
+.cambio-n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--accent-glow);color:var(--accent);font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.cambio-body{flex:1;min-width:0;}
+.cambio-titulo{font-size:13px;font-weight:600;color:var(--txt);}
+.cambio-titulo code{font-weight:500;}
+.cambio-por{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-dim);margin:6px 0 0;}
+.cambio pre.ctx{background:#1a2132;margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0;}
+.cambio pre.ctx span{opacity:.55;}
+.cambio pre.ctx + pre{margin-top:0;border-top-left-radius:0;border-top-right-radius:0;box-shadow:inset 3px 0 0 #facc15;}
+.cambio pre{margin:6px 0 0;border-radius:8px;padding:10px 14px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;} td,th{overflow-wrap:anywhere;} .step-body{min-width:0;}
+
+.sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border);}
+.sidebar-hub-link{display:flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-size:12.5px;font-weight:700;padding:8px 10px;border-radius:8px;transition:background .15s;}
+.sidebar-hub-link:hover{background:var(--accent-glow);}
+
+/* ── Identidad del portal ADSO: tipografías y código oscuro sobre fondo claro ── */
+h1,h2,.page-title,.sidebar-brand h1{font-family:'Syne','Inter',sans-serif;}
+pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
+.sidebar{box-shadow:0 10px 30px -10px rgba(15,23,42,.07);}
+
+/* Texto sobre fondos tintados: tonos mas oscuros para que se lea en tema claro */
+.callout.ok,.callout.tip,.step-badge.green{color:#166534;}
+.callout.warn,.page-warning,.step-badge.yellow,.pin{color:#92400e;}
+.callout.err{color:#b91c1c;}
+
+/* Iconos Lucide en línea (reemplazan a los emojis) */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
+
+/* ── Selector de aprendiz (lista propia, mismo estilo del portal) ── */
+.aprendiz-wrap{padding:14px 20px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.aprendiz-label{font-size:10px;color:var(--txt-dim);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;}
+.aprendiz-trigger{width:100%;display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;color:var(--txt);font:600 12.5px 'Inter',sans-serif;cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s;}
+.aprendiz-trigger:hover{border-color:var(--teal);}
+.aprendiz-trigger:focus-visible,.aprendiz-trigger[aria-expanded="true"]{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg);}
+.aprendiz-trigger.falta{border-color:var(--yellow);box-shadow:0 0 0 3px var(--yellow-bg);}
+.aprendiz-trigger svg{flex-shrink:0;color:var(--teal);}
+.aprendiz-trigger .aprendiz-chev{margin-left:auto;color:var(--txt-dim);transition:transform .2s;}
+.aprendiz-trigger[aria-expanded="true"] .aprendiz-chev{transform:rotate(180deg);}
+.aprendiz-trigger-text{flex:1;min-width:0;line-height:1.3;word-break:break-word;}
+.aprendiz-trigger-text.placeholder{color:var(--txt-dim);font-weight:500;}
+.aprendiz-panel{position:fixed;z-index:60;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;box-shadow:0 18px 40px -12px rgba(15,23,42,.25);overflow:hidden;}
+.aprendiz-panel[hidden]{display:none;}
+.aprendiz-search{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--txt-dim);}
+.aprendiz-search input{flex:1;min-width:0;border:0;background:transparent;font:500 12.5px 'Inter',sans-serif;color:var(--txt);outline:none;user-select:text;}
+.aprendiz-list{list-style:none;max-height:224px;overflow-y:auto;padding:4px;}
+.aprendiz-list li{display:flex;white-space:nowrap;line-height:1.35;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;font-size:12px;font-weight:500;color:var(--txt);cursor:pointer;}
+.aprendiz-list li[hidden]{display:none;}
+.aprendiz-list li:hover,.aprendiz-list li.activo{background:var(--surface2);}
+.aprendiz-list li[aria-selected="true"]{background:var(--teal-bg);color:var(--teal);font-weight:700;}
+.aprendiz-list li svg{margin-left:auto;flex-shrink:0;opacity:0;}
+.aprendiz-list li[aria-selected="true"] svg{opacity:1;}
+.aprendiz-empty{padding:12px;font-size:12px;color:var(--txt-dim);text-align:center;}
+.aprendiz-empty[hidden]{display:none;}
+</style>
+<canvas class="confetti-wrap" id="confetti-canvas"></canvas>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="curso">SENA ADSO · S31</div>
+    <h1>Ordenar en carpetas — Guía Paso a Paso</h1>
+    <div class="ficha">Ficha 3229944 · Oct 2026</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 9</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="aprendiz-wrap">
+    <span class="aprendiz-label" id="aprendiz-label">Aprendiz</span>
+    <button type="button" class="aprendiz-trigger" id="aprendiz-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="aprendiz-label aprendiz-trigger-text">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="aprendiz-trigger-text placeholder" id="aprendiz-trigger-text">Selecciona tu nombre</span>
+      <svg class="aprendiz-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="aprendiz-panel" id="aprendiz-panel" hidden>
+      <div class="aprendiz-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="aprendiz-search" placeholder="Buscar mi nombre..." autocomplete="off" aria-label="Buscar mi nombre"></div>
+      <ul class="aprendiz-list" id="aprendiz-list" role="listbox" aria-labelledby="aprendiz-label">
+      <li role="option" aria-selected="false" data-nombre="ANDRES STEVEN LOPEZ SCARPETTA">Andres Steven Lopez Scarpetta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="EDGAR STICK LOPEZ MURCIA">Edgar Stick Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="HEYDER IVAN VELASCO DELGADO">Heyder Ivan Velasco Delgado<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JESUS DAVID ORTIZ MUÑOZ">Jesus David Ortiz Muñoz<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHOJAN STEVEN SERRANO PATIÑO">Jhojan Steven Serrano Patiño<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JHON EDGARDO LUGO VILLANUEVA">Jhon Edgardo Lugo Villanueva<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JONIER STIVEN GUTIERREZ SALCEDO">Jonier Stiven Gutierrez Salcedo<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="JUAN PABLO PORRAS LOZANO">Juan Pablo Porras Lozano<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="KEVIN MIGUEL ORTIZ TELLEZ">Kevin Miguel Ortiz Tellez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LAURA FERNANDA SOSA CEDIEL">Laura Fernanda Sosa Cediel<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LEIDY VIVIANA SANCHEZ ACOSTA">Leidy Viviana Sanchez Acosta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="LUIS CARLOS CADENA VALENCIA">Luis Carlos Cadena Valencia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MARTIN SMITH LOPEZ MURCIA">Martin Smith Lopez Murcia<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="MICHAEL FERMAN HERNANDEZ BERMUDEZ">Michael Ferman Hernandez Bermudez<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      <li role="option" aria-selected="false" data-nombre="NITSON ESTIVEN LOPEZ YUSTES">Nitson Estiven Lopez Yustes<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></li>
+      </ul>
+      <div class="aprendiz-empty" id="aprendiz-empty" hidden>Sin coincidencias</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Preparar</div>
+    <a class="nav-item active" href="#paso1"><span class="nav-dot"></span>Paso 1 — Punto de retorno</a>
+    <a class="nav-item" href="#paso2"><span class="nav-dot"></span>Paso 2 — Carpetas y mover</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Arreglar las rutas</div>
+    <a class="nav-item" href="#paso3"><span class="nav-dot"></span>Paso 3 — main.jsx y App.jsx</a>
+    <a class="nav-item" href="#paso4"><span class="nav-dot"></span>Paso 4 — components</a>
+    <a class="nav-item" href="#paso5"><span class="nav-dot"></span>Paso 5 — pages</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#paso6"><span class="nav-dot"></span>Paso 6 — Lo que quedó fuera</a>
+    <a class="nav-item" href="#paso7"><span class="nav-dot"></span>Paso 7 — Pruebas</a>
+    <a class="nav-item" href="#paso8"><span class="nav-dot"></span>Paso 8 — Git y compartir</a>
+    <a class="nav-item" href="#checklist"><span class="nav-dot"></span>Checklist final</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="../../explorar.html" class="sidebar-hub-link">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      Volver al Hub
+    </a>
+  </div>
+</div>
+
+<main class="main">
+
+  <div class="page-header">
+    <div class="page-tag">Sesión 31 · Fase 5 React y Tailwind</div>
+    <h1 class="page-title">TechStore Pro, ordenado en carpetas</h1>
+    <p class="page-subtitle">SENA ADSO · Ficha 3229944 · Octubre 2026</p>
+    <div class="page-warning"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg><span>Sigue cada paso en orden. Entre el Paso 2 y el Paso 5 la tienda está rota a propósito: es normal, se arregla al terminar los imports.</span></div>
+  </div>
+
+  <div class="intro-card">
+    <div class="intro-tag">¿Qué construimos hoy?</div>
+    <div class="intro-title">Un proyecto ordenado en carpetas</div>
+    <p class="intro-sub">Los 21 archivos de <code>src</code> estaban sueltos. Los ordenamos en <code>components</code>, <code>pages</code> y <code>context</code>, y arreglamos las rutas de los <code>import</code> que los conectan. La tienda se ve y funciona igual; cambia solo la organización.</p>
+    <div class="intro-grid">
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z" /> <path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z" /> <path d="M3 5a2 2 0 0 0 2 2h3" /> <path d="M3 3v13a2 2 0 0 0 2 2h3" /></svg></div><div class="intro-item-label">Pasos 1-2</div><div class="intro-item-desc">Punto de retorno, tres carpetas y mover los archivos</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /> <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /> <circle cx="18" cy="5" r="3" /></svg></div><div class="intro-item-label">Pasos 3-5</div><div class="intro-item-desc">Las rutas <code>./</code> y <code>../</code> de cada import</div></div>
+      <div class="intro-item"><div class="intro-item-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg></div><div class="intro-item-label">Pasos 6-8</div><div class="intro-item-desc">Revisar lo que quedó fuera, recorrer la tienda y guardar en Git</div></div>
+    </div>
+  </div>
+
+  <!-- ════ PASO1 ════ -->
+  <section class="section" id="paso1" data-step="paso1">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 1 · Preparación</span>
+      <h2 class="section-title">Un punto de retorno antes de mover archivos</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Hasta hoy todos los archivos viven sueltos dentro de <code>src</code>: ya son 21 y buscar uno es incómodo. Hoy los ordenamos en carpetas. <strong>No cambia nada de lo que hace la tienda</strong>: solo cambia dónde vive cada archivo y, por eso, las líneas <code>import</code> que los conectan. Mover archivos y arreglar rutas es un trabajo delicado, así que primero guardamos un punto de retorno.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Comprueba que todo funciona <strong>antes</strong> de empezar. Con el frontend encendido (<code>npm run dev</code> dentro de <code>frontend-react/</code>), recorre la tienda: Inicio, Productos, un detalle, Carrito, Login.</p>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> todas las páginas abren sin pantalla en blanco y la terminal del frontend no muestra errores en rojo. Si algo ya falla ahora, <strong>no sigas</strong>: arréglalo primero, o no sabrás si el fallo es de antes o del movimiento.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Guarda el estado actual en Git. Abre una terminal en la carpeta del proyecto (la que contiene <code>backend</code> y <code>frontend-react</code>) y ejecuta:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — carpeta del proyecto</span></div><pre>git add .
+git commit -m "S31: antes de ordenar en carpetas"</pre></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Este <strong>commit</strong> es tu botón de deshacer. Si en algún momento todo se desordena y no sabes volver, escribe <code>git reset --hard HEAD</code> y el proyecto regresa exacto a este punto. No hace falta <code>git push</code> todavía: se sube al final.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO2 ════ -->
+  <section class="section" id="paso2" data-step="paso2">
+    <div class="section-header">
+      <span class="step-badge ">Paso 2 · Las carpetas</span>
+      <h2 class="section-title">Crear tres carpetas y mover los archivos</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Tres carpetas, tres tipos de archivo: <code>components</code> guarda las piezas pequeñas que se reutilizan, <code>pages</code> guarda las páginas completas (cada una tiene su ruta) y <code>context</code> guarda el estado compartido. Todo el movimiento se hace con comandos, así es rápido y no hay que arrastrar archivo por archivo.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Esta tabla dice a dónde va cada archivo. Léela antes de ejecutar los comandos:</p>
+<div class="table-wrap"><table><thead><tr><th>Carpeta</th><th>Archivos que van dentro</th></tr></thead><tbody><tr><td>context</td><td><code>AuthContext.jsx</code>, <code>CartContext.jsx</code></td></tr><tr><td>components</td><td><code>Navbar.jsx</code>, <code>Footer.jsx</code>, <code>ProductCard.jsx</code>, <code>ProductoModal.jsx</code>, <code>Campo.jsx</code>, <code>Contador.jsx</code>, <code>BadgeCarrito.jsx</code></td></tr><tr><td>pages</td><td><code>Home.jsx</code>, <code>Productos.jsx</code>, <code>ProductoDetalle.jsx</code>, <code>Nosotros.jsx</code>, <code>Contacto.jsx</code>, <code>Login.jsx</code>, <code>Registro.jsx</code>, <code>Carrito.jsx</code>, <code>NotFound.jsx</code></td></tr><tr><td>src (se quedan)</td><td><code>App.jsx</code>, <code>main.jsx</code>, <code>App.css</code>, <code>index.css</code>, <code>assets/</code> y <code>utils/</code></td></tr></tbody></table></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Abre una terminal en la carpeta del proyecto (la que contiene <code>backend</code> y <code>frontend-react</code>) y entra a <code>src</code>. <strong>Mac, o Git Bash en Windows:</strong></p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — Mac o Git Bash</span></div><pre>cd frontend-react/src
+mkdir components pages context</pre></div>
+<p><strong>Windows con PowerShell</strong> (la única diferencia es cómo se escribe <code>mkdir</code> con varios nombres: con comas):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — PowerShell</span></div><pre>cd frontend-react\src
+mkdir components, pages, context</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en el panel lateral de VS Code, dentro de <code>src</code>, aparecen las carpetas <code>components</code>, <code>pages</code> y <code>context</code> (vacías por ahora).</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Ahora los tres comandos que mueven los archivos. Son iguales en Mac y en Windows. Cópialos y pégalos <strong>uno por uno</strong>, dentro de <code>frontend-react/src</code>:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — dentro de frontend-react/src</span></div><pre>git mv AuthContext.jsx CartContext.jsx context
+git mv Navbar.jsx Footer.jsx ProductCard.jsx ProductoModal.jsx Campo.jsx Contador.jsx BadgeCarrito.jsx components
+git mv Home.jsx Productos.jsx ProductoDetalle.jsx Nosotros.jsx Contacto.jsx Login.jsx Registro.jsx Carrito.jsx NotFound.jsx pages</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Parte</th><th>Qué hace</th></tr></thead><tbody><tr><td>git mv</td><td>Mueve un archivo <strong>y</strong> le avisa a Git. Es lo mismo que arrastrarlo, pero Git entiende que es el mismo archivo en otro lugar y no que borraste uno y creaste otro</td></tr><tr><td>AuthContext.jsx CartContext.jsx</td><td>Los archivos a mover: se pueden poner varios, separados por espacios</td></tr><tr><td>context</td><td>Lo <strong>último</strong> de cada comando es la carpeta de destino</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>El comando <code>git mv</code> solo mueve archivos que Git ya conoce. Por eso el Paso 1 pedía hacer el commit antes: si saltaste ese paso, te dirá <code>not under version control</code>. Vuelve al Paso 1.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> escribe <code>ls</code> (en Mac o Git Bash) o <code>dir</code> (en PowerShell) dentro de <code>src</code>: solo quedan <code>App.jsx</code>, <code>main.jsx</code>, los dos <code>.css</code>, <code>assets</code>, <code>utils</code> y las tres carpetas nuevas. Ningún componente suelto.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">4</div><div class="step-body">
+<p>Mira la terminal del frontend y el navegador: ahora la tienda <strong>está rota a propósito</strong>. Verás mensajes en rojo como este:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal del frontend (ejemplo)</span></div><pre>Failed to resolve import "./CartContext.jsx" from "src/components/Navbar.jsx". Does the file exist?</pre></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Es normal: cada archivo sigue buscando a sus vecinos donde estaban antes. El mensaje te dice <strong>en qué archivo</strong> (<code>from "src/components/Navbar.jsx"</code>) está la ruta equivocada. Ese mensaje será tu guía en los pasos 3, 4 y 5: cuando termine de quejarse, está listo.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO3 ════ -->
+  <section class="section" id="paso3" data-step="paso3">
+    <div class="section-header">
+      <span class="step-badge ">Paso 3 · Cómo se escribe una ruta</span>
+      <h2 class="section-title">Arreglar main.jsx y App.jsx</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Un <code>import</code> lleva una <strong>ruta</strong>: dónde está el archivo, contado desde el archivo que lo importa. Se lee así:</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<div class="table-wrap"><table><thead><tr><th>Ruta</th><th>Significa</th><th>Ejemplo</th></tr></thead><tbody><tr><td>./</td><td>Esta misma carpeta</td><td>Desde <code>App.jsx</code> (en <code>src</code>): <code>./components/Navbar.jsx</code> entra a <code>components</code></td></tr><tr><td>../</td><td>Subir una carpeta</td><td>Desde <code>components/Navbar.jsx</code>: <code>../context/CartContext.jsx</code> sube a <code>src</code> y entra a <code>context</code></td></tr></tbody></table></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Regla práctica: pregunta <strong>desde dónde estoy yo</strong>. Si estoy dentro de <code>components</code> o <code>pages</code> y quiero llegar a otra carpeta, primero subo con <code>../</code>. Si estoy en <code>src</code> (como <code>App.jsx</code> y <code>main.jsx</code>), no subo: entro directo con <code>./</code>.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Abre <code>frontend-react/src/main.jsx</code>. Solo cambian dos líneas, las de los contextos (las amarillas). Las demás se quedan igual, y todo lo que está debajo de los imports no se toca:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/main.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { StrictMode } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { createRoot } <span class="k">from</span> <span class="s">"react-dom/client"</span>;
+<span class="k">import</span> { BrowserRouter } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> { AuthProvider } <span class="k">from</span> <span class="s">"./context/AuthContext.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> { CartProvider } <span class="k">from</span> <span class="s">"./context/CartContext.jsx"</span>;</span>
+<span class="k">import</span> <span class="s">"./index.css"</span>;
+<span class="k">import</span> App <span class="k">from</span> <span class="s">"./App.jsx"</span>;</pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { AuthProvider } <span class="k">from</span> <span class="s">"./AuthContext.jsx"</span>;
+<span class="k">import</span> { CartProvider } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { AuthProvider } <span class="k">from</span> <span class="s">"./context/AuthContext.jsx"</span>;
+<span class="k">import</span> { CartProvider } <span class="k">from</span> <span class="s">"./context/CartContext.jsx"</span>;</pre></div></div></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Abre <code>frontend-react/src/App.jsx</code>. Cambian todas las líneas que importan archivos nuestros: los componentes vienen de <code>components</code> y las páginas de <code>pages</code>. Fíjate que <code>Navbar</code> antes se importaba sin <code>.jsx</code>; ahora lo escribimos completo como los demás, para que todos sigan el mismo estilo:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/App.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { Routes, Route } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> Navbar <span class="k">from</span> <span class="s">"./components/Navbar.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> Footer <span class="k">from</span> <span class="s">"./components/Footer.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> Home <span class="k">from</span> <span class="s">"./pages/Home.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> Productos <span class="k">from</span> <span class="s">"./pages/Productos.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> ProductoDetalle <span class="k">from</span> <span class="s">"./pages/ProductoDetalle.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> Nosotros <span class="k">from</span> <span class="s">"./pages/Nosotros.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> Contacto <span class="k">from</span> <span class="s">"./pages/Contacto.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> Login <span class="k">from</span> <span class="s">"./pages/Login.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> Registro <span class="k">from</span> <span class="s">"./pages/Registro.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> Carrito <span class="k">from</span> <span class="s">"./pages/Carrito.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> NotFound <span class="k">from</span> <span class="s">"./pages/NotFound.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> Navbar <span class="k">from</span> <span class="s">"./Navbar"</span>;
+<span class="k">import</span> Footer <span class="k">from</span> <span class="s">"./Footer.jsx"</span>;
+<span class="k">import</span> Home <span class="k">from</span> <span class="s">"./Home.jsx"</span>;
+<span class="k">import</span> Productos <span class="k">from</span> <span class="s">"./Productos.jsx"</span>;
+<span class="k">import</span> ProductoDetalle <span class="k">from</span> <span class="s">"./ProductoDetalle.jsx"</span>;
+<span class="k">import</span> Nosotros <span class="k">from</span> <span class="s">"./Nosotros.jsx"</span>;
+<span class="k">import</span> Contacto <span class="k">from</span> <span class="s">"./Contacto.jsx"</span>;
+<span class="k">import</span> Login <span class="k">from</span> <span class="s">"./Login.jsx"</span>;
+<span class="k">import</span> Registro <span class="k">from</span> <span class="s">"./Registro.jsx"</span>;
+<span class="k">import</span> Carrito <span class="k">from</span> <span class="s">"./Carrito.jsx"</span>;
+<span class="k">import</span> NotFound <span class="k">from</span> <span class="s">"./NotFound.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> Navbar <span class="k">from</span> <span class="s">"./components/Navbar.jsx"</span>;
+<span class="k">import</span> Footer <span class="k">from</span> <span class="s">"./components/Footer.jsx"</span>;
+<span class="k">import</span> Home <span class="k">from</span> <span class="s">"./pages/Home.jsx"</span>;
+<span class="k">import</span> Productos <span class="k">from</span> <span class="s">"./pages/Productos.jsx"</span>;
+<span class="k">import</span> ProductoDetalle <span class="k">from</span> <span class="s">"./pages/ProductoDetalle.jsx"</span>;
+<span class="k">import</span> Nosotros <span class="k">from</span> <span class="s">"./pages/Nosotros.jsx"</span>;
+<span class="k">import</span> Contacto <span class="k">from</span> <span class="s">"./pages/Contacto.jsx"</span>;
+<span class="k">import</span> Login <span class="k">from</span> <span class="s">"./pages/Login.jsx"</span>;
+<span class="k">import</span> Registro <span class="k">from</span> <span class="s">"./pages/Registro.jsx"</span>;
+<span class="k">import</span> Carrito <span class="k">from</span> <span class="s">"./pages/Carrito.jsx"</span>;
+<span class="k">import</span> NotFound <span class="k">from</span> <span class="s">"./pages/NotFound.jsx"</span>;</pre></div></div></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> al guardar <code>main.jsx</code> y <code>App.jsx</code> desaparecen de la terminal los errores que mencionaban esos dos archivos. Los demás errores siguen: son de los pasos 4 y 5.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO4 ════ -->
+  <section class="section" id="paso4" data-step="paso4">
+    <div class="section-header">
+      <span class="step-badge ">Paso 4 · Los componentes</span>
+      <h2 class="section-title">Arreglar la carpeta components</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Estos archivos ahora viven en <code>components</code>. Cuando importan algo de <code>context</code>, tienen que <strong>subir una carpeta</strong> con <code>../</code>. Cambia solo las líneas amarillas; el resto de cada archivo queda como está.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p><code>Navbar.jsx</code>: importa los dos contextos.</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/components/Navbar.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useState, useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { Link, NavLink } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"../context/AuthContext.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+<span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"./AuthContext.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;
+<span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"../context/AuthContext.jsx"</span>;</pre></div></div></div>
+<p><code>ProductCard.jsx</code>: importa el contexto del carrito.</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/components/ProductCard.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="edit-line"><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</pre></div></div></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p><code>ProductoModal.jsx</code>:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/components/ProductoModal.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useContext, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</pre></div></div></div>
+<p><code>BadgeCarrito.jsx</code> (aunque hoy ninguna página lo usa, hay que dejarlo bien para que no estorbe después):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/components/BadgeCarrito.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="edit-line"><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</pre></div></div></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><code>Campo.jsx</code>, <code>Contador.jsx</code> y <code>Footer.jsx</code> <strong>no cambian</strong>: no importan ningún archivo nuestro, solo paquetes como <code>react</code> o <code>react-router-dom</code>, y esos nunca llevan <code>./</code> ni <code>../</code>.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en la terminal ya no hay errores que digan <code>from "src/components/...</code>.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO5 ════ -->
+  <section class="section" id="paso5" data-step="paso5">
+    <div class="section-header">
+      <span class="step-badge ">Paso 5 · Las páginas</span>
+      <h2 class="section-title">Arreglar la carpeta pages</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Las páginas importan de dos lugares: de <code>components</code> (piezas) y de <code>context</code> (estado). Desde <code>pages</code> los dos están al lado, así que en ambos casos se sube primero con <code>../</code>.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p><code>Home.jsx</code> y <code>Productos.jsx</code> usan las dos tarjetas de producto:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/pages/Home.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { Link, useNavigate } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"../components/ProductCard.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"../components/ProductoModal.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"./ProductCard.jsx"</span>;
+<span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"./ProductoModal.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"../components/ProductCard.jsx"</span>;
+<span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"../components/ProductoModal.jsx"</span>;</pre></div></div></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/pages/Productos.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="edit-line"><span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"../components/ProductCard.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"../components/ProductoModal.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"./ProductCard.jsx"</span>;
+<span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"./ProductoModal.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> ProductCard <span class="k">from</span> <span class="s">"../components/ProductCard.jsx"</span>;
+<span class="k">import</span> ProductoModal <span class="k">from</span> <span class="s">"../components/ProductoModal.jsx"</span>;</pre></div></div></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p><code>ProductoDetalle.jsx</code> y <code>Carrito.jsx</code>. Fíjate en que <code>Carrito.jsx</code> también sube para llegar a <code>utils</code>, que está al lado de <code>pages</code>:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/pages/ProductoDetalle.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useState, useEffect, useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { useParams, Link } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</pre></div></div></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/pages/Carrito.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useState, useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { Link, useNavigate } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"../context/AuthContext.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> { precioANumero, formatearPrecio } <span class="k">from</span> <span class="s">"../utils/precio.js"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"./CartContext.jsx"</span>;
+<span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"./AuthContext.jsx"</span>;
+<span class="k">import</span> { precioANumero, formatearPrecio } <span class="k">from</span> <span class="s">"./utils/precio.js"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { CartContext } <span class="k">from</span> <span class="s">"../context/CartContext.jsx"</span>;
+<span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"../context/AuthContext.jsx"</span>;
+<span class="k">import</span> { precioANumero, formatearPrecio } <span class="k">from</span> <span class="s">"../utils/precio.js"</span>;</pre></div></div></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Las tres páginas de formulario usan <code>Campo</code>; <code>Login.jsx</code> además usa el contexto de sesión:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/pages/Contacto.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useState } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="edit-line"><span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"../components/Campo.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"./Campo.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"../components/Campo.jsx"</span>;</pre></div></div></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/pages/Login.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useState, useContext } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { Link, useNavigate, useLocation } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"../context/AuthContext.jsx"</span>;</span>
+<span class="edit-line"><span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"../components/Campo.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"./AuthContext.jsx"</span>;
+<span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"./Campo.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> { AuthContext } <span class="k">from</span> <span class="s">"../context/AuthContext.jsx"</span>;
+<span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"../components/Campo.jsx"</span>;</pre></div></div></div>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">frontend-react/src/pages/Registro.jsx</span><span class="code-tag green">imports — así quedan</span></div><pre><span class="k">import</span> { useState, useEffect } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> { Link, useNavigate } <span class="k">from</span> <span class="s">"react-router-dom"</span>;
+<span class="edit-line"><span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"../components/Campo.jsx"</span>;</span></pre></div><p class="leyenda-edit"><span class="leyenda-muestra"></span> Las líneas con la barra amarilla son las <strong>nuevas</strong> o las que cambian.</p><div class="cambios"><div class="cambios-title">Qué cambia en este archivo · 1 cambio</div><div class="cambios-sub">No hace falta reemplazar todo: puedes aplicar solo estos cambios sobre tu archivo.</div><div class="cambio"><span class="cambio-n">1</span><div class="cambio-body"><div class="cambio-titulo">Reemplaza estas líneas:</div><pre><span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"./Campo.jsx"</span>;</pre><div class="cambio-por">por</div><pre><span class="k">import</span> Campo, { claseInput } <span class="k">from</span> <span class="s">"../components/Campo.jsx"</span>;</pre></div></div></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span><code>Nosotros.jsx</code> y <code>NotFound.jsx</code> <strong>no cambian</strong> por la misma razón de antes: solo importan paquetes.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> la terminal del frontend ya no muestra ningún error en rojo y el navegador vuelve a mostrar la tienda.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO6 ════ -->
+  <section class="section" id="paso6" data-step="paso6">
+    <div class="section-header">
+      <span class="step-badge ">Paso 6 · Lo que quedó fuera</span>
+      <h2 class="section-title">Qué archivos no se movieron y por qué</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Ordenar no es solo mover: también hay que saber <strong>qué se queda donde estaba</strong> y qué archivos sobran. Vas a revisar el proyecto con la herramienta de búsqueda de VS Code, sin cambiar nada todavía.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Estos archivos <strong>no se movieron</strong> y cada uno tiene su razón:</p>
+<div class="table-wrap"><table><thead><tr><th>Archivo</th><th>Por qué se queda donde está</th></tr></thead><tbody><tr><td>src/main.jsx</td><td>Es la <strong>puerta de entrada</strong>: el <code>index.html</code> (que está fuera de <code>src</code>) lo llama con <code>/src/main.jsx</code>. Si lo movieras, habría que cambiar también ese archivo</td></tr><tr><td>src/App.jsx</td><td>Es la raíz de la aplicación y reúne las rutas. Vive junto a <code>main.jsx</code></td></tr><tr><td>src/index.css</td><td>Lo importa <code>main.jsx</code> y trae Tailwind y los estilos globales</td></tr><tr><td>src/utils/</td><td>Ya es una carpeta: la creaste en el Paso 2 de la guía anterior</td></tr><tr><td>public/favicon.svg</td><td>El ícono de la pestaña. La carpeta <code>public</code> está <strong>fuera de <code>src</code></strong> y Vite la sirve tal cual; <code>index.html</code> lo llama como <code>/favicon.svg</code></td></tr></tbody></table></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p>Ahora busca lo que <strong>nadie usa</strong>. En VS Code pulsa <code>Ctrl + Shift + F</code> (en Mac, <code>Cmd + Shift + F</code>), escribe cada nombre de la tabla y mira cuántos resultados salen:</p>
+<div class="table-wrap"><table><thead><tr><th>Escribe en la búsqueda</th><th>Qué verás</th><th>Qué significa</th></tr></thead><tbody><tr><td>hero.png</td><td>Sin resultados</td><td>La imagen <code>src/assets/hero.png</code> no se usa en ningún archivo</td></tr><tr><td>react.svg y vite.svg</td><td>Sin resultados</td><td>Los dos íconos de <code>src/assets/</code> son del proyecto de ejemplo que crea Vite y no se usan</td></tr><tr><td>App.css</td><td>Sin resultados</td><td>Ningún archivo importa <code>src/App.css</code>: es otra sobra del ejemplo de Vite</td></tr><tr><td>icons.svg</td><td>Sin resultados</td><td>Tampoco se usa <code>public/icons.svg</code></td></tr><tr><td>Contador</td><td>Solo aparece su propio archivo</td><td>Nadie importa <code>components/Contador.jsx</code>: lo hicimos en S23 para practicar <code>useState</code></td></tr><tr><td>BadgeCarrito</td><td>Solo aparece su propio archivo</td><td>Nadie importa <code>components/BadgeCarrito.jsx</code>: el contador del carrito ahora vive en el Navbar</td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Buscar el nombre de un archivo en todo el proyecto es la forma segura de saber si se usa. <strong>Si no aparece en ningún <code>import</code> ni en ningún <code>src=</code>, nadie lo necesita.</strong> Haz esto siempre antes de borrar o mover algo.</span></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> coinciden los seis resultados de la tabla. Si alguno aparece en un <code>import</code> de tu proyecto, ese archivo <strong>sí</strong> se usa: no lo borres.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p><strong>Reto opcional <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg> — limpiar lo que sobra.</strong> Hoy no se borra nada obligatorio, porque un archivo sin usar no rompe la tienda. Si quieres dejar el proyecto limpio, elimina lo que la búsqueda confirmó que nadie usa: la carpeta <code>src/assets/</code>, el archivo <code>src/App.css</code> y <code>public/icons.svg</code>. En la terminal, dentro de la carpeta del proyecto:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — carpeta del proyecto (la que contiene backend y frontend-react)</span></div><pre>git rm -r frontend-react/src/assets
+git rm frontend-react/src/App.css frontend-react/public/icons.svg</pre></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Deja <code>Contador.jsx</code> y <code>BadgeCarrito.jsx</code> <strong>en su lugar</strong>: son ejemplos de sesiones anteriores y se pueden consultar. Después de borrar, recorre la tienda (Paso 7) para confirmar que todo sigue igual; con <code>git reset --hard HEAD</code> recuperas lo que borraste si no hiciste el commit del Paso 8.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO7 ════ -->
+  <section class="section" id="paso7" data-step="paso7">
+    <div class="section-header">
+      <span class="step-badge ">Paso 7 · Pruebas</span>
+      <h2 class="section-title">Que todo siga funcionando igual</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Mover archivos no debería cambiar nada de lo que ve el usuario. Recorre la tienda entera y comprueba que sea así:</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Resultado esperado</th></tr></thead><tbody><tr><td>Abrir / (Inicio) y /productos</td><td>Las tarjetas de producto aparecen y el modal se abre</td></tr><tr><td>Agregar un producto y abrir /carrito</td><td>La fila aparece, el total se calcula y el Navbar cuenta las unidades</td></tr><tr><td>Abrir un producto (/productos/…)</td><td>La página de detalle carga</td></tr><tr><td>/contacto, /login y /registro</td><td>Los formularios se ven y los campos funcionan</td></tr><tr><td>Iniciar sesión desde el carrito</td><td>Vuelve a <code>/carrito</code>, como en la guía anterior</td></tr><tr><td>Escribir una ruta que no existe (/hola)</td><td>Aparece la página 404</td></tr><tr><td>Consola del navegador (F12) y terminal del frontend</td><td>Sin errores en rojo</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span><strong>Si algo falla</strong>, lee el mensaje de la terminal: dice el archivo y la ruta que no encuentra (<code>Failed to resolve import "../context/CartContext.jsx" from "src/pages/Login.jsx"</code>). Abre ese archivo y compara su línea de <code>import</code> con la de esta guía; casi siempre es un <code>../</code> olvidado o un <code>./</code> de más. Si no logras arreglarlo, <code>git reset --hard HEAD</code> te devuelve al punto del Paso 1.</span></div>
+<div class="callout teal" style="margin-top:24px;"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg></span><span><strong>Desde ahora</strong>, todo archivo nuevo va en su carpeta: una página nueva en <code>pages</code>, una pieza reutilizable en <code>components</code>, estado compartido en <code>context</code>, funciones sueltas en <code>utils</code>. Las guías siguientes usarán estas rutas.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ PASO8 ════ -->
+  <section class="section" id="paso8" data-step="paso8">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 8 · Git</span>
+      <h2 class="section-title">Guardar tu avance y compartirlo con el instructor</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Una sesión no termina cuando funciona en tu computador, sino cuando queda <strong>guardada y compartida</strong>. Haces un <strong>commit</strong> (una foto de tu proyecto en este momento), lo subes a GitHub y, si todavía no lo hiciste, le das acceso al instructor (<strong>Jtrujillosena</strong>).</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Abre una terminal en la carpeta que contiene <code>backend</code> y <code>frontend-react</code> y mira si ya está conectada a un repositorio de GitHub:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — en la carpeta del proyecto</span></div><pre>git remote -v</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Qué ves</th><th>Qué significa</th><th>Qué haces</th></tr></thead><tbody><tr><td>Dos líneas con origin y una dirección https://github.com/...</td><td>Ya está conectada a tu repositorio</td><td>Sigue al punto 2</td></tr><tr><td>No sale nada</td><td>Todavía no está conectada a GitHub</td><td>Haz lo de abajo y después sigue al punto 2</td></tr></tbody></table></div>
+<p><strong>Solo si no salió nada:</strong> ejecuta, una línea a la vez (cambia la dirección por la de <strong>tu</strong> repositorio):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — solo la primera vez</span></div><pre>git init
+git remote add origin https://github.com/TU-USUARIO/techstore-fase5.git
+git branch -M main</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> <code>git remote -v</code> muestra tu dirección de GitHub en dos líneas.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p><strong>Antes de subir nada, revisa qué vas a subir.</strong> Hay archivos que jamás deben llegar a GitHub, como el <code>.env</code> (tiene las claves de tu base de datos) y la carpeta <code>node_modules</code>:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — en la carpeta del proyecto</span></div><pre>git status</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en la lista aparecen tus archivos de código (el avance de hoy) y <strong>no aparece</strong> ningún <code>.env</code> ni <code>node_modules</code>.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Si ves <code>.env</code> o <code>node_modules</code> en la lista, <strong>no sigas</strong>. Significa que falta el archivo <code>.gitignore</code> o que está mal escrito. Avisa al instructor antes de hacer <code>git add</code>: una clave subida a GitHub hay que cambiarla, aunque la borres después.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Guarda el avance de hoy y súbelo. Los tres comandos, una línea a la vez:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — en la carpeta del proyecto</span></div><pre>git add .
+git commit -m "S31: proyecto ordenado en carpetas components, pages y context"
+git push</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td>git add .</td><td>Marca <strong>todos</strong> los cambios para la foto (el punto significa "todo lo de esta carpeta")</td></tr><tr><td>git commit -m "..."</td><td>Toma la foto y le pone un mensaje que dice qué hiciste hoy. Escríbelo corto y claro</td></tr><tr><td>git push</td><td>Sube la foto a GitHub. La primera vez en un repositorio nuevo, si Git dice que no hay rama de destino, usa <code>git push -u origin main</code></td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> <code>git status</code> dice <code>nothing to commit, working tree clean</code>. Y al abrir tu repositorio en GitHub aparece tu commit de hoy arriba, con el mensaje que escribiste.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">4</div><div class="step-body">
+<p><strong>Comparte el proyecto con el instructor.</strong> Si ya lo hiciste en la S19, solo comprueba que <strong>Jtrujillosena</strong> sigue en la lista de <strong>Collaborators</strong>. Si no, hazlo ahora. Su cuenta de GitHub es <strong>Jtrujillosena</strong> (<code>https://github.com/Jtrujillosena</code>). En tu repositorio de GitHub:</p>
+<div class="table-wrap"><table><thead><tr><th>Paso</th><th>Dónde</th></tr></thead><tbody><tr><td>1</td><td>Entra a tu repositorio y abre <strong>Settings</strong> (la última pestaña de arriba, con un engranaje)</td></tr><tr><td>2</td><td>En el menú de la izquierda elige <strong>Collaborators</strong>. GitHub puede pedirte tu contraseña para confirmar</td></tr><tr><td>3</td><td>Pulsa el botón verde <strong>Add people</strong> y escribe <code>Jtrujillosena</code></td></tr><tr><td>4</td><td>Elige su cuenta en la lista y pulsa <strong>Add Jtrujillosena to this repository</strong></td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en <strong>Collaborators</strong> aparece <strong>Jtrujillosena</strong> con el aviso "Pending invitation" (invitación pendiente). Cuando el instructor la acepte, queda como colaborador. Esto se hace <strong>una sola vez</strong> por proyecto.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Si tu repositorio fuera público, el instructor podría verlo igual, pero se pide <strong>privado y compartido como colaborador</strong>: así queda registro de quién entregó y nadie más ve tu código. El <code>.env</code> nunca debe estar en el repositorio.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
+  <!-- ════ CHECKLIST ════ -->
+  <section class="section" id="checklist" data-step="checklist">
+    <div class="section-header">
+      <span class="step-badge green">Cierre</span>
+      <h2 class="section-title">Checklist final de la sesión</h2>
+    </div>
+    <ul class="checklist" id="checklist-ul">
+      <li data-check="chk1"><span class="check-box"></span><span><strong>Punto de retorno</strong>: la tienda funcionaba antes de mover y hiciste el commit "antes de ordenar"</span></li>
+      <li data-check="chk2"><span class="check-box"></span><span><strong>Carpetas</strong>: <code>components</code>, <code>pages</code> y <code>context</code> con sus archivos; en <code>src</code> solo quedan <code>App.jsx</code>, <code>main.jsx</code>, los <code>.css</code>, <code>assets</code> y <code>utils</code></span></li>
+      <li data-check="chk3"><span class="check-box"></span><span>Entiendes la diferencia entre <code>./</code> (esta carpeta) y <code>../</code> (subir una carpeta)</span></li>
+      <li data-check="chk4"><span class="check-box"></span><span><strong>main.jsx y App.jsx</strong> importan desde <code>./context</code>, <code>./components</code> y <code>./pages</code></span></li>
+      <li data-check="chk5"><span class="check-box"></span><span><strong>components y pages</strong> usan <code>../context</code>, <code>../components</code> y <code>../utils</code> donde corresponde</span></li>
+      <li data-check="chk6"><span class="check-box"></span><span>Revisaste con la búsqueda qué archivos quedaron fuera de las carpetas y cuáles no se usan (<code>assets</code>, <code>App.css</code>, <code>icons.svg</code>)</span></li>
+      <li data-check="chk7"><span class="check-box"></span><span>Recorriste Inicio, Productos, Detalle, Carrito, Login, Registro, Contacto y 404, sin errores en consola ni en la terminal</span></li>
+      <li data-check="chk8"><span class="check-box"></span><span><strong>Git</strong>: hiciste commit y push (sin <code>.env</code> ni <code>node_modules</code>) y le diste acceso a <strong>Jtrujillosena</strong> en Settings → Collaborators</span></li>
+    </ul>
+  </section>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="btn-enviar">
+      <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12" /> <path d="m17 8-5-5-5 5" /> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg><span>Enviar todo mi progreso</span>
+    </button>
+    <div class="submit-status" id="submit-status"></div>
+  </div>
+
+</main>
+
+<script>
+
+const STEPS = ['paso1','paso2','paso3','paso4','paso5','paso6','paso7','paso8','checklist'];
+const KEY   = 's31b-progress';
+
+function getState() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} }
+
+function updateProgress() {
+  const state = getState();
+  const done  = STEPS.filter(s => state[s]).length;
+  const pct   = Math.round((done / STEPS.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-txt').textContent  = done + ' / ' + STEPS.length;
+}
+
+function renderButtons() {
+  const state = getState();
+  STEPS.forEach(id => {
+    const section = document.querySelector(`[data-step="${id}"]`);
+    if (!section || section.querySelector('.complete-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'complete-btn' + (state[id] ? ' done' : '');
+    btn.dataset.step = id;
+    btn.innerHTML = `<span class="btn-icon">${state[id] ? '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>' : '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>'}</span>
+      <span class="btn-txt">${state[id] ? '¡Paso completado!' : 'Marcar como completado'}</span>
+      <span class="btn-badge">LISTO</span>`;
+    if (!state[id]) btn.addEventListener('click', () => completeStep(id, btn));
+    section.appendChild(btn);
+    const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+    if (nav && state[id]) nav.classList.add('done');
+  });
+}
+
+function completeStep(id, btn) {
+  const state = getState(); state[id] = true; saveState(state);
+  btn.classList.add('done');
+  btn.querySelector('.btn-icon').innerHTML = '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+  btn.querySelector('.btn-txt').textContent  = '¡Paso completado!';
+  const nav = document.querySelector(`.nav-item[href="#${id}"]`);
+  if (nav) nav.classList.add('done');
+  updateProgress();
+  launchConfetti(STEPS.filter(s => state[s]).length === STEPS.length);
+}
+
+function launchConfetti(big) {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#3b82f6','#2dd4bf','#22c55e','#f59e0b','#a78bfa','#f87171'];
+  const count  = big ? 180 : 60;
+  const parts  = Array.from({length: count}, () => ({
+    x: canvas.width * (big ? Math.random() : .5 + (Math.random()-.5)*.4),
+    y: big ? -10 : canvas.height * .4,
+    r: Math.random() * 7 + 3, color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: 0, tiltAngle: 0, tiltSpeed: Math.random()*.1+.05,
+    vx: Math.random()*4-2, vy: Math.random()*3+2
+  }));
+  let frame = 0; const total = big ? 160 : 80;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p => {
+      ctx.beginPath(); ctx.fillStyle = p.color;
+      ctx.ellipse(p.x, p.y, p.r, p.r*.4, p.tilt, 0, Math.PI*2); ctx.fill();
+      p.x += p.vx; p.y += p.vy; p.tiltAngle += p.tiltSpeed; p.tilt = Math.sin(p.tiltAngle)*12; p.vy += .08;
+    });
+    if (++frame < total) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+function getChecklistState() { try { return JSON.parse(localStorage.getItem('s31b-checklist') || '{}'); } catch { return {}; } }
+function saveChecklistState(s) { try { localStorage.setItem('s31b-checklist', JSON.stringify(s)); } catch {} }
+
+function renderChecklist() {
+  const state = getChecklistState();
+  document.querySelectorAll('#checklist-ul li').forEach(li => {
+    const id = li.dataset.check;
+    if (state[id]) { li.classList.add('marcado'); li.querySelector('.check-box').textContent = '✓'; }
+    li.addEventListener('click', () => {
+      const s = getChecklistState();
+      s[id] = !s[id];
+      saveChecklistState(s);
+      li.classList.toggle('marcado', s[id]);
+      li.querySelector('.check-box').textContent = s[id] ? '✓' : '';
+      const allChecked = Array.from(document.querySelectorAll('#checklist-ul li')).every(el => s[el.dataset.check]);
+      if (allChecked) launchConfetti(false);
+    });
+  });
+}
+
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('active'));
+      const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+sections.forEach(s => obs.observe(s));
+
+renderButtons();
+updateProgress();
+renderChecklist();
+
+/* ═══ Selector de aprendiz + envío a Google Sheets (Apps Script) ═══ */
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbyhq0L17BN2xp5FnAHuRXugHBYE4P9-4DvdWU4mR-1FnVBGUoBCGIkZw5O2ZEVu7T8P/exec';
+const ARCHIVO_ACTUAL  = '03_GUIA_ORDENAR_CARPETAS';
+const APRENDIZ_KEY    = 'sena-aprendiz-nombre';
+
+const APRENDIZ_TRIGGER = document.getElementById('aprendiz-trigger');
+const APRENDIZ_PANEL   = document.getElementById('aprendiz-panel');
+const APRENDIZ_BUSCAR  = document.getElementById('aprendiz-search');
+const APRENDIZ_TEXTO   = document.getElementById('aprendiz-trigger-text');
+const APRENDIZ_ITEMS   = Array.from(document.querySelectorAll('#aprendiz-list li'));
+const APRENDIZ_VACIO   = document.getElementById('aprendiz-empty');
+const APRENDIZ_LISTA   = document.getElementById('aprendiz-list');
+const selectAprendiz = { value: '', classList: APRENDIZ_TRIGGER.classList,
+  scrollIntoView: (o) => APRENDIZ_TRIGGER.scrollIntoView(o) };
+
+function tituloAprendiz(n) {
+  return n.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
+}
+function marcarAprendiz(nombre) {
+  selectAprendiz.value = nombre;
+  APRENDIZ_TEXTO.textContent = nombre ? tituloAprendiz(nombre) : 'Selecciona tu nombre';
+  APRENDIZ_TEXTO.classList.toggle('placeholder', !nombre);
+  APRENDIZ_ITEMS.forEach((li) => li.setAttribute('aria-selected', li.dataset.nombre === nombre ? 'true' : 'false'));
+}
+function posicionarAprendiz() {
+  const r = APRENDIZ_TRIGGER.getBoundingClientRect();
+  const ancho = Math.min(Math.max(r.width, 320), window.innerWidth - 16);
+  APRENDIZ_PANEL.style.width = ancho + 'px';
+  APRENDIZ_PANEL.style.left = Math.max(8, Math.min(r.left, window.innerWidth - ancho - 8)) + 'px';
+  APRENDIZ_PANEL.style.top = (r.bottom + 6) + 'px';
+  APRENDIZ_LISTA.style.maxHeight = Math.max(140, Math.min(260, window.innerHeight - r.bottom - 90)) + 'px';
+}
+function abrirAprendiz(abrir) {
+  APRENDIZ_PANEL.hidden = !abrir;
+  if (abrir) posicionarAprendiz();
+  APRENDIZ_TRIGGER.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+  if (abrir) { APRENDIZ_BUSCAR.value = ''; filtrarAprendices(); APRENDIZ_BUSCAR.focus(); }
+}
+function filtrarAprendices() {
+  const q = APRENDIZ_BUSCAR.value.toLowerCase().trim();
+  let visibles = 0;
+  APRENDIZ_ITEMS.forEach((li) => {
+    const ok = !q || li.dataset.nombre.toLowerCase().includes(q);
+    li.hidden = !ok;
+    if (ok) visibles++;
+  });
+  APRENDIZ_VACIO.hidden = visibles > 0;
+}
+function elegirAprendiz(nombre) {
+  marcarAprendiz(nombre);
+  try { localStorage.setItem(APRENDIZ_KEY, nombre); } catch {}
+  selectAprendiz.classList.remove('falta');
+  abrirAprendiz(false);
+  APRENDIZ_TRIGGER.focus();
+}
+APRENDIZ_TRIGGER.addEventListener('click', () => abrirAprendiz(APRENDIZ_PANEL.hidden));
+APRENDIZ_BUSCAR.addEventListener('input', filtrarAprendices);
+APRENDIZ_BUSCAR.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { abrirAprendiz(false); APRENDIZ_TRIGGER.focus(); }
+  if (e.key === 'Enter') {
+    const primero = APRENDIZ_ITEMS.find((li) => !li.hidden);
+    if (primero) elegirAprendiz(primero.dataset.nombre);
+  }
+});
+APRENDIZ_ITEMS.forEach((li) => li.addEventListener('click', () => elegirAprendiz(li.dataset.nombre)));
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.aprendiz-wrap')) abrirAprendiz(false);
+});
+window.addEventListener('resize', () => { if (!APRENDIZ_PANEL.hidden) posicionarAprendiz(); });
+APRENDIZ_TRIGGER.closest('.sidebar').addEventListener('scroll', () => { if (!APRENDIZ_PANEL.hidden) abrirAprendiz(false); });
+let nombreGuardado = '';
+try { nombreGuardado = localStorage.getItem(APRENDIZ_KEY) || ''; } catch {}
+if (APRENDIZ_ITEMS.some((li) => li.dataset.nombre === nombreGuardado)) marcarAprendiz(nombreGuardado);
+
+const btnEnviar = document.getElementById('btn-enviar');
+const statusEl  = document.getElementById('submit-status');
+
+btnEnviar.addEventListener('click', async () => {
+  const aprendiz = selectAprendiz.value;
+  if (!aprendiz) {
+    selectAprendiz.classList.add('falta');
+    statusEl.textContent = 'Selecciona tu nombre arriba antes de enviar.';
+    statusEl.className = 'submit-status err';
+    selectAprendiz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const state = getState();
+  const pasosCompletados = STEPS.filter(s => state[s]);
+
+  btnEnviar.disabled = true;
+  statusEl.textContent = 'Enviando...';
+  statusEl.className = 'submit-status';
+
+  try {
+    await fetch(URL_APPS_SCRIPT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        aprendiz: aprendiz,
+        archivo: ARCHIVO_ACTUAL,
+        completados: pasosCompletados.length,
+        total: STEPS.length,
+        pasos: pasosCompletados
+      })
+    });
+    statusEl.textContent = 'Progreso enviado — ' + pasosCompletados.length + '/' + STEPS.length + ' pasos.';
+    statusEl.className = 'submit-status ok';
+  } catch (err) {
+    statusEl.textContent = 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.';
+    statusEl.className = 'submit-status err';
+  } finally {
+    btnEnviar.disabled = false;
+  }
+});
+
+</script>
+</body>
+</html>
