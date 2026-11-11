@@ -203,7 +203,7 @@ pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
     <div class="ficha">Ficha 3229944 · Oct 2026</div>
   </div>
   <div class="progress-wrap">
-    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 6</span></div>
+    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 7</span></div>
     <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
   </div>
   <div class="aprendiz-wrap">
@@ -257,6 +257,7 @@ pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
   </div>
   <div class="nav-section">
     <div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#paso6"><span class="nav-dot"></span>Paso 6 — Git y compartir</a>
     <a class="nav-item" href="#checklist"><span class="nav-dot"></span>Checklist final</a>
   </div>
   <div class="nav-section" style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border);">
@@ -531,6 +532,51 @@ pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
     <button class="complete-btn" data-step="paso5"><span class="btn-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></svg></span><span class="btn-txt">Marcar como completado</span><span class="btn-badge">LISTO</span></button>
   </section>
 
+  <!-- ════ PASO6 ════ -->
+  
+  <section class="section" id="paso6" data-step="paso6">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 6 · Git</span>
+      <h2 class="section-title">Guardar tu avance y compartirlo con el instructor</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Una sesión no termina cuando funciona en tu computador, sino cuando queda <strong>guardada y compartida</strong>. Haces un <strong>commit</strong> (una foto de tu proyecto en este momento), lo subes a GitHub y, si todavía no lo hiciste, le das acceso al instructor (<strong>Jtrujillosena</strong>).</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Abre una terminal en la carpeta que contiene <code>backend</code> y <code>frontend-react</code> y mira si ya está conectada a un repositorio de GitHub:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — en la carpeta del proyecto</span></div><pre>git remote -v</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Qué ves</th><th>Qué significa</th><th>Qué haces</th></tr></thead><tbody><tr><td>Dos líneas con origin y una dirección https://github.com/...</td><td>Ya está conectada a tu repositorio</td><td>Sigue al punto 2</td></tr><tr><td>No sale nada</td><td>Todavía no está conectada a GitHub</td><td>Haz lo de abajo y después sigue al punto 2</td></tr></tbody></table></div>
+<p><strong>Solo si no salió nada:</strong> ejecuta, una línea a la vez (cambia la dirección por la de <strong>tu</strong> repositorio):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — solo la primera vez</span></div><pre>git init
+git remote add origin https://github.com/TU-USUARIO/techstore-fase5.git
+git branch -M main</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> <code>git remote -v</code> muestra tu dirección de GitHub en dos líneas.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p><strong>Antes de subir nada, revisa qué vas a subir.</strong> Hay archivos que jamás deben llegar a GitHub, como el <code>.env</code> (tiene las claves de tu base de datos) y la carpeta <code>node_modules</code>:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — en la carpeta del proyecto</span></div><pre>git status</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en la lista aparecen tus archivos de código (el avance de hoy) y <strong>no aparece</strong> ningún <code>.env</code> ni <code>node_modules</code>.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Si ves <code>.env</code> o <code>node_modules</code> en la lista, <strong>no sigas</strong>. Significa que falta el archivo <code>.gitignore</code> o que está mal escrito. Avisa al instructor antes de hacer <code>git add</code>: una clave subida a GitHub hay que cambiarla, aunque la borres después.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Guarda el avance de hoy y súbelo. Los tres comandos, una línea a la vez:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — en la carpeta del proyecto</span></div><pre>git add .
+git commit -m "Extra: rebranding premium de TechStore"
+git push</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td>git add .</td><td>Marca <strong>todos</strong> los cambios para la foto (el punto significa "todo lo de esta carpeta")</td></tr><tr><td>git commit -m "..."</td><td>Toma la foto y le pone un mensaje que dice qué hiciste hoy. Escríbelo corto y claro</td></tr><tr><td>git push</td><td>Sube la foto a GitHub. La primera vez en un repositorio nuevo, si Git dice que no hay rama de destino, usa <code>git push -u origin main</code></td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> <code>git status</code> dice <code>nothing to commit, working tree clean</code>. Y al abrir tu repositorio en GitHub aparece tu commit de hoy arriba, con el mensaje que escribiste.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">4</div><div class="step-body">
+<p><strong>Comparte el proyecto con el instructor.</strong> Si ya lo hiciste en la S19, solo comprueba que <strong>Jtrujillosena</strong> sigue en la lista de <strong>Collaborators</strong>. Si no, hazlo ahora. Su cuenta de GitHub es <strong>Jtrujillosena</strong> (<code>https://github.com/Jtrujillosena</code>). En tu repositorio de GitHub:</p>
+<div class="table-wrap"><table><thead><tr><th>Paso</th><th>Dónde</th></tr></thead><tbody><tr><td>1</td><td>Entra a tu repositorio y abre <strong>Settings</strong> (la última pestaña de arriba, con un engranaje)</td></tr><tr><td>2</td><td>En el menú de la izquierda elige <strong>Collaborators</strong>. GitHub puede pedirte tu contraseña para confirmar</td></tr><tr><td>3</td><td>Pulsa el botón verde <strong>Add people</strong> y escribe <code>Jtrujillosena</code></td></tr><tr><td>4</td><td>Elige su cuenta en la lista y pulsa <strong>Add Jtrujillosena to this repository</strong></td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en <strong>Collaborators</strong> aparece <strong>Jtrujillosena</strong> con el aviso "Pending invitation" (invitación pendiente). Cuando el instructor la acepte, queda como colaborador. Esto se hace <strong>una sola vez</strong> por proyecto.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Si tu repositorio fuera público, el instructor podría verlo igual, pero se pide <strong>privado y compartido como colaborador</strong>: así queda registro de quién entregó y nadie más ve tu código. El <code>.env</code> nunca debe estar en el repositorio.</span></div>
+</div></div>
+    </div>
+
+    <button class="complete-btn" data-step="paso6"><span class="btn-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></svg></span><span class="btn-txt">Marcar como completado</span><span class="btn-badge">LISTO</span></button>
+  </section>
+
+
   <!-- ════ CHECKLIST ════ -->
   <section class="section" id="checklist" data-step="checklist">
     <div class="section-header">
@@ -542,6 +588,7 @@ pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
       <li data-check="chk2"><span class="check-box"></span><span><strong>index.html</strong> con título "TechStore Pro" y las 4 fuentes de Google Fonts cargando sin error</span></li>
       <li data-check="chk3"><span class="check-box"></span><span><strong>favicon.svg</strong> reemplazado — la pestaña ya muestra el punto coral sobre fondo negro</span></li>
       <li data-check="chk4"><span class="check-box"></span><span>Verificado en consola que <code>document.fonts.check("16px Michroma")</code> devuelve <code>true</code></span></li>
+      <li data-check="chk5"><span class="check-box"></span><span><strong>Git</strong>: hiciste commit y push (sin <code>.env</code> ni <code>node_modules</code>) y le diste acceso a <strong>Jtrujillosena</strong> en Settings → Collaborators</span></li>
     </ul>
   </section>
 
@@ -562,7 +609,7 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && ['c','x','a','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
 });
 
-const STEPS = ['paso1','paso2','paso3','paso4','paso5','checklist'];
+const STEPS = ['paso1','paso2','paso3','paso4','paso5','paso6','checklist'];
 const KEY   = 'rebranding-progress';
 
 function getState() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }

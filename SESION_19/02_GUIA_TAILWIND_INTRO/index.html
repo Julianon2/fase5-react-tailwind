@@ -207,7 +207,7 @@ pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
     <div class="ficha">Ficha 3229944 · Sep 2026</div>
   </div>
   <div class="progress-wrap">
-    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 6</span></div>
+    <div class="progress-label"><span>Progreso</span><span id="progress-txt">0 / 7</span></div>
     <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
   </div>
   <div class="aprendiz-wrap">
@@ -255,6 +255,7 @@ pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
   </div>
   <div class="nav-section">
     <div class="nav-label">Cierre</div>
+    <a class="nav-item" href="#paso6"><span class="nav-dot"></span>Paso 6 — Git y compartir</a>
     <a class="nav-item" href="#checklist"><span class="nav-dot"></span>Checklist final</a>
   </div>
   <div class="sidebar-footer">
@@ -578,6 +579,54 @@ pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
     <div class="callout teal"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg></span><span><strong>Próxima sesión — S20:</strong> componentes reutilizables, grid responsive con breakpoints, modo oscuro con <code>dark:</code>, y migración de la tarjeta de producto y el catálogo completo — todavía en HTML+Tailwind puro, antes de React.</span></div>
   </section>
 
+  <!-- ════ PASO6 ════ -->
+  <!-- ════ PASO6 ════ -->
+  <section class="section" id="paso6" data-step="paso6">
+    <div class="section-header">
+      <span class="step-badge yellow">Paso 6 · Git</span>
+      <h2 class="section-title">Guardar tu avance y compartirlo con el instructor</h2>
+    </div>
+    <p style="color:var(--txt-dim);font-size:14px;margin-bottom:20px;">Desde esta sesión, y en <strong>todas</strong> las de la Fase 5, cada trabajo termina igual: se <strong>guarda y se comparte</strong>. Haces un <strong>commit</strong> (una foto de tu proyecto en este momento), lo subes a GitHub y le das acceso al instructor (<strong>Jtrujillosena</strong>) para que pueda ver tu avance y ayudarte. Hoy lo haces <strong>completo, la primera vez</strong>; en las siguientes sesiones solo repites los pasos 2 y 3 de este bloque.</p>
+    <div class="step-list">
+<div class="step-item"><div class="step-num">1</div><div class="step-body">
+<p>Necesitas una cuenta de GitHub. Si aún no tienes, créala en <code>github.com/signup</code> (gratis) y entra con ella. <strong>Anota tu usuario</strong>: lo vas a necesitar.</p>
+<p><strong>Un solo repositorio para toda la Fase 5.</strong> En GitHub pulsa el botón verde <strong>New</strong> (o el signo <strong>+</strong> arriba a la derecha → <strong>New repository</strong>) y llena:</p>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Qué poner</th></tr></thead><tbody><tr><td>Repository name</td><td><code>techstore-fase5</code> (sin espacios ni tildes)</td></tr><tr><td>Visibility</td><td><strong>Private</strong> (privado). Solo lo verán quienes tú invites</td></tr><tr><td>Add a README / .gitignore / license</td><td><strong>No marques nada.</strong> Se crea vacío</td></tr></tbody></table></div>
+<p>Pulsa <strong>Create repository</strong>. GitHub te muestra una dirección que termina en <code>.git</code>: cópiala.</p>
+<p>Abre una terminal en la carpeta de tu proyecto de Vite (la que abriste en VS Code) y mira si ya está conectada a un repositorio de GitHub:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — en la carpeta del proyecto</span></div><pre>git remote -v</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Qué ves</th><th>Qué significa</th><th>Qué haces</th></tr></thead><tbody><tr><td>Dos líneas con origin y una dirección https://github.com/...</td><td>Ya está conectada a tu repositorio</td><td>Sigue al punto 2</td></tr><tr><td>No sale nada</td><td>Todavía no está conectada a GitHub</td><td>Haz lo de abajo y después sigue al punto 2</td></tr></tbody></table></div>
+<p><strong>Solo si no salió nada:</strong> ejecuta, una línea a la vez (cambia la dirección por la de <strong>tu</strong> repositorio):</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — solo la primera vez</span></div><pre>git init
+git remote add origin https://github.com/TU-USUARIO/techstore-fase5.git
+git branch -M main</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> <code>git remote -v</code> muestra tu dirección de GitHub en dos líneas.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">2</div><div class="step-body">
+<p><strong>Antes de subir nada, revisa qué vas a subir.</strong> Hay archivos que jamás deben llegar a GitHub, como el <code>.env</code> (tiene las claves de tu base de datos) y la carpeta <code>node_modules</code>:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — en la carpeta del proyecto</span></div><pre>git status</pre></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en la lista aparecen tus archivos de código (el avance de hoy) y <strong>no aparece</strong> ningún <code>.env</code> ni <code>node_modules</code>.</span></div>
+<div class="callout warn"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span><span>Si ves <code>.env</code> o <code>node_modules</code> en la lista, <strong>no sigas</strong>. Significa que falta el archivo <code>.gitignore</code> o que está mal escrito. Avisa al instructor antes de hacer <code>git add</code>: una clave subida a GitHub hay que cambiarla, aunque la borres después.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">3</div><div class="step-body">
+<p>Guarda el avance de hoy y súbelo. Los tres comandos, una línea a la vez:</p>
+<div class="code-wrap"><div class="code-header"><div class="code-dots"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span></div><span class="code-filename">terminal — en la carpeta del proyecto</span></div><pre>git add .
+git commit -m "S19: introduccion a Tailwind"
+git push</pre></div>
+<div class="table-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td>git add .</td><td>Marca <strong>todos</strong> los cambios para la foto (el punto significa "todo lo de esta carpeta")</td></tr><tr><td>git commit -m "..."</td><td>Toma la foto y le pone un mensaje que dice qué hiciste hoy. Escríbelo corto y claro</td></tr><tr><td>git push</td><td>Sube la foto a GitHub. La primera vez en un repositorio nuevo, si Git dice que no hay rama de destino, usa <code>git push -u origin main</code></td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> <code>git status</code> dice <code>nothing to commit, working tree clean</code>. Y al abrir tu repositorio en GitHub aparece tu commit de hoy arriba, con el mensaje que escribiste.</span></div>
+</div></div>
+<div class="step-item"><div class="step-num">4</div><div class="step-body">
+<p><strong>Agrega al instructor como colaborador. Este paso es obligatorio:</strong> sin él no puedo ver tu proyecto. Su cuenta de GitHub es <strong>Jtrujillosena</strong> (<code>https://github.com/Jtrujillosena</code>). En tu repositorio de GitHub:</p>
+<div class="table-wrap"><table><thead><tr><th>Paso</th><th>Dónde</th></tr></thead><tbody><tr><td>1</td><td>Entra a tu repositorio y abre <strong>Settings</strong> (la última pestaña de arriba, con un engranaje)</td></tr><tr><td>2</td><td>En el menú de la izquierda elige <strong>Collaborators</strong>. GitHub puede pedirte tu contraseña para confirmar</td></tr><tr><td>3</td><td>Pulsa el botón verde <strong>Add people</strong> y escribe <code>Jtrujillosena</code></td></tr><tr><td>4</td><td>Elige su cuenta en la lista y pulsa <strong>Add Jtrujillosena to this repository</strong></td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /> <path d="m9 11 3 3L22 4" /></svg></span><span><strong>Cómo verificar:</strong> en <strong>Collaborators</strong> aparece <strong>Jtrujillosena</strong> con el aviso "Pending invitation" (invitación pendiente). Cuando el instructor la acepte, queda como colaborador. Esto se hace <strong>una sola vez</strong> por proyecto.</span></div>
+<div class="callout tip"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Compruébalo al terminar: abre <code>https://github.com/Jtrujillosena</code>. Si la página existe y se llama <strong>Jtrujillosena</strong>, escribiste bien el nombre. Si GitHub dice "No results found" al buscarlo, revisa que lo escribiste igual, con la <strong>J</strong> mayúscula al inicio.</span></div>
+<div class="callout info"><span class="callout-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg></span><span>Si tu repositorio fuera público, el instructor podría verlo igual, pero se pide <strong>privado y compartido como colaborador</strong>: así queda registro de quién entregó y nadie más ve tu código. El <code>.env</code> nunca debe estar en el repositorio.</span></div>
+</div></div>
+    </div>
+  </section>
+
+
   <!-- ════ CHECKLIST ════ -->
   <section class="section" id="checklist" data-step="checklist">
     <div class="section-header">
@@ -591,6 +640,7 @@ pre,pre *,.code-block,.code-block *{color:#e2e8f0;}
       <li data-check="chk4"><span class="check-box"></span><span>Colores del proyecto (<code>verde</code>, <code>naranja</code>, <code>azul</code>) configurados con <code>@theme</code></span></li>
       <li data-check="chk5"><span class="check-box"></span><span>Navbar de TechStore Pro migrado a <code>App.jsx</code> usando solo clases Tailwind</span></li>
       <li data-check="chk6"><span class="check-box"></span><span>backend/ y frontend/ (HTML viejo) siguen funcionando exactamente igual, sin cambios</span></li>
+      <li data-check="chk7"><span class="check-box"></span><span><strong>Git</strong>: hiciste commit y push (sin <code>.env</code> ni <code>node_modules</code>) y le diste acceso a <strong>Jtrujillosena</strong> en Settings → Collaborators</span></li>
     </ul>
   </section>
 
@@ -613,7 +663,7 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && ['a'].includes(e.key.toLowerCase()) && !inCode) e.preventDefault();
 });
 
-const STEPS = ['paso1','paso2','paso3','paso4','paso5','checklist'];
+const STEPS = ['paso1','paso2','paso3','paso4','paso5','paso6','checklist'];
 const KEY   = 's19-progress';
 
 function getState() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
