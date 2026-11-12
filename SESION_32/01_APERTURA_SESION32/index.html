@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 32: Migrar el Carrito (parte 2) | SENA ADSO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sena-verde: #39a900;
+  --sena-verde-dark: #2d8400;
+  --sena-verde-glow: rgba(57,169,0,0.10);
+  --sena-verde-border: rgba(57,169,0,0.30);
+  --sena-naranja: #ff6b00;
+  --sena-naranja-glow: rgba(255,107,0,0.10);
+  --sena-naranja-border: rgba(255,107,0,0.30);
+  --texto: #1a1a2e;
+  --texto-dim: rgba(26,26,46,0.62);
+  --texto-dimmer: rgba(26,26,46,0.38);
+  --bg: #f8fafc;
+  --bg-alt: #f4f7f2;
+  --borde: #e2e8f0;
+  --acento-azul: #3b82f6;
+  --acento-azul-glow: rgba(59,130,246,0.10);
+  --acento-purpura: #8b5cf6;
+  --acento-purpura-glow: rgba(139,92,246,0.10);
+  --alerta-amarillo: #f59e0b;
+  --alerta-amarillo-glow: rgba(245,158,11,0.10);
+  --alerta-rojo: #ef4444;
+  --alerta-rojo-glow: rgba(239,68,68,0.10);
+  --acento-teal: #0ea5e9;
+  --acento-teal-glow: rgba(14,165,233,0.10);
+  --acento-teal-border: rgba(14,165,233,0.30);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter',sans-serif; color:var(--texto); background:var(--bg); line-height:1.6; overflow-x:hidden; }
+
+@media(min-width:600px){ .topbar-sub{display:block;} }
+@media(min-width:900px){ .topbar-nav{display:flex;} }
+
+/* Scroll continuo tipo landing: mismo fondo en toda la apertura, sin bloques de color alternos */
+.slide.bg-alt, .slide.bg-verde, .slide.bg-azul, .slide.bg-teal { background:var(--bg); }
+.slide-inner { max-width:1200px; margin:0 auto; }
+
+.bg-dots { position:absolute; inset:0; background-image:radial-gradient(var(--sena-verde-border) 1px, transparent 1px); background-size:28px 28px; pointer-events:none; opacity:0.35; }
+.bg-glow { position:absolute; width:600px; height:600px; border-radius:50%; filter:blur(120px); opacity:0.22; pointer-events:none; z-index:0; }
+.bg-glow.g1 { background:radial-gradient(circle, var(--sena-verde-glow), transparent 70%); top:-200px; left:-200px; }
+.bg-glow.g2 { background:radial-gradient(circle, var(--sena-naranja-glow), transparent 70%); bottom:-200px; right:-200px; }
+
+.portada-tag { display:inline-flex; align-items:center; gap:8px; background:var(--sena-verde-glow); border:1px solid var(--sena-verde-border); padding:10px 20px; border-radius:30px; font-size:12px; font-weight:700; color:var(--sena-verde-dark); letter-spacing:1.5px; margin-bottom:32px; position:relative; z-index:1; }
+.portada-tag .dot { width:6px; height:6px; background:var(--sena-verde); border-radius:50%; animation:blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.portada-titulo { font-family:'Syne',sans-serif; font-size:clamp(40px,7vw,68px); font-weight:800; line-height:1.1; margin-bottom:20px; color:var(--texto); position:relative; z-index:1; }
+.portada-titulo .linea2 { display:block; background:linear-gradient(135deg, var(--acento-teal), var(--acento-azul)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-titulo .linea3 { display:block; background:linear-gradient(135deg, var(--sena-naranja), var(--acento-purpura)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-desc { font-size:clamp(15px,2vw,18px); color:var(--texto-dim); max-width:680px; margin-bottom:40px; position:relative; z-index:1; line-height:1.7; }
+.portada-meta { display:flex; gap:16px; flex-wrap:wrap; position:relative; z-index:1; }
+.portada-meta-item { background:rgba(255,255,255,0.9); border:1px solid var(--borde); padding:10px 20px; border-radius:12px; font-size:14px; font-weight:600; color:var(--texto-dim); }
+
+.sec-header { margin-bottom:40px; position:relative; z-index:1; }
+.sec-tag { display:inline-block; font-size:11px; font-weight:700; padding:6px 14px; border-radius:20px; letter-spacing:1.2px; margin-bottom:14px; text-transform:uppercase; border:1px solid transparent; }
+.sec-tag.verde   { background:var(--sena-verde-glow); color:var(--sena-verde); border-color:var(--sena-verde-border); }
+.sec-tag.naranja { background:var(--sena-naranja-glow); color:var(--sena-naranja); border-color:var(--sena-naranja-border); }
+.sec-tag.azul    { background:var(--acento-azul-glow); color:var(--acento-azul); border-color:rgba(59,130,246,0.30); }
+.sec-tag.purpura { background:var(--acento-purpura-glow); color:var(--acento-purpura); border-color:rgba(139,92,246,0.30); }
+.sec-tag.amarillo{ background:var(--alerta-amarillo-glow); color:var(--alerta-amarillo); border-color:rgba(245,158,11,0.30); }
+.sec-tag.teal    { background:var(--acento-teal-glow); color:var(--acento-teal); border-color:var(--acento-teal-border); }
+.sec-titulo { font-family:'Syne',sans-serif; font-size:clamp(28px,4vw,42px); font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.sec-desc { font-size:clamp(15px,1.8vw,17px); color:var(--texto-dim); max-width:800px; line-height:1.7; }
+
+.info-box {
+  background:#fff;
+  border:1px solid var(--borde);
+  border-top:3px solid transparent;
+  border-radius:16px;
+  padding:22px 26px;
+  margin:20px 0;
+  position:relative;
+  z-index:1;
+  box-shadow:0 1px 2px rgba(15,23,42,.04), 0 16px 32px -20px rgba(15,23,42,.14);
+}
+.info-box.tip     { border-top-color:var(--sena-verde); }
+.info-box.warning { border-top-color:var(--alerta-amarillo); }
+.info-box.danger  { border-top-color:var(--alerta-rojo); }
+.info-box.info    { border-top-color:var(--acento-azul); }
+.info-box.teal    { border-top-color:var(--acento-teal); }
+.info-box.purpura { border-top-color:var(--acento-purpura); }
+
+.info-box-title { display:flex; align-items:center; gap:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:12px; color:var(--texto); }
+.info-box-title svg.ic { width:34px; height:34px; min-width:34px; padding:8px; border-radius:10px; box-sizing:border-box; stroke-width:2; vertical-align:middle; }
+.info-box.tip     .info-box-title svg.ic { background:var(--sena-verde-glow); color:var(--sena-verde-dark); }
+.info-box.warning .info-box-title svg.ic { background:var(--alerta-amarillo-glow); color:#92400e; }
+.info-box.danger  .info-box-title svg.ic { background:var(--alerta-rojo-glow); color:#991b1b; }
+.info-box.info    .info-box-title svg.ic { background:var(--acento-azul-glow); color:#1e40af; }
+.info-box.teal    .info-box-title svg.ic { background:var(--acento-teal-glow); color:#0369a1; }
+.info-box.purpura .info-box-title svg.ic { background:var(--acento-purpura-glow); color:#5b21b6; }
+.info-box-content { font-size:14px; color:var(--texto-dim); line-height:1.75; }
+.info-box-content p { margin:0 0 10px; }
+.info-box-content p:last-child { margin-bottom:0; }
+.ejemplo-chips { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+.ejemplo-chip { display:flex; align-items:center; gap:8px; background:var(--bg-alt); border:1px solid var(--borde); border-radius:10px; padding:8px 14px; font-size:12.5px; }
+.ejemplo-chip .flecha { color:var(--texto-dimmer); font-weight:700; }
+
+/* Grilla para cajas info-box que antes quedaban apiladas una debajo de otra */
+.info-box-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:20px 0; align-items:start; }
+.info-box-grid .info-box { margin:0; }
+@media(max-width:900px){ .info-box-grid { grid-template-columns:1fr; } }
+
+.concepto-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:20px; position:relative; z-index:1; margin-bottom:28px; }
+.concepto-card { background:#fff; border:2px solid var(--borde); border-radius:16px; padding:24px; }
+.concepto-icon  { font-size:36px; margin-bottom:12px; }
+.concepto-titulo{ font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--texto); margin-bottom:6px; }
+.concepto-desc  { font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.concepto-card.verde   { border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.concepto-card.azul    { border-color:rgba(59,130,246,0.25); background:var(--acento-azul-glow); }
+.concepto-card.teal    { border-color:var(--acento-teal-border); background:var(--acento-teal-glow); }
+.concepto-card.purpura { border-color:rgba(139,92,246,0.25); background:var(--acento-purpura-glow); }
+.concepto-card.naranja { border-color:var(--sena-naranja-border); background:var(--sena-naranja-glow); }
+.concepto-card.amarillo{ border-color:rgba(245,158,11,0.30); background:var(--alerta-amarillo-glow); }
+
+.tabla-wrap { overflow-x:auto; position:relative; z-index:1; margin:20px 0; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th { background:var(--sena-verde); color:#fff; padding:12px 16px; text-align:left; font-weight:700; }
+th:first-child { border-radius:8px 0 0 0; } th:last-child { border-radius:0 8px 0 0; }
+td { padding:12px 16px; border-bottom:1px solid var(--borde); vertical-align:top; }
+tr:nth-child(even) td { background:var(--bg-alt); }
+tr:hover td { background:var(--sena-verde-glow); }
+
+.paso-lista { display:flex; flex-direction:column; gap:0; position:relative; z-index:1; }
+.paso-item { display:flex; gap:24px; padding:28px 0; border-bottom:1px solid var(--borde); }
+.paso-item:last-child { border-bottom:none; }
+.paso-num { flex-shrink:0; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:#fff; }
+.paso-num.verde   { background:var(--sena-verde); }
+.paso-num.azul    { background:var(--acento-azul); }
+.paso-num.teal    { background:var(--acento-teal); }
+.paso-num.purpura { background:var(--acento-purpura); }
+.paso-num.naranja { background:var(--sena-naranja); }
+.paso-body { flex:1; }
+.paso-titulo { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--texto); margin-bottom:6px; }
+.paso-desc { font-size:14px; color:var(--texto-dim); line-height:1.7; margin-bottom:12px; }
+
+.flujo-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; margin:32px 0; position:relative; z-index:1; }
+.flujo-nodo { border-radius:12px; padding:16px 22px; text-align:center; border:2px solid; min-width:130px; }
+.flujo-nodo.verde   { background:var(--sena-verde-glow); border-color:var(--sena-verde-border); }
+.flujo-nodo.azul    { background:var(--acento-azul-glow); border-color:rgba(59,130,246,0.30); }
+.flujo-nodo.purpura { background:var(--acento-purpura-glow); border-color:rgba(139,92,246,0.30); }
+.flujo-nodo.naranja { background:var(--sena-naranja-glow); border-color:var(--sena-naranja-border); }
+.flujo-nodo.teal    { background:var(--acento-teal-glow); border-color:var(--acento-teal-border); }
+.flujo-ico { font-size:26px; margin-bottom:6px; }
+.flujo-lbl { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--texto-dimmer); margin-bottom:4px; }
+.flujo-nom { font-size:13px; font-weight:700; color:var(--texto); }
+.flujo-sub { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--texto-dimmer); margin-top:3px; }
+.flujo-arrow { font-size:22px; color:var(--sena-verde); font-weight:700; padding:0 4px; }
+
+.entregable-box { background:linear-gradient(135deg, var(--sena-verde-glow), var(--acento-teal-glow)); border:2px solid var(--sena-verde-border); border-radius:16px; padding:28px 32px; position:relative; z-index:1; margin-top:32px; }
+.entregable-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--sena-verde-dark); margin-bottom:16px; }
+.entregable-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.entregable-list li { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:var(--texto); }
+.entregable-list li::before { content:'✅'; flex-shrink:0; }
+
+
+/* Mockup de terminal para mostrar instalación */
+.term-mock { background:#1a1a2e; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); margin:20px 0; position:relative; z-index:1; }
+.term-header { background:#12121f; padding:10px 16px; display:flex; align-items:center; gap:8px; }
+.term-dot { width:11px; height:11px; border-radius:50%; }
+.term-dot.r { background:#ff5f57; } .term-dot.y { background:#febc2e; } .term-dot.g { background:#28c840; }
+.term-title { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#8892a4; }
+.term-body { padding:20px 22px; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.9; }
+.term-body .prompt { color:#4ade80; }
+.term-body .cmd { color:#e2e8f0; }
+.term-body .out { color:#8892a4; display:block; margin:2px 0 10px 0; }
+.term-body .ok { color:#4ade80; }
+
+/* Comparador de código lado a lado, con resaltado de sintaxis real */
+.code-compare { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:18px 0; position:relative; z-index:1; }
+@media(max-width:900px){ .code-compare{ grid-template-columns:1fr; } }
+
+.slide-2col { display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start; position:relative; z-index:1; }
+@media(max-width:900px){ .slide-2col{ grid-template-columns:1fr; } }
+.slide-2col-code { display:flex; flex-direction:column; gap:18px; }
+.slide-2col-code .code-editor { width:100%; }
+.code-editor { background:#1a1a2e; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+.code-editor-header { background:#12121f; padding:10px 16px; display:flex; align-items:center; gap:8px; }
+.code-editor-title { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#8892a4; flex:1; }
+.code-editor-badge { font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:5px; }
+.code-editor-badge.antes { background:rgba(248,113,113,.15); color:#f87171; }
+.code-editor-badge.despues { background:rgba(74,222,128,.15); color:#4ade80; }
+.code-editor-body { padding:10px 0; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.9; flex:1; overflow-x:auto; }
+.cl { display:grid; grid-template-columns:34px 1fr; column-gap:12px; padding:0 20px; white-space:pre; }
+.cl .ln { color:#4a5178; user-select:none; text-align:right; }
+.cl .code { color:#e2e8f0; }
+.indent-1 .code { padding-left:18px; }
+.indent-2 .code { padding-left:36px; }
+.cm { color:#565f89; font-style:italic; }
+.sel { color:#7dcfff; }
+.prop { color:#9ece6a; }
+.val { color:#e2e8f0; }
+.var { color:#e0af68; }
+.tag { color:#f7768e; }
+.attr { color:#e0af68; }
+.str { color:#9ece6a; }
+.punc { color:#8892a4; }
+
+@media(max-width:900px){ .flujo-row{flex-direction:column;} }
+@media(max-width:768px){ .slide{padding:60px 24px;} .topbar{padding:10px 20px;} }
+
+/* Iconos Lucide en línea (reemplazan a los emojis) */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
+
+/* ══ Estructura de presentación del portal (sidebar + insignias) ══ */
+/* ============================================================
+   SIDEBAR LATERAL MODERNO (ESTILO IDE / CASE / LUCIDE)
+   ============================================================ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 2px 0 20px rgba(15, 23, 42, 0.04);
+}
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.sidebar-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+}
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-logo {
+  background: var(--sena-verde);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px -2px rgba(57, 169, 0, 0.4);
+}
+.sidebar-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+.sidebar-sub {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 600;
+}
+.sidebar-toggle-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #64748b;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.sidebar-toggle-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+.floating-sidebar-toggle {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  z-index: 999;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  height: 38px;
+  padding: 0 14px 0 10px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.floating-sidebar-toggle:hover {
+  background: #ffffff;
+  color: var(--sena-verde-dark);
+  border-color: var(--sena-verde);
+  box-shadow: 0 8px 22px rgba(57, 169, 0, 0.2);
+  transform: translateY(-1px);
+}
+.sidebar.collapsed ~ .floating-sidebar-toggle,
+.floating-sidebar-toggle.visible {
+  display: inline-flex !important;
+  animation: fadeInToggle 0.25s ease-out forwards;
+}
+@keyframes fadeInToggle {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 10px;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.nav-group {
+  margin-bottom: 18px;
+}
+.nav-group-title {
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #94a3b8;
+  padding: 0 10px 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 11.8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  position: relative;
+}
+.nav-link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.nav-link.active {
+  background: rgba(57, 169, 0, 0.1);
+  color: var(--sena-verde-dark);
+  font-weight: 700;
+}
+.nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3.5px;
+  background: var(--sena-verde);
+  border-radius: 0 4px 4px 0;
+}
+.nav-link-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  min-width: 15px;
+}
+.nav-link.active .nav-link-num {
+  color: var(--sena-verde);
+}
+.nav-link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+.nav-link:hover .nav-link-icon {
+  color: #0f172a;
+}
+.nav-link.active .nav-link-icon {
+  color: var(--sena-verde-dark);
+}
+.nav-link-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-footer {
+  padding: 12px 14px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-corte-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,107,0,0.08);
+  border: 1px solid rgba(255,107,0,0.22);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #c2410c;
+}
+.sidebar-dashboard-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0284c7;
+  text-decoration: none;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+.sidebar-dashboard-link:hover {
+  background: rgba(2,132,199,0.08);
+}
+
+.main-content {
+  margin-left: 280px;
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--bg);
+}
+.main-content.expanded {
+  margin-left: 0;
+}
+
+.slide {
+  min-height: 100vh;
+  padding: 60px 48px;
+  position: relative;
+  scroll-margin-top: 20px;
+}
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1099;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 1024px) {
+  .sidebar { transform: translateX(-100%); z-index: 1200; }
+  .sidebar.open { transform: translateX(0); box-shadow: 10px 0 35px rgba(0, 0, 0, 0.25); }
+  .main-content { margin-left: 0 !important; }
+  .floating-sidebar-toggle { display: flex !important; z-index: 1050; }
+  .slide-block-badge { left: 80px; }
+}
+@media (max-width: 900px) {
+  .col-3 { grid-template-columns: 1fr; gap: 16px; }
+}
+@media (max-width: 768px) {
+  .slide { padding: 68px 18px 40px; }
+  .col-2 { grid-template-columns: 1fr; gap: 16px; }
+  .slide-block-badge { left: 70px; top: 16px; font-size: 9.5px; padding: 4px 10px; }
+  .slide-num-badge { right: 14px; top: 16px; font-size: 10px; padding: 4px 8px; }
+  .floating-sidebar-toggle { top: 12px; left: 14px; height: 34px; padding: 0 10px; font-size: 11px; }
+  .floating-sidebar-toggle span { display: none; }
+  .portada-meta-item { min-width: 100%; }
+  .ddl-modal-overlay { padding: 0; }
+  .ddl-modal-card {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    min-height: auto;
+    border-radius: 0;
+    border: none;
+  }
+}
+.slide-inner{max-width:1200px;margin:0 auto}
+.slide-num-badge{position:absolute;top:20px;right:24px;background:var(--sena-verde-glow);color:var(--sena-verde);font-size:11px;font-weight:700;padding:5px 12px;border-radius:18px;letter-spacing:1px;border:1px solid var(--sena-verde-border)}
+.slide-block-badge{position:absolute;top:20px;left:40px;font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:5px 14px;border-radius:18px}
+.slide-block-badge.contexto{background:var(--azul-glow);color:var(--azul)}
+.slide-block-badge.teoria{background:var(--sena-verde-glow);color:var(--sena-verde)}
+.slide-block-badge.practica{background:var(--sena-naranja-glow);color:var(--sena-naranja)}
+.slide-block-badge.taller{background:var(--purpura-glow);color:var(--purpura)}
+.slide-num-badge,.slide-block-badge{z-index:2;}
+:root{--azul:var(--acento-azul);--azul-glow:var(--acento-azul-glow);--purpura:var(--acento-purpura);--purpura-glow:var(--acento-purpura-glow);}
+.sidebar-title{font-size:13px;white-space:nowrap;}
+/* ── Ajuste de contenido junto al sidebar ── */
+.main-content{min-width:0;}
+.slide{overflow-x:clip;}
+.slide-2col{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+.slide-2col > *{min-width:0;}
+.code-editor-body,.term-body{overflow-x:auto;}
+.tabla-wrap{overflow-x:auto;}
+@media (max-width:1280px){ .slide-2col{grid-template-columns:minmax(0,1fr);} }
+.main-content.expanded .slide-block-badge{left:200px;}
+@media (max-width:1024px){ .main-content.expanded .slide-block-badge{left:80px;} }
+/* ── Reglas propias de esta apertura ── */
+.sec-tag.rojo{ background:var(--alerta-rojo-glow); color:var(--alerta-rojo); border-color:rgba(239,68,68,0.30); }
+.info-box.tip     .info-box-title{ color:var(--sena-verde-dark); }
+.info-box.warning .info-box-title{ color:#92400e; }
+.info-box.danger  .info-box-title{ color:#991b1b; }
+.info-box.info    .info-box-title{ color:#1e40af; }
+.info-box.teal    .info-box-title{ color:#0369a1; }
+.info-box.purpura .info-box-title{ color:#5b21b6; }
+.roadmap-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){.roadmap-grid{ grid-template-columns:1fr; }}
+.roadmap-card{ background:#fff; border:2px solid var(--borde); border-radius:18px; padding:28px 24px 24px; position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s; }
+.roadmap-card:hover{ transform:translateY(-4px); box-shadow:0 16px 32px rgba(14,165,233,.14); border-color:var(--acento-teal-border); }
+.roadmap-num{ position:absolute; top:-6px; right:4px; font-family:'Syne',sans-serif; font-size:72px; font-weight:800; color:var(--acento-teal); opacity:.10; line-height:1; pointer-events:none; }
+.roadmap-icon{ font-size:34px; margin-bottom:14px; display:flex; }
+.roadmap-tag{ display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--acento-teal); background:var(--acento-teal-glow); border:1px solid var(--acento-teal-border); padding:4px 10px; border-radius:20px; margin-bottom:12px; }
+.roadmap-titulo{ font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--texto); margin-bottom:10px; line-height:1.25; }
+.roadmap-desc{ font-size:13px; color:var(--texto-dim); line-height:1.65; }
+.rap-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){.rap-grid{ grid-template-columns:1fr; }}
+.rap-card{ background:#fff; border-radius:18px; padding:0; overflow:hidden; border:2px solid var(--borde); position:relative; transition:transform .2s, box-shadow .2s; }
+.rap-card:hover{ transform:translateY(-4px); box-shadow:0 18px 36px rgba(0,0,0,.09); }
+.rap-card-bar{ height:6px; width:100%; }
+.rap-card.done .rap-card-bar{ background:linear-gradient(90deg, var(--sena-verde), #6bd44e); }
+.rap-card.active .rap-card-bar{ background:linear-gradient(90deg, var(--acento-teal), var(--acento-azul)); }
+.rap-card.pending .rap-card-bar{ background:linear-gradient(90deg, var(--acento-teal), #7dd3fc); opacity:.6; }
+.rap-card.active{ border-color:var(--acento-teal); box-shadow:0 0 0 4px var(--acento-teal-glow), 0 18px 36px rgba(14,165,233,.14); }
+.rap-card-body{ padding:28px 26px 26px; }
+.rap-card-top{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+.rap-card-icon{ font-size:42px; line-height:1; display:flex; }
+.rap-card-status{ font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:5px 12px; border-radius:20px; white-space:nowrap; display:flex; align-items:center; gap:6px; }
+.rap-card.done .rap-card-status{ background:var(--sena-verde-glow); color:var(--sena-verde-dark); }
+.rap-card.active .rap-card-status{ background:var(--acento-teal-glow); color:#0369a1; }
+.rap-card.pending .rap-card-status{ background:var(--acento-teal-glow); color:#0369a1; opacity:.8; }
+.rap-card-id{ font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--texto-dimmer); margin-bottom:6px; text-transform:uppercase; }
+.rap-card-titulo{ font-family:'Syne',sans-serif; font-size:21px; font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.rap-card-desc{ font-size:13.5px; color:var(--texto-dim); line-height:1.6; }
+.rap-card.active .rap-card-icon{ animation: rapPulse 1.8s ease-in-out infinite; }
+@keyframes rapPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
+.dom-compare{ display:grid; grid-template-columns:1fr auto 1fr; gap:20px; align-items:center; margin:24px 0; position:relative; z-index:1; }
+@media(max-width:900px){.dom-compare{ grid-template-columns:1fr; }}
+.dom-box{ background:#fff; border:2px solid var(--borde); border-radius:16px; padding:22px; }
+.dom-box.mal{ border-color:rgba(239,68,68,.3); background:var(--alerta-rojo-glow); }
+.dom-box.bien{ border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.dom-box-title{ font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.dom-box-desc{ font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.dom-vs{ font-family:'Syne',sans-serif; font-weight:800; font-size:16px; color:var(--texto-dimmer); text-align:center; }
+.par-valor{ color:#0ea5e9; font-weight:800; }
+.par-funcion{ color:#d946ef; font-weight:800; }
+.par-inicial{ color:#f59e0b; font-weight:800; }
+.par-evento{ color:#22c55e; font-weight:800; }
+.par-handler{ color:#f97316; font-weight:800; }
+.par-dato{ color:#a855f7; font-weight:800; }
+.useState-split{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; position:relative; z-index:1; margin-bottom:24px; }
+@media(max-width:900px){.useState-split{ grid-template-columns:1fr; }}
+.useState-breakdown{ background:#fff; border:2px solid var(--borde); border-radius:14px; padding:18px 20px; }
+.useState-breakdown-label{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--texto-dimmer); text-align:center; margin-bottom:10px; letter-spacing:.04em; }
+.useState-breakdown-line{ font-family:'JetBrains Mono',monospace; font-size:13px; text-align:center; margin-bottom:8px; line-height:1.6; }
+.useState-breakdown-arrows{ display:flex; justify-content:center; gap:28px; margin:4px 0; font-size:16px; }
+.useState-breakdown-plain{ font-family:'JetBrains Mono',monospace; font-size:12.5px; text-align:center; line-height:1.6; }
+.tree-demo{ max-width:620px; margin:0 auto 24px; background:#fff; border:2px solid var(--borde); border-radius:16px; padding:28px; position:relative; z-index:1; }
+.tree-row{ display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.tree-node{ background:var(--bg-alt); border:2px solid var(--borde); border-radius:10px; padding:8px 14px; font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:var(--texto-dim); }
+.tree-node.origen{ background:var(--sena-verde-glow); border-color:var(--sena-verde-border); color:var(--sena-verde-dark); }
+.tree-node.destino{ background:var(--acento-azul-glow); border-color:rgba(59,130,246,.3); color:#1e40af; }
+.tree-node.pasa{ background:var(--alerta-amarillo-glow); border-color:rgba(245,158,11,.3); color:#92400e; animation: treePulse 1.6s ease-in-out infinite; }
+@keyframes treePulse{ 0%,100%{ opacity:1; } 50%{ opacity:.45; } }
+.tree-arrow-down{ text-align:center; font-size:18px; color:var(--texto-dimmer); margin:2px 0; }
+.tree-caption{ text-align:center; font-size:12px; color:var(--texto-dim); margin-top:14px; font-family:'JetBrains Mono',monospace; }
+.tree-direct{ position:absolute; left:50%; top:24px; bottom:24px; width:3px; background:var(--sena-verde); border-radius:4px; opacity:0; transition:opacity .3s; }
+.tree-direct.on{ opacity:.35; }
+
+/* ── Ajustes del deck con sidebar para las aperturas de la ficha 3229944 ── */
+.concepto-grid>*,.roadmap-grid>*,.rap-grid>*,.useState-split>*,.dom-compare>*,.info-box-grid>*,.paso-lista>*,.compare-grid>*{min-width:0;}
+.slide-inner{min-width:0;}
+.slide .code-editor{max-width:100%;}
+.slide pre,.slide .term-body{overflow-x:auto;}
+@media (max-width:1280px){
+  .useState-split,.dom-compare{grid-template-columns:minmax(0,1fr)!important;}
+  .dom-compare .dom-vs{display:none;}
+  .rap-grid,.roadmap-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:768px){
+  .rap-grid,.roadmap-grid{grid-template-columns:minmax(0,1fr);}
+}
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR LATERAL DE NAVEGACIÓN -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo">
+        <svg width="24" height="24" viewBox="0 0 64 62" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <g transform="translate(-377 -19)">
+            <path d="M409.164 19C412.922 19 415.992 22.09 415.992 25.8778 415.992 29.6656 412.932 32.7556 409.164 32.7556 405.397 32.7556 402.336 29.6656 402.336 25.8778 402.336 22.09 405.407 19 409.164 19"/>
+            <path d="M384.305 41.1884 384.305 41.2183C384.285 41.3379 384.275 41.4177 384.275 41.4675 384.275 41.8264 384.474 42.0855 384.873 42.265 385.282 42.4344 385.9 42.5241 386.747 42.5241 387.395 42.5241 387.893 42.4543 388.262 42.3148 388.631 42.1752 388.81 41.9759 388.81 41.7267 388.81 41.3479 388.082 41.0489 386.647 40.8096 386.478 40.7797 386.348 40.7598 386.268 40.7498 386.179 40.7299 386.039 40.71 385.86 40.6801 383.567 40.3013 382.092 39.8926 381.434 39.454 381.115 39.2347 380.876 38.9855 380.706 38.6965 380.547 38.4074 380.467 38.0785 380.467 37.7096 380.467 36.8125 380.995 36.1248 382.052 35.6563 383.109 35.1878 384.654 34.9486 386.677 34.9486 388.7 34.9486 390.166 35.1678 391.133 35.6064 392.1 36.045 392.578 36.7228 392.578 37.6399L392.578 37.7495 388.78 37.7495 388.78 37.7096C388.78 37.3907 388.591 37.1614 388.202 36.992 387.813 36.8325 387.255 36.7428 386.508 36.7428 385.929 36.7428 385.481 36.8026 385.182 36.9122 384.863 37.0318 384.713 37.1913 384.713 37.4006 384.713 37.7794 385.541 38.1084 387.195 38.3675 387.514 38.4174 387.764 38.4572 387.943 38.4871 389.119 38.6865 389.966 38.8559 390.465 38.9955 390.963 39.135 391.392 39.3045 391.761 39.4939 392.159 39.7132 392.478 39.9923 392.698 40.3312 392.917 40.6701 393.027 41.0389 393.027 41.4476 393.027 42.3746 392.448 43.0823 391.302 43.5907 390.156 44.0891 388.501 44.3383 386.348 44.3383 384.195 44.3383 382.67 44.099 381.723 43.6206 380.766 43.1421 380.298 42.3746 380.298 41.308L380.298 41.1685 384.305 41.1685ZM394.711 44.1987 394.711 35.0881 405.546 35.0881 405.546 37.0518 398.778 37.0518 398.778 38.5071 405.028 38.5071 405.028 40.4508 398.778 40.4508 398.778 42.2151 405.795 42.2151 405.795 44.2087 394.711 44.2087ZM407.5 44.1987 407.5 35.0881 412.643 35.0881 418.155 41.2084 418.155 35.0881 422.063 35.0881 422.063 44.1987 416.72 44.1987 411.387 38.0585 411.387 44.1987 407.49 44.1987ZM432.569 40.5604 430.625 37.2511 428.572 40.5604 432.579 40.5604ZM426.369 44.1987 422.292 44.1987 428.592 35.0881 433.107 35.0881 439.118 44.1987 434.592 44.1987 433.675 42.554 427.366 42.554 426.389 44.1987Z"/>
+            <path d="M389.309 76.3351 385.67 72.9161 396.735 53.6881C397.333 52.6415 396.585 51.3257 395.379 51.3257L377.267 51.3257 377.267 46.5113 406.413 46.5113 389.309 76.3351Z"/>
+            <path d="M428.701 76.3351 432.34 72.9161 421.275 53.6881C420.677 52.6415 421.425 51.3257 422.631 51.3257L440.743 51.3257 440.743 46.5113 411.597 46.5113 428.701 76.3351Z"/>
+            <path d="M408.965 51.5949C408.965 51.5949 409.005 51.5251 409.005 51.5251L425.432 78.7174 421.066 80.99 410.48 63.2373C409.852 62.1907 408.347 62.1907 407.729 63.2373 404.2 69.1981 397.213 80.99 397.213 80.99L392.947 78.8768C392.947 78.8768 408.088 53.09 408.965 51.5949"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <div class="sidebar-title">ADSO 3229944</div>
+        <div class="sidebar-sub">Migrar el Carrito (parte 2) — Sesión 32</div>
+      </div>
+    </div>
+    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Ocultar menú lateral">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m8 9-3 3 3 3"/></svg>
+    </button>
+  </div>
+
+  <div class="sidebar-scroll">
+    <div class="nav-group">
+      <div class="nav-group-title"><svg class="ic" style="width:12px;height:12px" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /></svg> Contexto</div>
+      <a href="#portada" class="nav-link active">
+        <span class="nav-link-num">01</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg></span>
+        <span class="nav-link-text">Portada de la sesión</span>
+      </a>
+      <a href="#competencia" class="nav-link">
+        <span class="nav-link-num">02</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" /> <circle cx="12" cy="8" r="6" /></svg></span>
+        <span class="nav-link-text">Competencia y RAP</span>
+      </a>
+      <a href="#plan" class="nav-link">
+        <span class="nav-link-num">03</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /></svg></span>
+        <span class="nav-link-text">Plan de la sesión</span>
+      </a>
+      <a href="#logros" class="nav-link">
+        <span class="nav-link-num">04</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></svg></span>
+        <span class="nav-link-text">Logros de hoy</span>
+      </a>
+      <a href="#partida" class="nav-link">
+        <span class="nav-link-num">05</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></svg></span>
+        <span class="nav-link-text">De dónde partimos</span>
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title"><svg class="ic" style="width:12px;height:12px" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Conceptos</div>
+      <a href="#flujo" class="nav-link">
+        <span class="nav-link-num">06</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /> <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /> <circle cx="18" cy="5" r="3" /></svg></span>
+        <span class="nav-link-text">El camino de un pago</span>
+      </a>
+      <a href="#confianza" class="nav-link">
+        <span class="nav-link-num">07</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="M12 8v4" /> <path d="M12 16h.01" /></svg></span>
+        <span class="nav-link-text">El total no viene del navegador</span>
+      </a>
+      <a href="#llaves" class="nav-link">
+        <span class="nav-link-num">08</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /> <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
+        <span class="nav-link-text">Las llaves de Wompi</span>
+      </a>
+      <a href="#firma" class="nav-link">
+        <span class="nav-link-num">09</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" /> <path d="M14 13.12c0 2.38 0 6.38-1 8.88" /> <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" /> <path d="M2 12a10 10 0 0 1 18-6" /> <path d="M2 16h.01" /> <path d="M21.8 16c.2-2 .131-5.354 0-6" /> <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" /> <path d="M8.65 22c.21-.66.45-1.32.57-2" /> <path d="M9 6.8a6 6 0 0 1 9 5.2v2" /></svg></span>
+        <span class="nav-link-text">La firma de integridad</span>
+      </a>
+      <a href="#widget" class="nav-link">
+        <span class="nav-link-num">10</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /> <path d="M10 4v4" /> <path d="M2 8h20" /> <path d="M6 4v4" /></svg></span>
+        <span class="nav-link-text">El widget en React</span>
+      </a>
+      <a href="#pagar" class="nav-link">
+        <span class="nav-link-num">11</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4.1 12 6" /> <path d="m5.1 8-2.9-.8" /> <path d="m6 12-1.9 2" /> <path d="M7.2 2.2 8 5.1" /> <path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z" /></svg></span>
+        <span class="nav-link-text">Pagar desde el carrito</span>
+      </a>
+      <a href="#resultado" class="nav-link">
+        <span class="nav-link-num">12</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg></span>
+        <span class="nav-link-text">La página de resultado</span>
+      </a>
+      <a href="#pruebas" class="nav-link">
+        <span class="nav-link-num">13</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" /> <path d="M6.453 15h11.094" /> <path d="M8.5 2h7" /></svg></span>
+        <span class="nav-link-text">Probar con datos de prueba</span>
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title"><svg class="ic" style="width:12px;height:12px" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" /></svg> Cierre</div>
+      <a href="#prerrequisitos" class="nav-link">
+        <span class="nav-link-num">14</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span>
+        <span class="nav-link-text">Prerrequisitos</span>
+      </a>
+      <a href="#resumen" class="nav-link">
+        <span class="nav-link-num">15</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" /> <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" /> <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></svg></span>
+        <span class="nav-link-text">Los conceptos nuevos de hoy</span>
+      </a>
+      <a href="#entregable" class="nav-link">
+        <span class="nav-link-num">16</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg></span>
+        <span class="nav-link-text">Entregable y cierre</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="../../explorar.html" class="sidebar-dashboard-link">
+      <svg class="ic" style="width:14px;height:14px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg>
+      Volver al Hub
+    </a>
+    <div class="sidebar-corte-badge">
+      <span>Sesión 32 — Migrar el Carrito (parte 2)</span>
+      <span>Ficha 3229944</span>
+    </div>
+  </div>
+</aside>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+<button class="floating-sidebar-toggle" id="floating-toggle" onclick="toggleSidebar()" title="Mostrar menú lateral (16 slides)" aria-label="Abrir menú">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg>
+  <span>Menú (16 slides)</span>
+</button>
+
+<main class="main-content" id="main-content">
+
+<!-- ══════════ SLIDE 1 — PORTADA DE LA SESIÓN ══════════ -->
+<section class="slide" id="portada">
+  <div class="slide-block-badge contexto">Apertura &amp; Presentación</div>
+  <div class="bg-dots"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="slide-inner" style="position:relative;z-index:1;">
+    <div class="portada-tag"><span class="dot"></span> SESIÓN 32 · FASE 5 REACT Y TAILWIND CSS</div>
+    <h1 class="portada-titulo">
+      TechStore Pro<br>
+      <span class="linea2">Migrar el Carrito (parte 2):</span>
+      <span class="linea3">el pago con Wompi, de punta a punta</span>
+    </h1>
+    <p class="portada-desc">
+      Hoy el botón de pagar está apagado. En esta sesión se enciende: el servidor calcula el total y firma el pago, el navegador abre el widget de Wompi y una página nueva espera la respuesta del banco para decir si la compra se aprobó. Todo en modo de pruebas, sin mover dinero real.
+    </p>
+    <div class="portada-meta">
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /></svg> Sesión 32 de 44</div>
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2" /> <line x1="2" x2="22" y1="10" y2="10" /> <path d="M6 14h2" /></svg> Pago con Wompi</div>
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></svg> Firma en el servidor</div>
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" /></svg> Fase 5 — React y Tailwind</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 01 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 2 — COMPETENCIA Y RAP ══════════ -->
+<section class="slide" id="competencia">
+  <div class="slide-block-badge contexto">Marco de formación</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Competencia 220501096</h2>
+      <p class="sec-desc">Construcción del software de acuerdo con el diseño establecido. Todo lo que hacemos en esta fase construye evidencia real para estos 5 Resultados de Aprendizaje.</p>
+    </div>
+    <div class="rap-grid">
+      <div class="rap-card done">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" /> <path d="M15 5.764v15" /> <path d="M9 3.236v15" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Cerrado</span>
+          </div>
+          <div class="rap-card-id">RAP1</div>
+          <div class="rap-card-titulo">Planear</div>
+          <div class="rap-card-desc">Planear actividades de construcción según el diseño establecido.</div>
+        </div>
+      </div>
+      <div class="rap-card done">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Cerrado</span>
+          </div>
+          <div class="rap-card-id">RAP2</div>
+          <div class="rap-card-titulo">Base de datos</div>
+          <div class="rap-card-desc">Construir la base de datos a partir del modelo de datos.</div>
+        </div>
+      </div>
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP3</div>
+          <div class="rap-card-titulo">Componentes front-end</div>
+          <div class="rap-card-desc">Crear componentes front-end de acuerdo con el diseño. Hoy: el botón de pago y la página que muestra el resultado de la compra.</div>
+        </div>
+      </div>
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z" /> <path d="M20.054 15.987H3.946" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP4</div>
+          <div class="rap-card-titulo">Codificar</div>
+          <div class="rap-card-desc">Codificar el software según el diseño establecido. Hoy: integrar un servicio externo, calcular el total en el servidor y esperar una respuesta con un efecto.</div>
+        </div>
+      </div>
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" /> <path d="M6.453 15h11.094" /> <path d="M8.5 2h7" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP5</div>
+          <div class="rap-card-titulo">Pruebas</div>
+          <div class="rap-card-desc">Realizar pruebas para verificar la funcionalidad. Hoy: un pago aprobado, uno rechazado, un total manipulado y un pago abandonado.</div>
+        </div>
+      </div>
+    </div>
+    <div class="info-box tip">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></svg> Dónde estamos hoy</div>
+      <div class="info-box-content">La Sesión 32 sigue el Bloque C: es la primera vez que el proyecto habla con un <strong>servicio de otra empresa</strong>. Aporta evidencia a <strong>RAP3</strong>, <strong>RAP4</strong> y <strong>RAP5</strong>.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 02 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 3 — PLAN DE LA SESIÓN ══════════ -->
+<section class="slide" id="plan">
+  <div class="slide-block-badge contexto">Agenda</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Plan de la sesión</h2>
+      <p class="sec-desc">240 minutos: primero entender quién hace qué en un pago, después blindar el servidor, luego el navegador y por último probar con tarjetas de prueba.</p>
+    </div>
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">1</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.296 3.464 3.02 3.956" /> <path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z" /> <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /> <path d="m6.18 5.276 3.1 3.899" /></svg></div>
+        <div class="roadmap-tag">0–40 min</div>
+        <div class="roadmap-titulo">Apertura</div>
+        <div class="roadmap-desc">El camino de un pago, las llaves de Wompi y por qué el total jamás puede venir del navegador.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">2</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></svg></div>
+        <div class="roadmap-tag">40–90 min</div>
+        <div class="roadmap-titulo">El servidor</div>
+        <div class="roadmap-desc">La ruta de firma deja de creerle el total al navegador: lo calcula con los precios de la base de datos.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">3</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2" /> <line x1="2" x2="22" y1="10" y2="10" /> <path d="M6 14h2" /></svg></div>
+        <div class="roadmap-tag">90–150 min</div>
+        <div class="roadmap-titulo">El botón de pagar</div>
+        <div class="roadmap-desc">Cargar el widget de Wompi, pedir la firma y abrir la ventana de pago desde el carrito.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">4</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg></div>
+        <div class="roadmap-tag">150–200 min</div>
+        <div class="roadmap-titulo">La respuesta</div>
+        <div class="roadmap-desc">Una página nueva, /pago/:referencia, que pregunta cada 3 segundos hasta saber si el pago se aprobó.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">5</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" /> <path d="M6.453 15h11.094" /> <path d="M8.5 2h7" /></svg></div>
+        <div class="roadmap-tag">200–240 min</div>
+        <div class="roadmap-titulo">Pruebas y Git</div>
+        <div class="roadmap-desc">Tarjeta aprobada, tarjeta rechazada, total manipulado, y el commit con el proyecto compartido.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 03 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 4 — LOGROS DE HOY ══════════ -->
+<section class="slide" id="logros">
+  <div class="slide-block-badge contexto">Objetivos</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">¿Qué vamos a lograr?</h2>
+      <p class="sec-desc">Al terminar, una persona con sesión puede pagar su carrito, ver en pantalla si el pago se aprobó, y la compra queda guardada como una orden en tu base de datos.</p>
+    </div>
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">01</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></svg></div>
+        <div class="roadmap-tag">Servidor</div>
+        <div class="roadmap-titulo">Un total que nadie puede manipular</div>
+        <div class="roadmap-desc">El navegador dice qué productos y cuántas unidades; el servidor busca los precios en la base y calcula cuánto cobrar.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">02</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2" /> <line x1="2" x2="22" y1="10" y2="10" /> <path d="M6 14h2" /></svg></div>
+        <div class="roadmap-tag">Pago</div>
+        <div class="roadmap-titulo">Pagar con el widget de Wompi</div>
+        <div class="roadmap-desc">El botón del carrito pide una firma, abre la ventana de pago y espera. Funciona en modo de pruebas con tarjetas de mentira.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">03</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22V12" /> <path d="m16 17 2 2 4-4" /> <path d="M21 11.127V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.729l7 4a2 2 0 0 0 2 .001l1.32-.753" /> <path d="M3.29 7 12 12l8.71-5" /> <path d="m7.5 4.27 8.997 5.148" /></svg></div>
+        <div class="roadmap-tag">Resultado</div>
+        <div class="roadmap-titulo">Saber qué pasó</div>
+        <div class="roadmap-desc">Una página consulta el estado del pago. Si se aprobó, vacía el carrito y se crea la orden; si no, explica por qué.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 04 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 5 — DE DÓNDE PARTIMOS ══════════ -->
+<section class="slide" id="partida">
+  <div class="slide-block-badge contexto">Punto de partida</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Un backend que ya sabe cobrar y un botón apagado</h2>
+      <p class="sec-desc">El servidor ya tiene el sistema de pagos desde la sesión S18A. Lo que falta es el lado de React y cerrar un hueco de seguridad que ese servidor trae.</p>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></svg></div>
+        <div class="concepto-titulo">Ruta de firma</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">POST /api/pagos/firma</code> crea una referencia, calcula la firma y guarda una <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Transaccion</code> en estado <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PENDING</code>.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34" /> <circle cx="11" cy="11" r="8" /></svg></div>
+        <div class="concepto-titulo">Ruta de estado</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">GET /api/pagos/estado/:referencia</code> le pregunta a Wompi qué pasó y, si se aprobó, crea la <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Orden</code>.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /> <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></div>
+        <div class="concepto-titulo">Llaves en el .env</div>
+        <div class="concepto-desc">Las cuatro llaves <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">WOMPI_...</code> ya están en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">backend/.env</code>. Cada aprendiz usa las suyas, las de su cuenta de pruebas.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="12" r="3" /> <rect width="20" height="14" x="2" y="5" rx="7" /></svg></div>
+        <div class="concepto-titulo">El botón de S31</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Pagar con Wompi (próximamente)</code>: apagado a propósito. Hoy se enciende.</div>
+      </div>
+    </div>
+    <div class="info-box warning">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> El hueco: la ruta de firma le cree al navegador</div>
+      <div class="info-box-content">Hoy <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/api/pagos/firma</code> toma el <strong>total</strong> que manda el navegador y lo cobra tal cual. Cualquiera puede mandar <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">"total": 1000</code> por un MacBook de $8.999.000 y el servidor lo firma. Lo vemos en vivo y lo arreglamos.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 05 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 6 — EL CAMINO DE UN PAGO ══════════ -->
+<section class="slide" id="flujo">
+  <div class="slide-block-badge teoria">Concepto · Quién hace qué</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Un pago tiene tres participantes</h2>
+      <p class="sec-desc">El <strong>navegador</strong> (React), tu <strong>servidor</strong> y <strong>Wompi</strong>. Cada uno hace lo que sí puede hacer con seguridad, y ninguno confía a ciegas en el anterior.</p>
+    </div>
+    <div class="tree-demo">
+      <div class="tree-row"><div class="tree-node origen">1 · React pide la firma al servidor (productos y cantidades)</div></div>
+      <div class="tree-arrow-down">↓ el servidor calcula el total con los precios de la base ↓</div>
+      <div class="tree-row"><div class="tree-node pasa">2 · El servidor responde: referencia, monto y firma</div></div>
+      <div class="tree-arrow-down">↓ React abre el widget de Wompi con esos datos ↓</div>
+      <div class="tree-row"><div class="tree-node pasa">3 · La persona paga dentro de la ventana de Wompi</div></div>
+      <div class="tree-arrow-down">↓ React va a la página /pago/referencia ↓</div>
+      <div class="tree-row"><div class="tree-node destino">4 · La página pregunta cada 3 s al servidor, y el servidor a Wompi</div></div>
+      <div class="tree-caption">Si Wompi dice APPROVED, el servidor crea la orden y la página vacía el carrito. Nadie en el navegador decide si el pago se aprobó.</div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Quién</th><th>Qué sabe</th><th>Qué nunca debe hacer</th></tr></thead>
+        <tbody>
+          <tr><td>React (navegador)</td><td>Qué productos hay en el carrito y cuántos</td><td>Decidir el total, ni mucho menos decidir si el pago se aprobó: el navegador lo controla quien lo usa</td></tr>
+          <tr><td>Tu servidor</td><td>Los precios reales y los secretos de Wompi</td><td>Entregar los secretos al navegador. Solo entrega la llave pública y la firma</td></tr>
+          <tr><td>Wompi</td><td>Si el banco aprobó o rechazó el pago</td><td>Nada: es la única fuente que dice si se pagó</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 06 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 7 — EL TOTAL NO VIENE DEL NAVEGADOR ══════════ -->
+<section class="slide" id="confianza">
+  <div class="slide-block-badge teoria">Concepto · No confiar en el cliente</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Todo lo que llega del navegador se puede mentir</h2>
+      <p class="sec-desc">Es el mismo principio de S30, cuando el registro aceptaba <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">"rol": "admin"</code>. En <strong>Postman</strong> no hay botones ni pantallas: cualquiera manda el cuerpo que quiera.</p>
+    </div>
+    <div class="dom-compare" style="grid-template-columns:1fr auto 1fr;">
+      <div class="dom-box mal">
+        <div class="dom-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m15 9-6 6" /> <path d="m9 9 6 6" /></svg> El servidor cobra lo que le digan</div>
+        <div class="dom-box-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">{ "productos": [...], "total": 1000 }</code>. El servidor firma 1.000 pesos por un portátil de millones. La firma es válida: Wompi cobra y la orden se crea.</div>
+      </div>
+      <div class="dom-vs">→</div>
+      <div class="dom-box bien">
+        <div class="dom-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> El servidor calcula el total</div>
+        <div class="dom-box-desc">El navegador solo manda <strong>qué productos y cuántos</strong>. El servidor busca cada precio en la base de datos, multiplica y suma. Un <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">total</code> extra en el cuerpo se ignora.</div>
+      </div>
+    </div>
+    <div class="code-editor" style="max-width:700px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">backend/routes/pago.js — el total sale de la base</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> enBase = await Producto.<span class="par-funcion">find</span>({ id: { $in: ids } })</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">3</span><span class="code"><span class="prop">let</span> total = 0</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">for (<span class="prop">const</span> p of productos) {</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">  <span class="prop">const</span> prod = enBase.<span class="par-funcion">find</span>((x) =&gt; x.id === p.id)</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">  total += <span class="sel">Number</span>(prod.precio.<span class="par-funcion">replace</span>(/[$.]/g, <span class="str">""</span>)) * p.cantidad</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">}</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>Producto.find({ id: { $in: ids } })</td><td>Pide a la base los productos del carrito en una sola consulta. <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">$in</code> significa "cualquiera de estos ids"</td></tr>
+          <tr><td>prod.precio.replace(/[$.]/g, "")</td><td>El mismo truco de S31, ahora en el servidor: el precio guardado sigue siendo texto con puntos y signo</td></tr>
+          <tr><td>* p.cantidad</td><td>La cantidad sí viene del navegador, pero se valida: debe ser un entero de 1 en adelante</td></tr>
+          <tr><td>Postman de prueba</td><td>Antes del arreglo mandas <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">total: 1000</code> y responde con una firma por 100.000 centavos. Después, esa misma petición cobra el precio real</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 07 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 8 — LAS LLAVES DE WOMPI ══════════ -->
+<section class="slide" id="llaves">
+  <div class="slide-block-badge teoria">Concepto · Llaves y secretos</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Cuatro llaves, y solo una puede salir del servidor</h2>
+      <p class="sec-desc">Wompi entrega cuatro valores en su panel, en <strong>Desarrolladores</strong>. Todos viven en el <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">.env</code> del backend. Solo la llave pública viaja al navegador.</p>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Llave</th><th>Empieza con…</th><th>Para qué sirve</th><th>¿Sale del servidor?</th></tr></thead>
+        <tbody>
+          <tr><td>Llave pública</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">pub_test_</code></td><td>Identifica tu comercio al abrir el widget. Es pública a propósito</td><td>Sí, viaja en la respuesta de la firma</td></tr>
+          <tr><td>Llave privada</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">prv_test_</code></td><td>El servidor la usa para preguntarle a Wompi el estado de un pago</td><td><strong>Nunca</strong></td></tr>
+          <tr><td>Secreto de integridad</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">test_integrity_</code></td><td>Se mezcla con la referencia y el monto para firmar el pago</td><td><strong>Nunca</strong></td></tr>
+          <tr><td>Secreto de eventos</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">test_events_</code></td><td>Verifica los avisos (webhooks) que Wompi te manda. Hoy no se usa</td><td><strong>Nunca</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" /> <path d="M6.453 15h11.094" /> <path d="M8.5 2h7" /></svg></div>
+        <div class="concepto-titulo">Modo de pruebas (sandbox)</div>
+        <div class="concepto-desc">Las llaves de prueba traen <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">test</code> en el nombre y mueven <strong>dinero de mentira</strong>. Las de producción empiezan con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">prod</code>. Nunca se mezclan: una pública de pruebas con una privada de producción falla.</div>
+      </div>
+      <div class="concepto-card amarillo">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6a9 9 0 0 0-9 9V3" /> <circle cx="18" cy="6" r="3" /> <circle cx="6" cy="18" r="3" /></svg></div>
+        <div class="concepto-titulo">Un .env nunca se sube a Git</div>
+        <div class="concepto-desc">Si un secreto llega al repositorio, hay que cambiarlo en Wompi: ya se considera publicado. Por eso el paso de Git de cada guía revisa que <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">.env</code> no aparezca.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 08 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 9 — LA FIRMA DE INTEGRIDAD ══════════ -->
+<section class="slide" id="firma">
+  <div class="slide-block-badge practica">Práctica · La firma</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Una firma que prueba que el monto no cambió</h2>
+      <p class="sec-desc">Antes de abrir el widget, el servidor entrega una <strong>firma</strong>: una huella calculada con el secreto de integridad. Si alguien cambia el monto en el navegador, la huella ya no coincide y Wompi rechaza el pago.</p>
+    </div>
+    <div class="code-editor" style="max-width:820px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">backend/routes/pago.js — la firma (ya existe, resumida)</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> reference = <span class="str">"TS-"</span> + Date.<span class="sel">now</span>() + <span class="str">"-"</span> + Math.<span class="sel">floor</span>(1000 + Math.<span class="sel">random</span>() * 9000)</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code"><span class="prop">const</span> amountInCents = Math.<span class="sel">round</span>(total * 100)</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code"><span class="prop">const</span> raw = reference + amountInCents + <span class="str">"COP"</span> + process.env.WOMPI_INTEGRITY_SECRET</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code"><span class="prop">const</span> signature = crypto.<span class="par-funcion">createHash</span>(<span class="str">"sha256"</span>).<span class="par-funcion">update</span>(raw).<span class="par-funcion">digest</span>(<span class="str">"hex"</span>)</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>reference</td><td>Un código único para este intento de pago: <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">TS-</code>, la hora y un número al azar. Así se reconoce el pago después</td></tr>
+          <tr><td>amountInCents</td><td>Wompi trabaja en <strong>centavos</strong>: $8.999.000 se manda como 899.900.000. Por eso se multiplica por 100</td></tr>
+          <tr><td>raw</td><td>Un texto que pega referencia, monto, moneda y el secreto. El secreto es lo que hace imposible falsificar la firma</td></tr>
+          <tr><td>sha256(...).digest("hex")</td><td>Convierte ese texto en una huella de 64 caracteres. El mismo texto siempre da la misma huella; cambiar una letra da otra completamente distinta</td></tr>
+          <tr><td>Transaccion con PENDING</td><td>Antes de responder, el servidor guarda el carrito y el total en una <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Transaccion</code> pendiente. Cuando Wompi apruebe, de ahí se crea la orden</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box info">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Lo que cambiamos hoy en esta ruta</div>
+      <div class="info-box-content">Nada de la firma: sigue igual. Cambia <strong>de dónde sale el total</strong> (ahora de la base) y lo que se guarda en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">pendingOrderData</code>: los productos con su <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">_id</code> de MongoDB y su cantidad, que es lo que espera el modelo <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Orden</code>. El servidor lo busca a partir del <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">id</code> que manda el carrito.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 09 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 10 — EL WIDGET EN REACT ══════════ -->
+<section class="slide" id="widget">
+  <div class="slide-block-badge practica">Práctica · Abrir el widget</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Wompi se carga como un script, no como un paquete</h2>
+      <p class="sec-desc">El widget es un archivo JavaScript que vive en los servidores de Wompi. Se carga una sola vez en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">index.html</code> y deja disponible una clase global, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">WidgetCheckout</code>, que React usa cuando haga falta.</p>
+    </div>
+    <div class="code-editor" style="max-width:700px;margin:0 auto 10px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">frontend-react/index.html — una línea nueva</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">&lt;<span class="tag">body</span>&gt;</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  &lt;<span class="tag">div</span> <span class="attr">id</span>=<span class="str">"root"</span>&gt;&lt;/<span class="tag">div</span>&gt;</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">  <span class="par-handler">&lt;script src="https://checkout.wompi.co/widget.js"&gt;&lt;/script&gt;</span></span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">  &lt;<span class="tag">script</span> <span class="attr">type</span>=<span class="str">"module"</span> <span class="attr">src</span>=<span class="str">"/src/main.jsx"</span>&gt;&lt;/<span class="tag">script</span>&gt;</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">&lt;/<span class="tag">body</span>&gt;</span></div>
+      </div>
+    </div>
+    <div class="code-editor" style="max-width:760px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">Carrito.jsx — abrir la ventana de pago</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> checkout = new <span class="par-funcion">window.WidgetCheckout</span>({</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  currency: datos.currency,</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">  amountInCents: datos.amountInCents,</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">  reference: datos.reference,</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">  publicKey: datos.publicKey,</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">  signature: { integrity: datos.signature },</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">})</span></div>
+        <div class="cl"><span class="ln">8</span><span class="code">checkout.<span class="par-funcion">open</span>(() =&gt; <span class="sel">navegar</span>(<span class="str">"/pago/"</span> + datos.reference))</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>window.WidgetCheckout</td><td>La clase que dejó el script. Se escribe con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">window.</code> para que quede claro que no la importamos: viene de afuera</td></tr>
+          <tr><td>Los cinco datos</td><td>Todos salen de la respuesta del servidor, no del navegador: moneda, monto, referencia, llave pública y firma</td></tr>
+          <tr><td>checkout.open(callback)</td><td>Abre la ventana de pago. Cuando la persona la <strong>cierra</strong> (pagó, falló o canceló), se ejecuta el callback</td></tr>
+          <tr><td>navegar("/pago/" + referencia)</td><td>El widget no dice si el pago se aprobó con confianza: se va a la página de resultado, que le pregunta al servidor</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 10 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 11 — PAGAR DESDE EL CARRITO ══════════ -->
+<section class="slide" id="pagar">
+  <div class="slide-block-badge practica">Práctica · El botón de pagar</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">El botón se enciende y habla con el servidor</h2>
+      <p class="sec-desc">El botón que S31 dejó apagado ahora llama a una función asíncrona. Mientras trabaja se desactiva, y si algo falla se explica en la misma página.</p>
+    </div>
+    <div class="code-editor" style="max-width:900px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">Carrito.jsx — la función pagar</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> [<span class="par-dato">pagando</span>, setPagando] = <span class="sel">useState</span>(<span class="prop">false</span>)</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code"><span class="prop">const</span> [<span class="par-dato">error</span>, setError] = <span class="sel">useState</span>(<span class="str">""</span>)</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">4</span><span class="code"><span class="par-funcion">async</span> <span class="prop">function</span> <span class="sel">pagar</span>() {</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">  <span class="sel">setError</span>(<span class="str">""</span>)</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">  <span class="sel">setPagando</span>(<span class="prop">true</span>)</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">  try {</span></div>
+        <div class="cl"><span class="ln">8</span><span class="code">    <span class="prop">const</span> respuesta = <span class="par-funcion">await</span> <span class="sel">fetch</span>(<span class="str">"http://localhost:3000/api/pagos/firma"</span>, {</span></div>
+        <div class="cl"><span class="ln">9</span><span class="code">      method: <span class="str">"POST"</span>,</span></div>
+        <div class="cl"><span class="ln">10</span><span class="code">      headers: {</span></div>
+        <div class="cl"><span class="ln">11</span><span class="code">        <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>,</span></div>
+        <div class="cl"><span class="ln">12</span><span class="code">        Authorization: <span class="str">"Bearer "</span> + localStorage.<span class="sel">getItem</span>(<span class="str">"token"</span>),</span></div>
+        <div class="cl"><span class="ln">13</span><span class="code">      },</span></div>
+        <div class="cl"><span class="ln">14</span><span class="code">      body: JSON.<span class="sel">stringify</span>({</span></div>
+        <div class="cl"><span class="ln">15</span><span class="code">        productos: items.<span class="sel">map</span>((i) =&gt; ({ id: i.id, cantidad: i.cantidad })),</span></div>
+        <div class="cl"><span class="ln">16</span><span class="code">      }),</span></div>
+        <div class="cl"><span class="ln">17</span><span class="code">    })</span></div>
+        <div class="cl"><span class="ln">18</span><span class="code">    <span class="prop">const</span> datos = <span class="par-funcion">await</span> respuesta.<span class="sel">json</span>()</span></div>
+        <div class="cl"><span class="ln">19</span><span class="code">    <span class="prop">if</span> (!respuesta.ok) { <span class="sel">setError</span>(datos.error); <span class="sel">setPagando</span>(<span class="prop">false</span>); <span class="prop">return</span> }</span></div>
+        <div class="cl"><span class="ln">20</span><span class="code">    <span class="cm">// ... abrir el widget (diapositiva anterior)</span></span></div>
+        <div class="cl"><span class="ln">21</span><span class="code">  } catch {</span></div>
+        <div class="cl"><span class="ln">22</span><span class="code">    <span class="sel">setError</span>(<span class="str">"No se pudo conectar con el servidor"</span>)</span></div>
+        <div class="cl"><span class="ln">23</span><span class="code">    <span class="sel">setPagando</span>(<span class="prop">false</span>)</span></div>
+        <div class="cl"><span class="ln">24</span><span class="code">  }</span></div>
+        <div class="cl"><span class="ln">25</span><span class="code">}</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>pagando</td><td>Un <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">true</code>/<code style="font-family:'JetBrains Mono',monospace;font-size:12px;">false</code> que apaga el botón y cambia su texto a "Preparando pago…". Evita que un doble clic genere dos cobros</td></tr>
+          <tr><td>Authorization: "Bearer " + token</td><td>El servidor exige sesión: la ruta de firma usa <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">verificarToken</code>. Es el token que guardó el Login de S30</td></tr>
+          <tr><td>id: i.id</td><td>El número <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">id</code> del producto, que el carrito ya guarda. El servidor lo busca en la base y de ahí saca el precio real y el <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">_id</code> de MongoDB que guarda la orden</td></tr>
+          <tr><td>async / await</td><td>Esperan la respuesta sin congelar la página. Dentro de <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">try</code>/<code style="font-family:'JetBrains Mono',monospace;font-size:12px;">catch</code>, un servidor apagado cae en el <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">catch</code> en vez de romper la página</td></tr>
+          <tr><td>!respuesta.ok</td><td>El servidor respondió, pero con un error (400, 401, 500…): se muestra su mensaje, por ejemplo "Carrito con productos inválidos"</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 11 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 12 — LA PÁGINA DE RESULTADO ══════════ -->
+<section class="slide" id="resultado">
+  <div class="slide-block-badge practica">Práctica · PagoResultado.jsx</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Preguntar cada 3 segundos, y parar a tiempo</h2>
+      <p class="sec-desc">Wompi tarda unos segundos en confirmar. La página nueva <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/pago/:referencia</code> repite la pregunta hasta tener respuesta, y deja de preguntar si la persona se va o si pasa un minuto.</p>
+    </div>
+    <div class="code-editor" style="max-width:900px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">pages/PagoResultado.jsx — el efecto que espera</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> { <span class="par-dato">referencia</span> } = <span class="par-funcion">useParams</span>()</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code"><span class="prop">const</span> [estado, setEstado] = <span class="sel">useState</span>(<span class="str">"PENDING"</span>)</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">4</span><span class="code"><span class="sel">useEffect</span>(() =&gt; {</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">  <span class="prop">let</span> intentos = 0</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">  <span class="prop">const</span> intervalo = <span class="par-funcion">setInterval</span>(async () =&gt; {</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">    intentos++</span></div>
+        <div class="cl"><span class="ln">8</span><span class="code">    <span class="prop">if</span> (intentos &gt; 20) { <span class="sel">clearInterval</span>(intervalo); <span class="sel">setEstado</span>(<span class="str">"TIMEOUT"</span>); <span class="prop">return</span> }</span></div>
+        <div class="cl"><span class="ln">9</span><span class="code">    <span class="prop">const</span> r = await <span class="sel">fetch</span>(<span class="str">"http://localhost:3000/api/pagos/estado/"</span> + referencia, {</span></div>
+        <div class="cl"><span class="ln">10</span><span class="code">      headers: { Authorization: <span class="str">"Bearer "</span> + localStorage.<span class="sel">getItem</span>(<span class="str">"token"</span>) },</span></div>
+        <div class="cl"><span class="ln">11</span><span class="code">    })</span></div>
+        <div class="cl"><span class="ln">12</span><span class="code">    <span class="prop">const</span> datos = await r.<span class="sel">json</span>()</span></div>
+        <div class="cl"><span class="ln">13</span><span class="code">    <span class="prop">if</span> (datos.status &amp;&amp; datos.status !== <span class="str">"PENDING"</span>) { <span class="sel">clearInterval</span>(intervalo); <span class="sel">setEstado</span>(datos.status) }</span></div>
+        <div class="cl"><span class="ln">14</span><span class="code">  }, 3000)</span></div>
+        <div class="cl"><span class="ln">15</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">16</span><span class="code">  <span class="prop">return</span> () =&gt; <span class="par-funcion">clearInterval</span>(intervalo)</span></div>
+        <div class="cl"><span class="ln">17</span><span class="code">}, [referencia])</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>useParams()</td><td>Lee la parte variable de la dirección: en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/pago/TS-1731-4821</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">referencia</code> vale <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">"TS-1731-4821"</code></td></tr>
+          <tr><td>setInterval(..., 3000)</td><td>Ejecuta la función una y otra vez, cada 3 segundos. Con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">intentos &gt; 20</code> se rinde a los 60 segundos y muestra "no pudimos confirmar"</td></tr>
+          <tr><td>return () => clearInterval(...)</td><td>La <strong>limpieza</strong> del efecto: si la persona se va de la página, el reloj se detiene. Sin esto seguiría preguntando para siempre, en una página que ya no existe</td></tr>
+          <tr><td>Los cuatro estados</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">APPROVED</code> (aprobado: se vacía el carrito), <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">DECLINED</code> (rechazado), <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">ERROR</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">TIMEOUT</code> (nadie respondió a tiempo)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box tip">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Si cierras el widget sin pagar</div>
+      <div class="info-box-content">Wompi nunca crea la transacción, así que el estado se queda en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PENDING</code> los 60 segundos y la página dice "no pudimos confirmar el pago". El carrito <strong>no se vacía</strong>: la persona puede intentar de nuevo.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 12 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 13 — PROBAR CON DATOS DE PRUEBA ══════════ -->
+<section class="slide" id="pruebas">
+  <div class="slide-block-badge practica">Práctica · Sandbox</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Dinero de mentira, resultados de verdad</h2>
+      <p class="sec-desc">En modo de pruebas Wompi acepta tarjetas inventadas. Cada una produce un resultado distinto, y así se prueban los dos caminos.</p>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Método</th><th>Dato de prueba</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td>Tarjeta de crédito</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">4242 4242 4242 4242</code>, cualquier fecha futura, CVC de 3 dígitos</td><td><strong>APPROVED</strong>: aprobada</td></tr>
+          <tr><td>Tarjeta de crédito</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">4111 1111 1111 1111</code>, cualquier fecha futura, CVC de 3 dígitos</td><td><strong>DECLINED</strong>: rechazada</td></tr>
+          <tr><td>Nequi</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">3991111111</code></td><td><strong>APPROVED</strong></td></tr>
+          <tr><td>Nequi</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">3992222222</code></td><td><strong>DECLINED</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22V12" /> <path d="m16 17 2 2 4-4" /> <path d="M21 11.127V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.729l7 4a2 2 0 0 0 2 .001l1.32-.753" /> <path d="M3.29 7 12 12l8.71-5" /> <path d="m7.5 4.27 8.997 5.148" /></svg></div>
+        <div class="concepto-titulo">Después de un pago aprobado</div>
+        <div class="concepto-desc">En Compass, la colección <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">transaccions</code> tiene tu referencia con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">APPROVED</code> y, en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">ordens</code>, aparece una orden nueva con estado <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PAGO_CONFIRMADO</code>.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m15 9-6 6" /> <path d="m9 9 6 6" /></svg></div>
+        <div class="concepto-titulo">Después de uno rechazado</div>
+        <div class="concepto-desc">La transacción queda <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">DECLINED</code>, <strong>no</strong> se crea ninguna orden y el carrito sigue lleno para reintentar.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20v-9" /> <path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z" /> <path d="M14.12 3.88 16 2" /> <path d="M21 21a4 4 0 0 0-3.81-4" /> <path d="M21 5a4 4 0 0 1-3.55 3.97" /> <path d="M22 13h-4" /> <path d="M3 21a4 4 0 0 1 3.81-4" /> <path d="M3 5a4 4 0 0 0 3.55 3.97" /> <path d="M6 13H2" /> <path d="m8 2 1.88 1.88" /> <path d="M9 7.13V6a3 3 0 1 1 6 0v1.13" /></svg></div>
+        <div class="concepto-titulo">Total manipulado</div>
+        <div class="concepto-desc">Con Postman manda <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">total: 1000</code>: debe cobrar el precio real. Manda un id que no existe o una cantidad de <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">-5</code>: debe responder 400.</div>
+      </div>
+    </div>
+    <div class="info-box info">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> El webhook, un viaje que hoy no hacemos</div>
+      <div class="info-box-content">En producción Wompi avisa al servidor por su cuenta con un <strong>webhook</strong>, pero eso necesita una dirección pública (el <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">localhost</code> de tu computador no lo es). Por eso hoy el servidor <strong>pregunta</strong> en vez de esperar aviso. El resultado es el mismo.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 13 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 14 — PRERREQUISITOS ══════════ -->
+<section class="slide" id="prerrequisitos">
+  <div class="slide-block-badge contexto">Antes de empezar</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Prerrequisitos</h2>
+      <p class="sec-desc">Hay que dejar listo el lado de Wompi antes de escribir código.</p>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /> <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg></div>
+        <div class="concepto-titulo">Cuenta Wompi en modo de pruebas</div>
+        <div class="concepto-desc">Con tu cuenta de Wompi, activa el <strong>modo de pruebas</strong> y copia, desde <strong>Desarrolladores</strong>, las cuatro llaves a <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">backend/.env</code>: <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">WOMPI_PUBLIC_KEY</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">WOMPI_PRIVATE_KEY</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">WOMPI_INTEGRITY_SECRET</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">WOMPI_EVENTS_SECRET</code>.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.05 2.05 1.099-.028a1 1 0 0 1 1.008.815l2.69 14.347A1 1 0 0 0 7.83 18H18" /> <path d="M4.563 5h16.435a1 1 0 0 1 .981 1.204l-1.026 6.226A2 2 0 0 1 18.962 14H6.25" /> <circle cx="18" cy="20" r="2" /> <circle cx="8" cy="20" r="2" /></svg></div>
+        <div class="concepto-titulo">Un carrito con productos</div>
+        <div class="concepto-desc">Necesitas productos en el carrito para pagar. Si dejaste uno de S31, sirve. Si no, agrega dos o tres desde la tienda.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="concepto-titulo">S31 funcionando y ordenada</div>
+        <div class="concepto-desc">La página <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/carrito</code> y la estructura con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">pages/</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">components/</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">context/</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">utils/</code>. Hoy se agrega un archivo nuevo en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">pages/</code>.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></svg></div>
+        <div class="concepto-titulo">Dos servidores a la vez</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">backend/</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">frontend-react/</code>, cada uno con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">npm run dev</code>. Esta vez el backend es indispensable: sin él no hay firma.</div>
+      </div>
+    </div>
+    <div class="info-box warning">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="M12 8v4" /> <path d="M12 16h.01" /></svg> Los secretos no se comparten</div>
+      <div class="info-box-content">Las llaves de Wompi son de <strong>cada persona</strong>. No las pegues en el chat, no las pongas en capturas de pantalla y no las subas a Git. Si se filtra una, se genera otra en el panel de Wompi.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 14 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 15 — LOS CONCEPTOS NUEVOS DE HOY ══════════ -->
+<section class="slide" id="resumen">
+  <div class="slide-block-badge contexto">Referencia rápida</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Los conceptos nuevos de hoy</h2>
+      <p class="sec-desc">Todo lo de S19 a S31 sigue funcionando igual. Esto es lo que se suma.</p>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Concepto</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><td>No confiar en el cliente</td><td>Todo lo que llega del navegador se puede alterar. El servidor recalcula lo importante, como el total, con datos que él controla</td></tr>
+          <tr><td>Llave pública y llaves secretas</td><td>Una identifica al comercio y puede viajar al navegador. Las demás solo viven en el <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">.env</code> del servidor</td></tr>
+          <tr><td>Firma de integridad</td><td>Una huella <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">sha256</code> de referencia, monto y secreto. Si el monto cambia, la huella deja de coincidir</td></tr>
+          <tr><td>Script externo</td><td>El widget de Wompi se carga desde su dirección en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">index.html</code> y se usa como <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">window.WidgetCheckout</code></td></tr>
+          <tr><td>async / await con try / catch</td><td>Esperar una respuesta del servidor sin congelar la página, y qué hacer si falla</td></tr>
+          <tr><td>Parámetro de ruta</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/pago/:referencia</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">useParams()</code> leen la parte variable de la dirección</td></tr>
+          <tr><td>Polling con limpieza</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">setInterval</code> dentro de un efecto, con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">clearInterval</code> al salir y un tope de intentos</td></tr>
+          <tr><td>Estados de un pago</td><td>PENDING, APPROVED, DECLINED, ERROR y, en nuestra página, TIMEOUT. Solo APPROVED crea una orden</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 15 / 16</div>
+</section>
+
+<!-- ══════════ SLIDE 16 — ENTREGABLE Y CIERRE ══════════ -->
+<section class="slide" id="entregable">
+  <div class="slide-block-badge contexto">Cierre · Sesión 32</div>
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">¡Empezamos!</h2>
+    </div>
+    <div class="entregable-box">
+      <div class="entregable-title">Criterios de evaluación</div>
+      <ul class="entregable-list">
+        <li>La ruta de firma <strong>ignora el total</strong> del navegador y lo calcula con los precios de la base de datos; con ids inválidos o cantidades incorrectas responde 400</li>
+        <li>El widget de Wompi se carga en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">index.html</code> y ninguna llave secreta aparece en el código de React</li>
+        <li>Con sesión, "Pagar con Wompi" se enciende, muestra "Preparando pago…" mientras trabaja y abre la ventana de Wompi</li>
+        <li>Si el servidor falla o rechaza el carrito, la página muestra el mensaje y el botón vuelve a estar disponible</li>
+        <li>La ruta <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/pago/:referencia</code> espera la respuesta cada 3 segundos y se detiene al salir o tras 60 segundos</li>
+        <li>Un pago con la tarjeta 4242 vacía el carrito y crea una orden <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PAGO_CONFIRMADO</code> visible en Compass</li>
+        <li>Un pago con la tarjeta 4111 muestra "rechazado", no crea orden y conserva el carrito</li>
+        <li>Sin errores en consola ni en las terminales, y el <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">.env</code> sin subir a Git</li>
+      </ul>
+    </div>
+    <div class="concepto-grid" style="margin-top:24px;grid-template-columns:minmax(240px,520px);">
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" /> <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg></div>
+        <div class="concepto-titulo">02 — Guía paso a paso</div>
+        <div class="concepto-desc">La parte <strong>obligatoria</strong> de hoy: el servidor que calcula el total, el widget, el botón de pagar y la página de resultado.</div>
+        <a href="../02_GUIA_MIGRAR_CARRITO_PAGO_WOMPI/index.html" style="display:inline-block;margin-top:10px;color:#1e40af;font-weight:700;text-decoration:underline;font-size:13px;">Abrir guía →</a>
+      </div>
+    </div>
+    <div class="info-box teal">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg> Próxima sesión: S33</div>
+      <div class="info-box-content">Migrar Mis Pedidos: <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">GET /api/ordenes</code> con el token y una línea de tiempo del estado de cada orden como componente de React. Las órdenes que crees hoy con tus pagos de prueba son las que verás ahí.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 16 / 16</div>
+</section>
+
+</main>
+
+<script>
+// Alternar sidebar (colapsado en escritorio, drawer en móvil)
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main-content');
+  const toggleBtn = document.getElementById('floating-toggle');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (window.innerWidth <= 1024) {
+    const abierto = sidebar.classList.toggle('open');
+    backdrop.classList.toggle('active', abierto);
+  } else {
+    const colapsado = sidebar.classList.toggle('collapsed');
+    main.classList.toggle('expanded', colapsado);
+    toggleBtn.classList.toggle('visible', colapsado);
+  }
+}
+
+// Cerrar el drawer al elegir un slide en móvil
+document.querySelectorAll('.sidebar .nav-link').forEach((link) => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 1024) {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarBackdrop').classList.remove('active');
+    }
+  });
+});
+
+// ScrollSpy: marca en el menú el slide visible
+const secciones = document.querySelectorAll('section.slide[id]');
+const enlaces = document.querySelectorAll('.sidebar .nav-link');
+const observador = new IntersectionObserver((entradas) => {
+  entradas.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const id = e.target.id;
+    enlaces.forEach((l) => {
+      const activo = l.getAttribute('href') === '#' + id;
+      l.classList.toggle('active', activo);
+      if (activo) l.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  });
+}, { root: null, rootMargin: '-15% 0px -65% 0px', threshold: 0 });
+secciones.forEach((s) => observador.observe(s));
+</script>
+</body>
+</html>
