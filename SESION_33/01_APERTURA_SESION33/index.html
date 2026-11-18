@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 33: Migrar Mis Pedidos | SENA ADSO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sena-verde: #39a900;
+  --sena-verde-dark: #2d8400;
+  --sena-verde-glow: rgba(57,169,0,0.10);
+  --sena-verde-border: rgba(57,169,0,0.30);
+  --sena-naranja: #ff6b00;
+  --sena-naranja-glow: rgba(255,107,0,0.10);
+  --sena-naranja-border: rgba(255,107,0,0.30);
+  --texto: #1a1a2e;
+  --texto-dim: rgba(26,26,46,0.62);
+  --texto-dimmer: rgba(26,26,46,0.38);
+  --bg: #f8fafc;
+  --bg-alt: #f4f7f2;
+  --borde: #e2e8f0;
+  --acento-azul: #3b82f6;
+  --acento-azul-glow: rgba(59,130,246,0.10);
+  --acento-purpura: #8b5cf6;
+  --acento-purpura-glow: rgba(139,92,246,0.10);
+  --alerta-amarillo: #f59e0b;
+  --alerta-amarillo-glow: rgba(245,158,11,0.10);
+  --alerta-rojo: #ef4444;
+  --alerta-rojo-glow: rgba(239,68,68,0.10);
+  --acento-teal: #0ea5e9;
+  --acento-teal-glow: rgba(14,165,233,0.10);
+  --acento-teal-border: rgba(14,165,233,0.30);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter',sans-serif; color:var(--texto); background:var(--bg); line-height:1.6; overflow-x:hidden; }
+
+@media(min-width:600px){ .topbar-sub{display:block;} }
+@media(min-width:900px){ .topbar-nav{display:flex;} }
+
+/* Scroll continuo tipo landing: mismo fondo en toda la apertura, sin bloques de color alternos */
+.slide.bg-alt, .slide.bg-verde, .slide.bg-azul, .slide.bg-teal { background:var(--bg); }
+.slide-inner { max-width:1200px; margin:0 auto; }
+
+.bg-dots { position:absolute; inset:0; background-image:radial-gradient(var(--sena-verde-border) 1px, transparent 1px); background-size:28px 28px; pointer-events:none; opacity:0.35; }
+.bg-glow { position:absolute; width:600px; height:600px; border-radius:50%; filter:blur(120px); opacity:0.22; pointer-events:none; z-index:0; }
+.bg-glow.g1 { background:radial-gradient(circle, var(--sena-verde-glow), transparent 70%); top:-200px; left:-200px; }
+.bg-glow.g2 { background:radial-gradient(circle, var(--sena-naranja-glow), transparent 70%); bottom:-200px; right:-200px; }
+
+.portada-tag { display:inline-flex; align-items:center; gap:8px; background:var(--sena-verde-glow); border:1px solid var(--sena-verde-border); padding:10px 20px; border-radius:30px; font-size:12px; font-weight:700; color:var(--sena-verde-dark); letter-spacing:1.5px; margin-bottom:32px; position:relative; z-index:1; }
+.portada-tag .dot { width:6px; height:6px; background:var(--sena-verde); border-radius:50%; animation:blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.portada-titulo { font-family:'Syne',sans-serif; font-size:clamp(40px,7vw,68px); font-weight:800; line-height:1.1; margin-bottom:20px; color:var(--texto); position:relative; z-index:1; }
+.portada-titulo .linea2 { display:block; background:linear-gradient(135deg, var(--acento-teal), var(--acento-azul)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-titulo .linea3 { display:block; background:linear-gradient(135deg, var(--sena-naranja), var(--acento-purpura)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.portada-desc { font-size:clamp(15px,2vw,18px); color:var(--texto-dim); max-width:680px; margin-bottom:40px; position:relative; z-index:1; line-height:1.7; }
+.portada-meta { display:flex; gap:16px; flex-wrap:wrap; position:relative; z-index:1; }
+.portada-meta-item { background:rgba(255,255,255,0.9); border:1px solid var(--borde); padding:10px 20px; border-radius:12px; font-size:14px; font-weight:600; color:var(--texto-dim); }
+
+.sec-header { margin-bottom:40px; position:relative; z-index:1; }
+.sec-tag { display:inline-block; font-size:11px; font-weight:700; padding:6px 14px; border-radius:20px; letter-spacing:1.2px; margin-bottom:14px; text-transform:uppercase; border:1px solid transparent; }
+.sec-tag.verde   { background:var(--sena-verde-glow); color:var(--sena-verde); border-color:var(--sena-verde-border); }
+.sec-tag.naranja { background:var(--sena-naranja-glow); color:var(--sena-naranja); border-color:var(--sena-naranja-border); }
+.sec-tag.azul    { background:var(--acento-azul-glow); color:var(--acento-azul); border-color:rgba(59,130,246,0.30); }
+.sec-tag.purpura { background:var(--acento-purpura-glow); color:var(--acento-purpura); border-color:rgba(139,92,246,0.30); }
+.sec-tag.amarillo{ background:var(--alerta-amarillo-glow); color:var(--alerta-amarillo); border-color:rgba(245,158,11,0.30); }
+.sec-tag.teal    { background:var(--acento-teal-glow); color:var(--acento-teal); border-color:var(--acento-teal-border); }
+.sec-titulo { font-family:'Syne',sans-serif; font-size:clamp(28px,4vw,42px); font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.sec-desc { font-size:clamp(15px,1.8vw,17px); color:var(--texto-dim); max-width:800px; line-height:1.7; }
+
+.info-box {
+  background:#fff;
+  border:1px solid var(--borde);
+  border-top:3px solid transparent;
+  border-radius:16px;
+  padding:22px 26px;
+  margin:20px 0;
+  position:relative;
+  z-index:1;
+  box-shadow:0 1px 2px rgba(15,23,42,.04), 0 16px 32px -20px rgba(15,23,42,.14);
+}
+.info-box.tip     { border-top-color:var(--sena-verde); }
+.info-box.warning { border-top-color:var(--alerta-amarillo); }
+.info-box.danger  { border-top-color:var(--alerta-rojo); }
+.info-box.info    { border-top-color:var(--acento-azul); }
+.info-box.teal    { border-top-color:var(--acento-teal); }
+.info-box.purpura { border-top-color:var(--acento-purpura); }
+
+.info-box-title { display:flex; align-items:center; gap:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:12px; color:var(--texto); }
+.info-box-title svg.ic { width:34px; height:34px; min-width:34px; padding:8px; border-radius:10px; box-sizing:border-box; stroke-width:2; vertical-align:middle; }
+.info-box.tip     .info-box-title svg.ic { background:var(--sena-verde-glow); color:var(--sena-verde-dark); }
+.info-box.warning .info-box-title svg.ic { background:var(--alerta-amarillo-glow); color:#92400e; }
+.info-box.danger  .info-box-title svg.ic { background:var(--alerta-rojo-glow); color:#991b1b; }
+.info-box.info    .info-box-title svg.ic { background:var(--acento-azul-glow); color:#1e40af; }
+.info-box.teal    .info-box-title svg.ic { background:var(--acento-teal-glow); color:#0369a1; }
+.info-box.purpura .info-box-title svg.ic { background:var(--acento-purpura-glow); color:#5b21b6; }
+.info-box-content { font-size:14px; color:var(--texto-dim); line-height:1.75; }
+.info-box-content p { margin:0 0 10px; }
+.info-box-content p:last-child { margin-bottom:0; }
+.ejemplo-chips { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+.ejemplo-chip { display:flex; align-items:center; gap:8px; background:var(--bg-alt); border:1px solid var(--borde); border-radius:10px; padding:8px 14px; font-size:12.5px; }
+.ejemplo-chip .flecha { color:var(--texto-dimmer); font-weight:700; }
+
+/* Grilla para cajas info-box que antes quedaban apiladas una debajo de otra */
+.info-box-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:20px 0; align-items:start; }
+.info-box-grid .info-box { margin:0; }
+@media(max-width:900px){ .info-box-grid { grid-template-columns:1fr; } }
+
+.concepto-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:20px; position:relative; z-index:1; margin-bottom:28px; }
+.concepto-card { background:#fff; border:2px solid var(--borde); border-radius:16px; padding:24px; }
+.concepto-icon  { font-size:36px; margin-bottom:12px; }
+.concepto-titulo{ font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--texto); margin-bottom:6px; }
+.concepto-desc  { font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.concepto-card.verde   { border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.concepto-card.azul    { border-color:rgba(59,130,246,0.25); background:var(--acento-azul-glow); }
+.concepto-card.teal    { border-color:var(--acento-teal-border); background:var(--acento-teal-glow); }
+.concepto-card.purpura { border-color:rgba(139,92,246,0.25); background:var(--acento-purpura-glow); }
+.concepto-card.naranja { border-color:var(--sena-naranja-border); background:var(--sena-naranja-glow); }
+.concepto-card.amarillo{ border-color:rgba(245,158,11,0.30); background:var(--alerta-amarillo-glow); }
+
+.tabla-wrap { overflow-x:auto; position:relative; z-index:1; margin:20px 0; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th { background:var(--sena-verde); color:#fff; padding:12px 16px; text-align:left; font-weight:700; }
+th:first-child { border-radius:8px 0 0 0; } th:last-child { border-radius:0 8px 0 0; }
+td { padding:12px 16px; border-bottom:1px solid var(--borde); vertical-align:top; }
+tr:nth-child(even) td { background:var(--bg-alt); }
+tr:hover td { background:var(--sena-verde-glow); }
+
+.paso-lista { display:flex; flex-direction:column; gap:0; position:relative; z-index:1; }
+.paso-item { display:flex; gap:24px; padding:28px 0; border-bottom:1px solid var(--borde); }
+.paso-item:last-child { border-bottom:none; }
+.paso-num { flex-shrink:0; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:#fff; }
+.paso-num.verde   { background:var(--sena-verde); }
+.paso-num.azul    { background:var(--acento-azul); }
+.paso-num.teal    { background:var(--acento-teal); }
+.paso-num.purpura { background:var(--acento-purpura); }
+.paso-num.naranja { background:var(--sena-naranja); }
+.paso-body { flex:1; }
+.paso-titulo { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--texto); margin-bottom:6px; }
+.paso-desc { font-size:14px; color:var(--texto-dim); line-height:1.7; margin-bottom:12px; }
+
+.flujo-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; margin:32px 0; position:relative; z-index:1; }
+.flujo-nodo { border-radius:12px; padding:16px 22px; text-align:center; border:2px solid; min-width:130px; }
+.flujo-nodo.verde   { background:var(--sena-verde-glow); border-color:var(--sena-verde-border); }
+.flujo-nodo.azul    { background:var(--acento-azul-glow); border-color:rgba(59,130,246,0.30); }
+.flujo-nodo.purpura { background:var(--acento-purpura-glow); border-color:rgba(139,92,246,0.30); }
+.flujo-nodo.naranja { background:var(--sena-naranja-glow); border-color:var(--sena-naranja-border); }
+.flujo-nodo.teal    { background:var(--acento-teal-glow); border-color:var(--acento-teal-border); }
+.flujo-ico { font-size:26px; margin-bottom:6px; }
+.flujo-lbl { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--texto-dimmer); margin-bottom:4px; }
+.flujo-nom { font-size:13px; font-weight:700; color:var(--texto); }
+.flujo-sub { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--texto-dimmer); margin-top:3px; }
+.flujo-arrow { font-size:22px; color:var(--sena-verde); font-weight:700; padding:0 4px; }
+
+.entregable-box { background:linear-gradient(135deg, var(--sena-verde-glow), var(--acento-teal-glow)); border:2px solid var(--sena-verde-border); border-radius:16px; padding:28px 32px; position:relative; z-index:1; margin-top:32px; }
+.entregable-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--sena-verde-dark); margin-bottom:16px; }
+.entregable-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.entregable-list li { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:var(--texto); }
+.entregable-list li::before { content:'✅'; flex-shrink:0; }
+
+
+/* Mockup de terminal para mostrar instalación */
+.term-mock { background:#1a1a2e; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); margin:20px 0; position:relative; z-index:1; }
+.term-header { background:#12121f; padding:10px 16px; display:flex; align-items:center; gap:8px; }
+.term-dot { width:11px; height:11px; border-radius:50%; }
+.term-dot.r { background:#ff5f57; } .term-dot.y { background:#febc2e; } .term-dot.g { background:#28c840; }
+.term-title { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#8892a4; }
+.term-body { padding:20px 22px; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.9; }
+.term-body .prompt { color:#4ade80; }
+.term-body .cmd { color:#e2e8f0; }
+.term-body .out { color:#8892a4; display:block; margin:2px 0 10px 0; }
+.term-body .ok { color:#4ade80; }
+
+/* Comparador de código lado a lado, con resaltado de sintaxis real */
+.code-compare { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:18px 0; position:relative; z-index:1; }
+@media(max-width:900px){ .code-compare{ grid-template-columns:1fr; } }
+
+.slide-2col { display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start; position:relative; z-index:1; }
+@media(max-width:900px){ .slide-2col{ grid-template-columns:1fr; } }
+.slide-2col-code { display:flex; flex-direction:column; gap:18px; }
+.slide-2col-code .code-editor { width:100%; }
+.code-editor { background:#1a1a2e; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+.code-editor-header { background:#12121f; padding:10px 16px; display:flex; align-items:center; gap:8px; }
+.code-editor-title { margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#8892a4; flex:1; }
+.code-editor-badge { font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:5px; }
+.code-editor-badge.antes { background:rgba(248,113,113,.15); color:#f87171; }
+.code-editor-badge.despues { background:rgba(74,222,128,.15); color:#4ade80; }
+.code-editor-body { padding:10px 0; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.9; flex:1; overflow-x:auto; }
+.cl { display:grid; grid-template-columns:34px 1fr; column-gap:12px; padding:0 20px; white-space:pre; }
+.cl .ln { color:#4a5178; user-select:none; text-align:right; }
+.cl .code { color:#e2e8f0; }
+.indent-1 .code { padding-left:18px; }
+.indent-2 .code { padding-left:36px; }
+.cm { color:#565f89; font-style:italic; }
+.sel { color:#7dcfff; }
+.prop { color:#9ece6a; }
+.val { color:#e2e8f0; }
+.var { color:#e0af68; }
+.tag { color:#f7768e; }
+.attr { color:#e0af68; }
+.str { color:#9ece6a; }
+.punc { color:#8892a4; }
+
+@media(max-width:900px){ .flujo-row{flex-direction:column;} }
+@media(max-width:768px){ .slide{padding:60px 24px;} .topbar{padding:10px 20px;} }
+
+/* Iconos Lucide en línea (reemplazan a los emojis) */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;}
+
+/* ══ Estructura de presentación del portal (sidebar + insignias) ══ */
+/* ============================================================
+   SIDEBAR LATERAL MODERNO (ESTILO IDE / CASE / LUCIDE)
+   ============================================================ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 2px 0 20px rgba(15, 23, 42, 0.04);
+}
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.sidebar-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+}
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-logo {
+  background: var(--sena-verde);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px -2px rgba(57, 169, 0, 0.4);
+}
+.sidebar-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+.sidebar-sub {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 600;
+}
+.sidebar-toggle-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #64748b;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.sidebar-toggle-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+.floating-sidebar-toggle {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  z-index: 999;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  height: 38px;
+  padding: 0 14px 0 10px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.floating-sidebar-toggle:hover {
+  background: #ffffff;
+  color: var(--sena-verde-dark);
+  border-color: var(--sena-verde);
+  box-shadow: 0 8px 22px rgba(57, 169, 0, 0.2);
+  transform: translateY(-1px);
+}
+.sidebar.collapsed ~ .floating-sidebar-toggle,
+.floating-sidebar-toggle.visible {
+  display: inline-flex !important;
+  animation: fadeInToggle 0.25s ease-out forwards;
+}
+@keyframes fadeInToggle {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 10px;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.nav-group {
+  margin-bottom: 18px;
+}
+.nav-group-title {
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #94a3b8;
+  padding: 0 10px 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 11.8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  position: relative;
+}
+.nav-link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.nav-link.active {
+  background: rgba(57, 169, 0, 0.1);
+  color: var(--sena-verde-dark);
+  font-weight: 700;
+}
+.nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3.5px;
+  background: var(--sena-verde);
+  border-radius: 0 4px 4px 0;
+}
+.nav-link-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  min-width: 15px;
+}
+.nav-link.active .nav-link-num {
+  color: var(--sena-verde);
+}
+.nav-link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+.nav-link:hover .nav-link-icon {
+  color: #0f172a;
+}
+.nav-link.active .nav-link-icon {
+  color: var(--sena-verde-dark);
+}
+.nav-link-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-footer {
+  padding: 12px 14px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-corte-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,107,0,0.08);
+  border: 1px solid rgba(255,107,0,0.22);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #c2410c;
+}
+.sidebar-dashboard-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #0284c7;
+  text-decoration: none;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+.sidebar-dashboard-link:hover {
+  background: rgba(2,132,199,0.08);
+}
+
+.main-content {
+  margin-left: 280px;
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--bg);
+}
+.main-content.expanded {
+  margin-left: 0;
+}
+
+.slide {
+  min-height: 100vh;
+  padding: 60px 48px;
+  position: relative;
+  scroll-margin-top: 20px;
+}
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1099;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 1024px) {
+  .sidebar { transform: translateX(-100%); z-index: 1200; }
+  .sidebar.open { transform: translateX(0); box-shadow: 10px 0 35px rgba(0, 0, 0, 0.25); }
+  .main-content { margin-left: 0 !important; }
+  .floating-sidebar-toggle { display: flex !important; z-index: 1050; }
+  .slide-block-badge { left: 80px; }
+}
+@media (max-width: 900px) {
+  .col-3 { grid-template-columns: 1fr; gap: 16px; }
+}
+@media (max-width: 768px) {
+  .slide { padding: 68px 18px 40px; }
+  .col-2 { grid-template-columns: 1fr; gap: 16px; }
+  .slide-block-badge { left: 70px; top: 16px; font-size: 9.5px; padding: 4px 10px; }
+  .slide-num-badge { right: 14px; top: 16px; font-size: 10px; padding: 4px 8px; }
+  .floating-sidebar-toggle { top: 12px; left: 14px; height: 34px; padding: 0 10px; font-size: 11px; }
+  .floating-sidebar-toggle span { display: none; }
+  .portada-meta-item { min-width: 100%; }
+  .ddl-modal-overlay { padding: 0; }
+  .ddl-modal-card {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    min-height: auto;
+    border-radius: 0;
+    border: none;
+  }
+}
+.slide-inner{max-width:1200px;margin:0 auto}
+.slide-num-badge{position:absolute;top:20px;right:24px;background:var(--sena-verde-glow);color:var(--sena-verde);font-size:11px;font-weight:700;padding:5px 12px;border-radius:18px;letter-spacing:1px;border:1px solid var(--sena-verde-border)}
+.slide-block-badge{position:absolute;top:20px;left:40px;font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:5px 14px;border-radius:18px}
+.slide-block-badge.contexto{background:var(--azul-glow);color:var(--azul)}
+.slide-block-badge.teoria{background:var(--sena-verde-glow);color:var(--sena-verde)}
+.slide-block-badge.practica{background:var(--sena-naranja-glow);color:var(--sena-naranja)}
+.slide-block-badge.taller{background:var(--purpura-glow);color:var(--purpura)}
+.slide-num-badge,.slide-block-badge{z-index:2;}
+:root{--azul:var(--acento-azul);--azul-glow:var(--acento-azul-glow);--purpura:var(--acento-purpura);--purpura-glow:var(--acento-purpura-glow);}
+.sidebar-title{font-size:13px;white-space:nowrap;}
+/* ── Ajuste de contenido junto al sidebar ── */
+.main-content{min-width:0;}
+.slide{overflow-x:clip;}
+.slide-2col{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+.slide-2col > *{min-width:0;}
+.code-editor-body,.term-body{overflow-x:auto;}
+.tabla-wrap{overflow-x:auto;}
+@media (max-width:1280px){ .slide-2col{grid-template-columns:minmax(0,1fr);} }
+.main-content.expanded .slide-block-badge{left:200px;}
+@media (max-width:1024px){ .main-content.expanded .slide-block-badge{left:80px;} }
+/* ── Reglas propias de esta apertura ── */
+.sec-tag.rojo{ background:var(--alerta-rojo-glow); color:var(--alerta-rojo); border-color:rgba(239,68,68,0.30); }
+.info-box.tip     .info-box-title{ color:var(--sena-verde-dark); }
+.info-box.warning .info-box-title{ color:#92400e; }
+.info-box.danger  .info-box-title{ color:#991b1b; }
+.info-box.info    .info-box-title{ color:#1e40af; }
+.info-box.teal    .info-box-title{ color:#0369a1; }
+.info-box.purpura .info-box-title{ color:#5b21b6; }
+.roadmap-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){.roadmap-grid{ grid-template-columns:1fr; }}
+.roadmap-card{ background:#fff; border:2px solid var(--borde); border-radius:18px; padding:28px 24px 24px; position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s; }
+.roadmap-card:hover{ transform:translateY(-4px); box-shadow:0 16px 32px rgba(14,165,233,.14); border-color:var(--acento-teal-border); }
+.roadmap-num{ position:absolute; top:-6px; right:4px; font-family:'Syne',sans-serif; font-size:72px; font-weight:800; color:var(--acento-teal); opacity:.10; line-height:1; pointer-events:none; }
+.roadmap-icon{ font-size:34px; margin-bottom:14px; display:flex; }
+.roadmap-tag{ display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--acento-teal); background:var(--acento-teal-glow); border:1px solid var(--acento-teal-border); padding:4px 10px; border-radius:20px; margin-bottom:12px; }
+.roadmap-titulo{ font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--texto); margin-bottom:10px; line-height:1.25; }
+.roadmap-desc{ font-size:13px; color:var(--texto-dim); line-height:1.65; }
+.rap-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; position:relative; z-index:1; margin-bottom:8px; }
+@media(max-width:900px){.rap-grid{ grid-template-columns:1fr; }}
+.rap-card{ background:#fff; border-radius:18px; padding:0; overflow:hidden; border:2px solid var(--borde); position:relative; transition:transform .2s, box-shadow .2s; }
+.rap-card:hover{ transform:translateY(-4px); box-shadow:0 18px 36px rgba(0,0,0,.09); }
+.rap-card-bar{ height:6px; width:100%; }
+.rap-card.done .rap-card-bar{ background:linear-gradient(90deg, var(--sena-verde), #6bd44e); }
+.rap-card.active .rap-card-bar{ background:linear-gradient(90deg, var(--acento-teal), var(--acento-azul)); }
+.rap-card.pending .rap-card-bar{ background:linear-gradient(90deg, var(--acento-teal), #7dd3fc); opacity:.6; }
+.rap-card.active{ border-color:var(--acento-teal); box-shadow:0 0 0 4px var(--acento-teal-glow), 0 18px 36px rgba(14,165,233,.14); }
+.rap-card-body{ padding:28px 26px 26px; }
+.rap-card-top{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+.rap-card-icon{ font-size:42px; line-height:1; display:flex; }
+.rap-card-status{ font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:5px 12px; border-radius:20px; white-space:nowrap; display:flex; align-items:center; gap:6px; }
+.rap-card.done .rap-card-status{ background:var(--sena-verde-glow); color:var(--sena-verde-dark); }
+.rap-card.active .rap-card-status{ background:var(--acento-teal-glow); color:#0369a1; }
+.rap-card.pending .rap-card-status{ background:var(--acento-teal-glow); color:#0369a1; opacity:.8; }
+.rap-card-id{ font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--texto-dimmer); margin-bottom:6px; text-transform:uppercase; }
+.rap-card-titulo{ font-family:'Syne',sans-serif; font-size:21px; font-weight:800; color:var(--texto); margin-bottom:12px; line-height:1.2; }
+.rap-card-desc{ font-size:13.5px; color:var(--texto-dim); line-height:1.6; }
+.rap-card.active .rap-card-icon{ animation: rapPulse 1.8s ease-in-out infinite; }
+@keyframes rapPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
+.dom-compare{ display:grid; grid-template-columns:1fr auto 1fr; gap:20px; align-items:center; margin:24px 0; position:relative; z-index:1; }
+@media(max-width:900px){.dom-compare{ grid-template-columns:1fr; }}
+.dom-box{ background:#fff; border:2px solid var(--borde); border-radius:16px; padding:22px; }
+.dom-box.mal{ border-color:rgba(239,68,68,.3); background:var(--alerta-rojo-glow); }
+.dom-box.bien{ border-color:var(--sena-verde-border); background:var(--sena-verde-glow); }
+.dom-box-title{ font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.dom-box-desc{ font-size:13px; color:var(--texto-dim); line-height:1.6; }
+.dom-vs{ font-family:'Syne',sans-serif; font-weight:800; font-size:16px; color:var(--texto-dimmer); text-align:center; }
+.par-valor{ color:#0ea5e9; font-weight:800; }
+.par-funcion{ color:#d946ef; font-weight:800; }
+.par-inicial{ color:#f59e0b; font-weight:800; }
+.par-evento{ color:#22c55e; font-weight:800; }
+.par-handler{ color:#f97316; font-weight:800; }
+.par-dato{ color:#a855f7; font-weight:800; }
+.useState-split{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; position:relative; z-index:1; margin-bottom:24px; }
+@media(max-width:900px){.useState-split{ grid-template-columns:1fr; }}
+.useState-breakdown{ background:#fff; border:2px solid var(--borde); border-radius:14px; padding:18px 20px; }
+.useState-breakdown-label{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--texto-dimmer); text-align:center; margin-bottom:10px; letter-spacing:.04em; }
+.useState-breakdown-line{ font-family:'JetBrains Mono',monospace; font-size:13px; text-align:center; margin-bottom:8px; line-height:1.6; }
+.useState-breakdown-arrows{ display:flex; justify-content:center; gap:28px; margin:4px 0; font-size:16px; }
+.useState-breakdown-plain{ font-family:'JetBrains Mono',monospace; font-size:12.5px; text-align:center; line-height:1.6; }
+.tree-demo{ max-width:620px; margin:0 auto 24px; background:#fff; border:2px solid var(--borde); border-radius:16px; padding:28px; position:relative; z-index:1; }
+.tree-row{ display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.tree-node{ background:var(--bg-alt); border:2px solid var(--borde); border-radius:10px; padding:8px 14px; font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:var(--texto-dim); }
+.tree-node.origen{ background:var(--sena-verde-glow); border-color:var(--sena-verde-border); color:var(--sena-verde-dark); }
+.tree-node.destino{ background:var(--acento-azul-glow); border-color:rgba(59,130,246,.3); color:#1e40af; }
+.tree-node.pasa{ background:var(--alerta-amarillo-glow); border-color:rgba(245,158,11,.3); color:#92400e; animation: treePulse 1.6s ease-in-out infinite; }
+@keyframes treePulse{ 0%,100%{ opacity:1; } 50%{ opacity:.45; } }
+.tree-arrow-down{ text-align:center; font-size:18px; color:var(--texto-dimmer); margin:2px 0; }
+.tree-caption{ text-align:center; font-size:12px; color:var(--texto-dim); margin-top:14px; font-family:'JetBrains Mono',monospace; }
+.tree-direct{ position:absolute; left:50%; top:24px; bottom:24px; width:3px; background:var(--sena-verde); border-radius:4px; opacity:0; transition:opacity .3s; }
+.tree-direct.on{ opacity:.35; }
+
+/* ── Ajustes del deck con sidebar para las aperturas de la ficha 3229944 ── */
+.concepto-grid>*,.roadmap-grid>*,.rap-grid>*,.useState-split>*,.dom-compare>*,.info-box-grid>*,.paso-lista>*,.compare-grid>*{min-width:0;}
+.slide-inner{min-width:0;}
+.slide .code-editor{max-width:100%;}
+.slide pre,.slide .term-body{overflow-x:auto;}
+@media (max-width:1280px){
+  .useState-split,.dom-compare{grid-template-columns:minmax(0,1fr)!important;}
+  .dom-compare .dom-vs{display:none;}
+  .rap-grid,.roadmap-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:768px){
+  .rap-grid,.roadmap-grid{grid-template-columns:minmax(0,1fr);}
+}
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR LATERAL DE NAVEGACIÓN -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo">
+        <svg width="24" height="24" viewBox="0 0 64 62" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <g transform="translate(-377 -19)">
+            <path d="M409.164 19C412.922 19 415.992 22.09 415.992 25.8778 415.992 29.6656 412.932 32.7556 409.164 32.7556 405.397 32.7556 402.336 29.6656 402.336 25.8778 402.336 22.09 405.407 19 409.164 19"/>
+            <path d="M384.305 41.1884 384.305 41.2183C384.285 41.3379 384.275 41.4177 384.275 41.4675 384.275 41.8264 384.474 42.0855 384.873 42.265 385.282 42.4344 385.9 42.5241 386.747 42.5241 387.395 42.5241 387.893 42.4543 388.262 42.3148 388.631 42.1752 388.81 41.9759 388.81 41.7267 388.81 41.3479 388.082 41.0489 386.647 40.8096 386.478 40.7797 386.348 40.7598 386.268 40.7498 386.179 40.7299 386.039 40.71 385.86 40.6801 383.567 40.3013 382.092 39.8926 381.434 39.454 381.115 39.2347 380.876 38.9855 380.706 38.6965 380.547 38.4074 380.467 38.0785 380.467 37.7096 380.467 36.8125 380.995 36.1248 382.052 35.6563 383.109 35.1878 384.654 34.9486 386.677 34.9486 388.7 34.9486 390.166 35.1678 391.133 35.6064 392.1 36.045 392.578 36.7228 392.578 37.6399L392.578 37.7495 388.78 37.7495 388.78 37.7096C388.78 37.3907 388.591 37.1614 388.202 36.992 387.813 36.8325 387.255 36.7428 386.508 36.7428 385.929 36.7428 385.481 36.8026 385.182 36.9122 384.863 37.0318 384.713 37.1913 384.713 37.4006 384.713 37.7794 385.541 38.1084 387.195 38.3675 387.514 38.4174 387.764 38.4572 387.943 38.4871 389.119 38.6865 389.966 38.8559 390.465 38.9955 390.963 39.135 391.392 39.3045 391.761 39.4939 392.159 39.7132 392.478 39.9923 392.698 40.3312 392.917 40.6701 393.027 41.0389 393.027 41.4476 393.027 42.3746 392.448 43.0823 391.302 43.5907 390.156 44.0891 388.501 44.3383 386.348 44.3383 384.195 44.3383 382.67 44.099 381.723 43.6206 380.766 43.1421 380.298 42.3746 380.298 41.308L380.298 41.1685 384.305 41.1685ZM394.711 44.1987 394.711 35.0881 405.546 35.0881 405.546 37.0518 398.778 37.0518 398.778 38.5071 405.028 38.5071 405.028 40.4508 398.778 40.4508 398.778 42.2151 405.795 42.2151 405.795 44.2087 394.711 44.2087ZM407.5 44.1987 407.5 35.0881 412.643 35.0881 418.155 41.2084 418.155 35.0881 422.063 35.0881 422.063 44.1987 416.72 44.1987 411.387 38.0585 411.387 44.1987 407.49 44.1987ZM432.569 40.5604 430.625 37.2511 428.572 40.5604 432.579 40.5604ZM426.369 44.1987 422.292 44.1987 428.592 35.0881 433.107 35.0881 439.118 44.1987 434.592 44.1987 433.675 42.554 427.366 42.554 426.389 44.1987Z"/>
+            <path d="M389.309 76.3351 385.67 72.9161 396.735 53.6881C397.333 52.6415 396.585 51.3257 395.379 51.3257L377.267 51.3257 377.267 46.5113 406.413 46.5113 389.309 76.3351Z"/>
+            <path d="M428.701 76.3351 432.34 72.9161 421.275 53.6881C420.677 52.6415 421.425 51.3257 422.631 51.3257L440.743 51.3257 440.743 46.5113 411.597 46.5113 428.701 76.3351Z"/>
+            <path d="M408.965 51.5949C408.965 51.5949 409.005 51.5251 409.005 51.5251L425.432 78.7174 421.066 80.99 410.48 63.2373C409.852 62.1907 408.347 62.1907 407.729 63.2373 404.2 69.1981 397.213 80.99 397.213 80.99L392.947 78.8768C392.947 78.8768 408.088 53.09 408.965 51.5949"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <div class="sidebar-title">ADSO 3229944</div>
+        <div class="sidebar-sub">Migrar Mis Pedidos — Sesión 33</div>
+      </div>
+    </div>
+    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Ocultar menú lateral">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m8 9-3 3 3 3"/></svg>
+    </button>
+  </div>
+
+  <div class="sidebar-scroll">
+    <div class="nav-group">
+      <div class="nav-group-title"><svg class="ic" style="width:12px;height:12px" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /></svg> Contexto</div>
+      <a href="#portada" class="nav-link active">
+        <span class="nav-link-num">01</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg></span>
+        <span class="nav-link-text">Portada de la sesión</span>
+      </a>
+      <a href="#competencia" class="nav-link">
+        <span class="nav-link-num">02</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" /> <circle cx="12" cy="8" r="6" /></svg></span>
+        <span class="nav-link-text">Competencia y RAP</span>
+      </a>
+      <a href="#plan" class="nav-link">
+        <span class="nav-link-num">03</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /></svg></span>
+        <span class="nav-link-text">Plan de la sesión</span>
+      </a>
+      <a href="#logros" class="nav-link">
+        <span class="nav-link-num">04</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></svg></span>
+        <span class="nav-link-text">Logros de hoy</span>
+      </a>
+      <a href="#partida" class="nav-link">
+        <span class="nav-link-num">05</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></svg></span>
+        <span class="nav-link-text">De dónde partimos</span>
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title"><svg class="ic" style="width:12px;height:12px" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Conceptos</div>
+      <a href="#token" class="nav-link">
+        <span class="nav-link-num">06</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span>
+        <span class="nav-link-text">El token dice quién eres</span>
+      </a>
+      <a href="#backend" class="nav-link">
+        <span class="nav-link-num">07</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></svg></span>
+        <span class="nav-link-text">Ajustar la ruta de pedidos</span>
+      </a>
+      <a href="#caras" class="nav-link">
+        <span class="nav-link-num">08</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1" /> <rect width="7" height="7" x="3" y="14" rx="1" /> <path d="M14 4h7" /> <path d="M14 9h7" /> <path d="M14 15h7" /> <path d="M14 20h7" /></svg></span>
+        <span class="nav-link-text">Una carga tiene cuatro caras</span>
+      </a>
+      <a href="#pedir" class="nav-link">
+        <span class="nav-link-num">09</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 13v8l-4-4" /> <path d="m12 21 4-4" /> <path d="M4.393 15.269A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.436 8.284" /></svg></span>
+        <span class="nav-link-text">Pedir los pedidos</span>
+      </a>
+      <a href="#timeline-logica" class="nav-link">
+        <span class="nav-link-num">10</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /> <line x1="3" x2="9" y1="12" y2="12" /> <line x1="15" x2="21" y1="12" y2="12" /></svg></span>
+        <span class="nav-link-text">La línea de tiempo: los datos</span>
+      </a>
+      <a href="#timeline-dibujo" class="nav-link">
+        <span class="nav-link-num">11</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /> <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg></span>
+        <span class="nav-link-text">La línea de tiempo: el dibujo</span>
+      </a>
+      <a href="#tarjeta" class="nav-link">
+        <span class="nav-link-num">12</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17V7" /> <path d="M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8" /> <path d="M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z" /></svg></span>
+        <span class="nav-link-text">La tarjeta de cada pedido</span>
+      </a>
+      <a href="#sesion" class="nav-link">
+        <span class="nav-link-num">13</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 17 5-5-5-5" /> <path d="M21 12H9" /> <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /></svg></span>
+        <span class="nav-link-text">Sin sesión y sesión vencida</span>
+      </a>
+      <a href="#conectar" class="nav-link">
+        <span class="nav-link-num">14</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /> <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /> <circle cx="18" cy="5" r="3" /></svg></span>
+        <span class="nav-link-text">Ruta, Navbar y atajo desde el pago</span>
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title"><svg class="ic" style="width:12px;height:12px" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" /></svg> Cierre</div>
+      <a href="#prerrequisitos" class="nav-link">
+        <span class="nav-link-num">15</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></span>
+        <span class="nav-link-text">Prerrequisitos</span>
+      </a>
+      <a href="#resumen" class="nav-link">
+        <span class="nav-link-num">16</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" /> <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" /> <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" /></svg></span>
+        <span class="nav-link-text">Los conceptos nuevos de hoy</span>
+      </a>
+      <a href="#entregable" class="nav-link">
+        <span class="nav-link-num">17</span>
+        <span class="nav-link-icon"><svg class="ic" style="width:15px;height:15px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg></span>
+        <span class="nav-link-text">Entregable y cierre</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="../../explorar.html" class="sidebar-dashboard-link">
+      <svg class="ic" style="width:14px;height:14px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7" /> <path d="M19 12H5" /></svg>
+      Volver al Hub
+    </a>
+    <div class="sidebar-corte-badge">
+      <span>Sesión 33 — Migrar Mis Pedidos</span>
+      <span>Ficha 3229944</span>
+    </div>
+  </div>
+</aside>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+<button class="floating-sidebar-toggle" id="floating-toggle" onclick="toggleSidebar()" title="Mostrar menú lateral (17 slides)" aria-label="Abrir menú">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg>
+  <span>Menú (17 slides)</span>
+</button>
+
+<main class="main-content" id="main-content">
+
+<!-- ══════════ SLIDE 1 — PORTADA DE LA SESIÓN ══════════ -->
+<section class="slide" id="portada">
+  <div class="slide-block-badge contexto">Apertura &amp; Presentación</div>
+  <div class="bg-dots"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="slide-inner" style="position:relative;z-index:1;">
+    <div class="portada-tag"><span class="dot"></span> SESIÓN 33 · FASE 5 REACT Y TAILWIND CSS</div>
+    <h1 class="portada-titulo">
+      TechStore Pro<br>
+      <span class="linea2">Migrar Mis Pedidos:</span>
+      <span class="linea3">ver la compra avanzar, paso a paso</span>
+    </h1>
+    <p class="portada-desc">
+      Pagar ya funciona, pero después del pago la persona no ve nada: su compra existe solo en la base de datos. En esta sesión nace la página Mis Pedidos: la lista de tus compras, las más nuevas primero, con una línea de tiempo que muestra si tu pedido está confirmado, en proceso, enviado o entregado.
+    </p>
+    <div class="portada-meta">
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /></svg> Sesión 33 de 44</div>
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" /> <path d="M12 22V12" /> <polyline points="3.29 7 12 12 20.71 7" /> <path d="m7.5 4.27 9 5.15" /></svg> Mis Pedidos</div>
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /> <line x1="3" x2="9" y1="12" y2="12" /> <line x1="15" x2="21" y1="12" y2="12" /></svg> Línea de tiempo</div>
+      <div class="portada-meta-item"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" /></svg> Fase 5 — React y Tailwind</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 01 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 2 — COMPETENCIA Y RAP ══════════ -->
+<section class="slide" id="competencia">
+  <div class="slide-block-badge contexto">Marco de formación</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Competencia 220501096</h2>
+      <p class="sec-desc">Construcción del software de acuerdo con el diseño establecido. Todo lo que hacemos en esta fase construye evidencia real para estos 5 Resultados de Aprendizaje.</p>
+    </div>
+    <div class="rap-grid">
+      <div class="rap-card done">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" /> <path d="M15 5.764v15" /> <path d="M9 3.236v15" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Cerrado</span>
+          </div>
+          <div class="rap-card-id">RAP1</div>
+          <div class="rap-card-titulo">Planear</div>
+          <div class="rap-card-desc">Planear actividades de construcción según el diseño establecido.</div>
+        </div>
+      </div>
+      <div class="rap-card done">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> Cerrado</span>
+          </div>
+          <div class="rap-card-id">RAP2</div>
+          <div class="rap-card-titulo">Base de datos</div>
+          <div class="rap-card-desc">Construir la base de datos a partir del modelo de datos.</div>
+        </div>
+      </div>
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP3</div>
+          <div class="rap-card-titulo">Componentes front-end</div>
+          <div class="rap-card-desc">Crear componentes front-end de acuerdo con el diseño. Hoy: la línea de tiempo, un componente que se usa con cualquier pedido, y la página que los lista.</div>
+        </div>
+      </div>
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z" /> <path d="M20.054 15.987H3.946" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP4</div>
+          <div class="rap-card-titulo">Codificar</div>
+          <div class="rap-card-desc">Codificar el software según el diseño establecido. Hoy: pedir datos al servidor con el token, y mostrar cargando, error, vacío y lista.</div>
+        </div>
+      </div>
+      <div class="rap-card active">
+        <div class="rap-card-bar"></div>
+        <div class="rap-card-body">
+          <div class="rap-card-top">
+            <span class="rap-card-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" /> <path d="M6.453 15h11.094" /> <path d="M8.5 2h7" /></svg></span>
+            <span class="rap-card-status"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></svg> Hoy</span>
+          </div>
+          <div class="rap-card-id">RAP5</div>
+          <div class="rap-card-titulo">Pruebas</div>
+          <div class="rap-card-desc">Realizar pruebas para verificar la funcionalidad. Hoy: dos cuentas distintas, una sin pedidos, una sesión vencida y el servidor apagado.</div>
+        </div>
+      </div>
+    </div>
+    <div class="info-box tip">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></svg> Dónde estamos hoy</div>
+      <div class="info-box-content">La Sesión 33 sigue el Bloque C: la primera página que <strong>lee</strong> lo que otra sesión escribió. Las órdenes que creaste con tus pagos de la S32 son las que vas a ver. Aporta evidencia a <strong>RAP3</strong>, <strong>RAP4</strong> y <strong>RAP5</strong>.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 02 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 3 — PLAN DE LA SESIÓN ══════════ -->
+<section class="slide" id="plan">
+  <div class="slide-block-badge contexto">Agenda</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Plan de la sesión</h2>
+      <p class="sec-desc">240 minutos: primero el servidor, después una pieza pequeña que se reutiliza, luego la página completa y al final conectarla con la tienda.</p>
+    </div>
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">1</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.296 3.464 3.02 3.956" /> <path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z" /> <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /> <path d="m6.18 5.276 3.1 3.899" /></svg></div>
+        <div class="roadmap-tag">0–40 min</div>
+        <div class="roadmap-titulo">Apertura</div>
+        <div class="roadmap-desc">Cómo sabe el servidor de quién son los pedidos, y por qué una carga tiene cuatro caras.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">2</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></svg></div>
+        <div class="roadmap-tag">40–80 min</div>
+        <div class="roadmap-titulo">El servidor</div>
+        <div class="roadmap-desc">Ajustar GET /api/ordenes y probarlo en Postman con dos cuentas distintas.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">3</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /> <line x1="3" x2="9" y1="12" y2="12" /> <line x1="15" x2="21" y1="12" y2="12" /></svg></div>
+        <div class="roadmap-tag">80–130 min</div>
+        <div class="roadmap-titulo">La línea de tiempo</div>
+        <div class="roadmap-desc">Un componente nuevo, TimelinePedido, que dibuja los pasos según el estado de cada pedido.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">4</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" /> <path d="M12 22V12" /> <polyline points="3.29 7 12 12 20.71 7" /> <path d="m7.5 4.27 9 5.15" /></svg></div>
+        <div class="roadmap-tag">130–190 min</div>
+        <div class="roadmap-titulo">La página</div>
+        <div class="roadmap-desc">MisPedidos.jsx: pedir los pedidos con el token, mostrar cada tarjeta y manejar cargando, error y vacío.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">5</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2" /> <path d="M6.453 15h11.094" /> <path d="M8.5 2h7" /></svg></div>
+        <div class="roadmap-tag">190–240 min</div>
+        <div class="roadmap-titulo">Conectar y probar</div>
+        <div class="roadmap-desc">La ruta, el enlace del Navbar, el atajo desde el pago, las pruebas en Compass y el commit.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 03 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 4 — LOGROS DE HOY ══════════ -->
+<section class="slide" id="logros">
+  <div class="slide-block-badge contexto">Objetivos</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">¿Qué vamos a lograr?</h2>
+      <p class="sec-desc">Al terminar, una persona con sesión puede abrir Mis Pedidos, ver sus compras con la más reciente arriba y saber en qué paso va cada una.</p>
+    </div>
+    <div class="roadmap-grid">
+      <div class="roadmap-card">
+        <div class="roadmap-num">01</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></div>
+        <div class="roadmap-tag">Servidor</div>
+        <div class="roadmap-titulo">Cada quien ve lo suyo</div>
+        <div class="roadmap-desc">El servidor entrega solo las órdenes de quien trae el token, con el nombre, el precio y la imagen de cada producto.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">02</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /> <line x1="3" x2="9" y1="12" y2="12" /> <line x1="15" x2="21" y1="12" y2="12" /></svg></div>
+        <div class="roadmap-tag">Componente</div>
+        <div class="roadmap-titulo">Una línea de tiempo reutilizable</div>
+        <div class="roadmap-desc">Recibe el estado del pedido y marca como hechos los pasos anteriores y como actual el de ahora. Sirve para cualquier pedido.</div>
+      </div>
+      <div class="roadmap-card">
+        <div class="roadmap-num">03</div>
+        <div class="roadmap-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" /> <path d="M12 22V12" /> <polyline points="3.29 7 12 12 20.71 7" /> <path d="m7.5 4.27 9 5.15" /></svg></div>
+        <div class="roadmap-tag">Página</div>
+        <div class="roadmap-titulo">Mis Pedidos completo</div>
+        <div class="roadmap-desc">Lista de tarjetas, fecha, total y productos; y respuestas claras si cargan, fallan, no hay pedidos o la sesión venció.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 04 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 5 — DE DÓNDE PARTIMOS ══════════ -->
+<section class="slide" id="partida">
+  <div class="slide-block-badge contexto">Punto de partida</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Compras guardadas que nadie puede ver</h2>
+      <p class="sec-desc">Desde la S32, cada pago aprobado crea una orden en la base de datos. El servidor ya sabe entregarlas. Falta la página que las muestre.</p>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></svg></div>
+        <div class="concepto-titulo">Las órdenes de la S32</div>
+        <div class="concepto-desc">Cada pago aprobado creó una <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Orden</code> con estado <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PAGO_CONFIRMADO</code>, sus productos con cantidad y el total. Ya tienes al menos una en tu base.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></svg></div>
+        <div class="concepto-titulo">Una ruta que ya existe</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">GET /api/ordenes</code> devuelve las órdenes de quien trae el token. Funciona, pero se puede mejorar.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2" /> <line x1="8" x2="16" y1="6" y2="6" /> <line x1="16" x2="16" y1="14" y2="18" /> <path d="M16 10h.01" /> <path d="M12 10h.01" /> <path d="M8 10h.01" /> <path d="M12 14h.01" /> <path d="M8 14h.01" /> <path d="M12 18h.01" /> <path d="M8 18h.01" /></svg></div>
+        <div class="concepto-titulo">Tus utilidades</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">formatearPrecio</code> de S31 escribe los totales con puntos. <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">AuthContext</code> sabe quién tiene sesión.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" /> <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" /> <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" /> <path d="m2 2 20 20" /></svg></div>
+        <div class="concepto-titulo">Lo que falta</div>
+        <div class="concepto-desc">No hay página ni enlace. Después de pagar, la persona queda con un "Pago aprobado" y ninguna forma de volver a ver su compra.</div>
+      </div>
+    </div>
+    <div class="info-box info">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> La línea de tiempo ya la conoces</div>
+      <div class="info-box-content">Tu primer proyecto con HTML y JavaScript puro ya tenía una, en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">timeline.js</code>. Hoy se reconstruye como <strong>componente de React</strong>: en vez de armar texto HTML con código, recibe el estado y dibuja.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 05 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 6 — EL TOKEN DICE QUIÉN ERES ══════════ -->
+<section class="slide" id="token">
+  <div class="slide-block-badge teoria">Concepto · Quién es quién</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">El servidor sabe de quién son los pedidos por el token</h2>
+      <p class="sec-desc">Una página de pedidos tiene un riesgo: que alguien vea los pedidos de otra persona. La defensa no está en React. Está en <strong>cómo el servidor decide a quién pertenece la petición</strong>.</p>
+    </div>
+    <div class="dom-compare" style="grid-template-columns:1fr auto 1fr;">
+      <div class="dom-box mal">
+        <div class="dom-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m15 9-6 6" /> <path d="m9 9 6 6" /></svg> El navegador dice quién es</div>
+        <div class="dom-box-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">GET /api/ordenes?usuario=123</code>. Cualquiera cambia el número y lee los pedidos de otro. Es el mismo error de S32: confiar en lo que llega del navegador.</div>
+      </div>
+      <div class="dom-vs">→</div>
+      <div class="dom-box bien">
+        <div class="dom-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></svg> El token lo dice, y el servidor lo verifica</div>
+        <div class="dom-box-desc">El token se firmó en el login y no se puede falsificar. El servidor lo abre y saca el id de la persona: <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">req.usuario.id</code>. No hay nada que cambiar.</div>
+      </div>
+    </div>
+    <div class="code-editor" style="max-width:640px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">backend/routes/ordenes.js — la consulta (esto ya existe)</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">router.<span class="par-funcion">get</span>(<span class="str">"/"</span>, verificarToken, async (req, res) =&gt; {</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  <span class="prop">const</span> ordenes = await Orden</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">    .<span class="par-funcion">find</span>({ usuario: req.usuario.id })</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">    ...</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">})</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>verificarToken</td><td>Un guardia delante de la ruta. Sin token responde <strong>401</strong>; con un token falso o vencido, <strong>403</strong>. Si todo está bien, deja pasar</td></tr>
+          <tr><td>req.usuario.id</td><td>El id que el servidor sacó <strong>del token</strong>. La petición no trae ningún "usuario" que se pueda cambiar</td></tr>
+          <tr><td>find({ usuario: ... })</td><td>El filtro: solo las órdenes cuyo dueño es esa persona. Ana y Beto llaman a la misma ruta y reciben listas distintas</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 06 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 7 — AJUSTAR LA RUTA DE PEDIDOS ══════════ -->
+<section class="slide" id="backend">
+  <div class="slide-block-badge practica">Práctica · ordenes.js</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Más nuevos primero, y con imagen</h2>
+      <p class="sec-desc">La ruta funciona, pero tiene tres detalles por pulir: las órdenes llegan en cualquier orden, los productos no traen imagen y se devuelven datos que no hacen falta.</p>
+    </div>
+    <div class="code-editor" style="max-width:700px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">backend/routes/ordenes.js — GET / (mis órdenes)</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">router.<span class="sel">get</span>(<span class="str">"/"</span>, verificarToken, async (req, res) =&gt; {</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  try {</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">    <span class="prop">const</span> ordenes = await Orden</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">      .<span class="sel">find</span>({ usuario: req.usuario.id })</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">      .<span class="par-funcion">populate</span>(<span class="str">"productos.producto"</span>, <span class="str">"nombre precio imagen"</span>)</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">      .<span class="par-funcion">sort</span>({ createdAt: -1 });</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">    res.<span class="sel">json</span>(ordenes);</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>.populate("productos.producto", "nombre precio imagen")</td><td>Cada línea de la orden guarda solo el <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">_id</code> del producto. <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">populate</code> lo cambia por el producto de verdad, pero solo con esos tres campos. Se agrega <strong>imagen</strong></td></tr>
+          <tr><td>.sort({ createdAt: -1 })</td><td>Ordena por fecha de creación. El <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">-1</code> significa de la más nueva a la más vieja: arriba va tu compra de hoy</td></tr>
+          <tr><td>Se quita .populate("usuario", ...)</td><td>Eran tu nombre y tu correo, que el navegador ya conoce. <strong>Se envía solo lo que la página necesita</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box warning">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Un detalle que puede sorprender</div>
+      <div class="info-box-content">El precio que verás viene del producto <strong>de hoy</strong>, no del día de la compra. Si el producto sube de precio, el pedido viejo mostraría otro valor. Por eso la orden guarda su propio <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">total</code>: es el que se muestra.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 07 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 8 — UNA CARGA TIENE CUATRO CARAS ══════════ -->
+<section class="slide" id="caras">
+  <div class="slide-block-badge teoria">Concepto · Estados de una carga</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Pedir datos no es instantáneo: la página debe decir qué pasa</h2>
+      <p class="sec-desc">Entre pedir los datos y tenerlos, la página pasa por varias situaciones. Cada una necesita su propia pantalla, o la persona ve un espacio en blanco sin saber qué ocurre.</p>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4" /> <path d="m16.2 7.8 2.9-2.9" /> <path d="M18 12h4" /> <path d="m16.2 16.2 2.9 2.9" /> <path d="M12 18v4" /> <path d="m4.9 19.1 2.9-2.9" /> <path d="M2 12h4" /> <path d="m4.9 4.9 2.9 2.9" /></svg></div>
+        <div class="concepto-titulo">Cargando</div>
+        <div class="concepto-desc">La petición salió y no ha vuelto. Se muestra "Cargando tus pedidos…". <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">cargando</code> empieza en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">true</code>.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg></div>
+        <div class="concepto-titulo">Error</div>
+        <div class="concepto-desc">El servidor no respondió o respondió mal. Se explica qué revisar. Se guarda en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">error</code>.</div>
+      </div>
+      <div class="concepto-card amarillo">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12" /> <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /></svg></div>
+        <div class="concepto-titulo">Vacío</div>
+        <div class="concepto-desc">Todo salió bien, pero la lista tiene cero pedidos. Se invita a comprar. No es un error: es una cuenta nueva.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h.01" /> <path d="M3 12h.01" /> <path d="M3 19h.01" /> <path d="M8 5h13" /> <path d="M8 12h13" /> <path d="M8 19h13" /></svg></div>
+        <div class="concepto-titulo">Con pedidos</div>
+        <div class="concepto-desc">Llegó la lista. Se dibuja una tarjeta por pedido, con el más nuevo arriba.</div>
+      </div>
+    </div>
+    <div class="code-editor" style="max-width:620px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">MisPedidos.jsx — los tres estados</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> [<span class="par-dato">pedidos</span>, setPedidos] = <span class="sel">useState</span>([])</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code"><span class="prop">const</span> [<span class="par-dato">cargando</span>, setCargando] = <span class="sel">useState</span>(<span class="par-inicial">true</span>)</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code"><span class="prop">const</span> [<span class="par-dato">error</span>, setError] = <span class="sel">useState</span>(<span class="str">""</span>)</span></div>
+      </div>
+    </div>
+    <div class="info-box tip">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Cuatro pantallas con tres estados</div>
+      <div class="info-box-content">"Vacío" no necesita un estado propio: sale de preguntar <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">pedidos.length === 0</code>. <strong>No guardes lo que puedes calcular</strong>, como el total del carrito en S31.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 08 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 9 — PEDIR LOS PEDIDOS ══════════ -->
+<section class="slide" id="pedir">
+  <div class="slide-block-badge practica">Práctica · El efecto de MisPedidos</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Un efecto pide los pedidos, con el token en la cabecera</h2>
+      <p class="sec-desc">Es el patrón de S24, con un ingrediente nuevo: el <strong>token</strong>. La página lo manda en la cabecera <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">Authorization</code>, igual que Postman.</p>
+    </div>
+    <div class="code-editor" style="max-width:900px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">pages/MisPedidos.jsx — el efecto</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="sel">useEffect</span>(() =&gt; {</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  <span class="prop">if</span> (!usuario) <span class="prop">return</span></span></div>
+        <div class="cl"><span class="ln">3</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">  async <span class="prop">function</span> <span class="sel">cargar</span>() {</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">    try {</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">      <span class="prop">const</span> respuesta = await <span class="sel">fetch</span>(<span class="str">"http://localhost:3000/api/ordenes"</span>, {</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">        headers: { Authorization: <span class="str">"Bearer "</span> + localStorage.<span class="sel">getItem</span>(<span class="str">"token"</span>) },</span></div>
+        <div class="cl"><span class="ln">8</span><span class="code">      })</span></div>
+        <div class="cl"><span class="ln">9</span><span class="code">      <span class="prop">if</span> (respuesta.status === 401 || respuesta.status === 403) { ... }</span></div>
+        <div class="cl"><span class="ln">10</span><span class="code">      <span class="prop">if</span> (!respuesta.ok) throw new <span class="sel">Error</span>(<span class="str">"respuesta no válida"</span>)</span></div>
+        <div class="cl"><span class="ln">11</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">12</span><span class="code">      <span class="sel">setPedidos</span>(await respuesta.<span class="sel">json</span>())</span></div>
+        <div class="cl"><span class="ln">13</span><span class="code">    } catch {</span></div>
+        <div class="cl"><span class="ln">14</span><span class="code">      <span class="sel">setError</span>(<span class="str">"No se pudieron cargar tus pedidos..."</span>)</span></div>
+        <div class="cl"><span class="ln">15</span><span class="code">    } finally {</span></div>
+        <div class="cl"><span class="ln">16</span><span class="code">      <span class="sel">setCargando</span>(<span class="prop">false</span>)</span></div>
+        <div class="cl"><span class="ln">17</span><span class="code">    }</span></div>
+        <div class="cl"><span class="ln">18</span><span class="code">  }</span></div>
+        <div class="cl"><span class="ln">19</span><span class="code">  <span class="sel">cargar</span>()</span></div>
+        <div class="cl"><span class="ln">20</span><span class="code">}, [])</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>if (!usuario) return</td><td>Sin sesión no se le pide nada al servidor. La página mostrará un mensaje para ingresar</td></tr>
+          <tr><td>Authorization: "Bearer " + token</td><td>El token que guardó el Login. Es lo que el servidor abre para saber quién eres</td></tr>
+          <tr><td>respuesta.ok</td><td>Es <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">true</code> si el servidor respondió bien. Si no, se lanza un error para ir al <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">catch</code></td></tr>
+          <tr><td>catch</td><td>Atrapa el servidor apagado o cualquier otro fallo, y guarda un mensaje en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">error</code></td></tr>
+          <tr><td>finally</td><td>Se ejecuta <strong>siempre</strong>, haya salido bien o mal. Aquí apaga "cargando": en los dos casos la espera terminó</td></tr>
+          <tr><td>[]</td><td>Efecto de una sola vez: pide los pedidos al abrir la página</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 09 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 10 — LA LÍNEA DE TIEMPO: LOS DATOS ══════════ -->
+<section class="slide" id="timeline-logica">
+  <div class="slide-block-badge practica">Práctica · TimelinePedido</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Una lista de pasos y la posición del paso actual</h2>
+      <p class="sec-desc">Todo el componente se apoya en una lista ordenada, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PASOS</code>, y en una pregunta: <strong>¿en qué posición está el estado de este pedido?</strong></p>
+    </div>
+    <div class="code-editor" style="max-width:700px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">components/TimelinePedido.jsx — los datos</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> PASOS = [</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  { estado: <span class="str">"PAGO_CONFIRMADO"</span>, texto: <span class="str">"Pago confirmado"</span> },</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">  { estado: <span class="str">"procesando"</span>, texto: <span class="str">"Procesando"</span> },</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">  { estado: <span class="str">"enviado"</span>, texto: <span class="str">"Enviado"</span> },</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">  { estado: <span class="str">"entregado"</span>, texto: <span class="str">"Entregado"</span> },</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">]</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code"></span></div>
+        <div class="cl"><span class="ln">8</span><span class="code"><span class="prop">function</span> <span class="sel">TimelinePedido</span>({ <span class="par-dato">estado</span> }) {</span></div>
+        <div class="cl"><span class="ln">9</span><span class="code">  <span class="prop">const</span> actual = PASOS.<span class="par-funcion">findIndex</span>((paso) =&gt; paso.estado === estado)</span></div>
+        <div class="cl"><span class="ln">10</span><span class="code">  <span class="prop">if</span> (actual === -1) <span class="prop">return</span> <span class="prop">null</span></span></div>
+      </div>
+    </div>
+    <div class="useState-split">
+    <div class="code-editor" style="">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">TimelinePedido.jsx — la posición</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">const</span> <span class="par-dato">actual</span> = PASOS.<span class="par-funcion">findIndex</span>(</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  (<span class="par-dato">paso</span>) =&gt; paso.estado === <span class="par-dato">estado</span></span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">)</span></div>
+      </div>
+    </div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="useState-breakdown">
+          <div class="useState-breakdown-label">// las 3 piezas, en palabras normales</div>
+          <div class="useState-breakdown-line"><span class="par-dato">actual</span> = el número del paso donde está el pedido &nbsp;·&nbsp; <span class="par-dato">paso</span> = cada paso de la lista, uno por uno &nbsp;·&nbsp; <span class="par-dato">estado</span> = lo que recibe el componente, como PAGO_CONFIRMADO</div>
+          <div class="useState-breakdown-arrows"><span class="par-dato">↓</span>
+            <span class="par-dato">↓</span>
+            <span class="par-dato">↓</span></div>
+          <div class="useState-breakdown-plain">"<span class="par-dato">Recorre los pasos</span> y dime en <span class="par-dato">qué posición</span> está el que se llama igual que mi <span class="par-dato">estado</span>. Cuenta desde 0: si es el primero, 0; si es el tercero, 2; si no está, -1."</div>
+        </div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Si el estado es…</th><th>actual vale…</th><th>Qué dibuja</th></tr></thead>
+        <tbody>
+          <tr><td>PAGO_CONFIRMADO</td><td>0</td><td>Los cuatro pasos, con el primero como actual</td></tr>
+          <tr><td>enviado</td><td>2</td><td>Pago y proceso como hechos, "Enviado" como actual y "Entregado" pendiente</td></tr>
+          <tr><td>pendiente</td><td>-1</td><td>Nada: no es un paso del flujo normal, y el componente devuelve <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">null</code> ("no dibujes nada")</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 10 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 11 — LA LÍNEA DE TIEMPO: EL DIBUJO ══════════ -->
+<section class="slide" id="timeline-dibujo">
+  <div class="slide-block-badge practica">Práctica · TimelinePedido</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Cada paso se pinta según su posición frente al actual</h2>
+      <p class="sec-desc">Con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">actual</code> y la posición <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">i</code> de cada paso, basta una comparación para decidir su aspecto: <strong>antes del actual</strong> (hecho), <strong>el actual</strong> o <strong>después</strong> (pendiente).</p>
+    </div>
+    <div class="code-editor" style="max-width:700px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">components/TimelinePedido.jsx — el color de cada círculo</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">{PASOS.<span class="par-funcion">map</span>((paso, i) =&gt; (</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  &lt;<span class="tag">li</span> <span class="attr">key</span>={paso.estado}&gt;</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">    &lt;<span class="tag">span</span></span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">      <span class="attr">className</span>={</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">        i &lt; actual ? <span class="str">"bg-ink text-paper"</span></span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">        : i === actual ? <span class="str">"bg-accent text-paper"</span></span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">        : <span class="str">"bg-gray-200 text-gray-500"</span></span></div>
+        <div class="cl"><span class="ln">8</span><span class="code">      }</span></div>
+        <div class="cl"><span class="ln">9</span><span class="code">    &gt;</span></div>
+        <div class="cl"><span class="ln">10</span><span class="code">      {i &lt; actual ? <span class="str">"<svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>"</span> : i + 1}</span></div>
+        <div class="cl"><span class="ln">11</span><span class="code">    &lt;/<span class="tag">span</span>&gt;</span></div>
+        <div class="cl"><span class="ln">12</span><span class="code">    {paso.texto}</span></div>
+        <div class="cl"><span class="ln">13</span><span class="code">  &lt;/<span class="tag">li</span>&gt;</span></div>
+        <div class="cl"><span class="ln">14</span><span class="code">))}</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Condición</th><th>Es un paso…</th><th>Se ve…</th></tr></thead>
+        <tbody>
+          <tr><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">i &lt; actual</code></td><td>Ya hecho</td><td>Círculo negro con una marca <svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></td></tr>
+          <tr><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">i === actual</code></td><td>En el que va el pedido</td><td>Círculo naranja con su número y el texto en negrita</td></tr>
+          <tr><td>Cualquier otro</td><td>Pendiente</td><td>Círculo gris con su número</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" /> <path d="m14.5 12.5 2-2" /> <path d="m11.5 9.5 2-2" /> <path d="m8.5 6.5 2-2" /> <path d="m17.5 15.5 2-2" /></svg></div>
+        <div class="concepto-titulo">La barra entre pasos</div>
+        <div class="concepto-desc">Una línea que va de un círculo al anterior. Es negra si <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">i <= actual</code> y gris si todavía no se llega. Así la barra "avanza" con el pedido.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5" /> <path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12" /> <path d="m14 16-3 3 3 3" /> <path d="M8.293 13.596 7.196 9.5 3.1 10.598" /> <path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843" /> <path d="m13.378 9.633 4.096 1.098 1.097-4.096" /></svg></div>
+        <div class="concepto-titulo">Un componente, muchos pedidos</div>
+        <div class="concepto-desc">El mismo <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">TimelinePedido</code> se usa en cada tarjeta de la lista. Solo cambia la prop <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">estado</code>. En S34 el panel de administración lo reutilizará.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 11 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 12 — LA TARJETA DE CADA PEDIDO ══════════ -->
+<section class="slide" id="tarjeta">
+  <div class="slide-block-badge practica">Práctica · Una tarjeta por pedido</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Datos crudos que se convierten en texto legible</h2>
+      <p class="sec-desc">El servidor entrega fechas en formato técnico, ids largos y números sin puntos. La tarjeta los vuelve algo que una persona entiende.</p>
+    </div>
+    <div class="code-editor" style="max-width:760px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">pages/MisPedidos.jsx — dentro de cada tarjeta</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">&lt;<span class="tag">p</span>&gt;Pedido #{pedido._id.<span class="par-funcion">slice</span>(-6).<span class="par-funcion">toUpperCase</span>()}&lt;/<span class="tag">p</span>&gt;</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">&lt;<span class="tag">p</span>&gt;</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">  {new <span class="sel">Date</span>(pedido.createdAt).<span class="par-funcion">toLocaleDateString</span>(<span class="str">"es-CO"</span>, {</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">    year: <span class="str">"numeric"</span>, month: <span class="str">"long"</span>, day: <span class="str">"numeric"</span>,</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">  })}</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">&lt;/<span class="tag">p</span>&gt;</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">&lt;<span class="tag">span</span>&gt;{<span class="par-funcion">textoEstado</span>(pedido.estado)}&lt;/<span class="tag">span</span>&gt;</span></div>
+        <div class="cl"><span class="ln">8</span><span class="code">&lt;<span class="tag">p</span>&gt;Total {<span class="par-funcion">formatearPrecio</span>(pedido.total)}&lt;/<span class="tag">p</span>&gt;</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Parte</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>pedido._id.slice(-6).toUpperCase()</td><td>El id de MongoDB tiene 24 caracteres. <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">slice(-6)</code> toma los <strong>últimos seis</strong> y se pasan a mayúsculas: "Pedido #6DCEDD", un código corto para reconocerlo</td></tr>
+          <tr><td>toLocaleDateString("es-CO", {...})</td><td>Escribe la fecha como en Colombia: "12 de noviembre de 2026", en vez de <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">2026-11-12T15:00:00.000Z</code></td></tr>
+          <tr><td>textoEstado(pedido.estado)</td><td>Convierte <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PAGO_CONFIRMADO</code> en "Pago confirmado" reutilizando la lista <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PASOS</code>. Si el estado no está, muestra el texto tal cual</td></tr>
+          <tr><td>formatearPrecio(pedido.total)</td><td>La función de S31 (<code style="font-family:'JetBrains Mono',monospace;font-size:12px;">utils/precio.js</code>): de 17597000 a "$17.597.000"</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box tip">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Un producto que ya no existe</div>
+      <div class="info-box-content">Si borraran un producto de la base, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">populate</code> lo deja en <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">null</code>. La tarjeta pregunta <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">linea.producto ? ... : "Producto que ya no existe"</code> para no romperse al leer <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">null.nombre</code>.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 12 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 13 — SIN SESIÓN Y SESIÓN VENCIDA ══════════ -->
+<section class="slide" id="sesion">
+  <div class="slide-block-badge practica">Práctica · Casos de sesión</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Dos casos: nunca entró, o entró hace mucho</h2>
+      <p class="sec-desc">Una página de pedidos solo tiene sentido con sesión. Pero hay <strong>dos formas</strong> de no tenerla, y cada una pide una respuesta.</p>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Caso</th><th>Cómo lo detecta la página</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>Nunca inició sesión</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">usuario</code> es <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">null</code> en el contexto</td><td>Muestra "Inicia sesión para ver tus pedidos" y un botón a <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/login</code>, con el aviso y la vuelta a Mis Pedidos</td></tr>
+          <tr><td>Tenía sesión, pero el token venció</td><td>El servidor responde <strong>403</strong> ("token inválido o expirado"). Sin token, 401</td><td>Cierra la sesión, y lleva a <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/login</code> con "Tu sesión terminó..."</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-editor" style="max-width:780px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">pages/MisPedidos.jsx — token vencido</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code"><span class="prop">if</span> (respuesta.status === 401 || respuesta.status === 403) {</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  <span class="par-funcion">logout</span>()</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">  <span class="par-funcion">navegar</span>(<span class="str">"/login"</span>, {</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">    state: {</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">      aviso: <span class="str">"Tu sesión terminó. Ingresa de nuevo para ver tus pedidos"</span>,</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">      desde: <span class="str">"/mis-pedidos"</span>,</span></div>
+        <div class="cl"><span class="ln">7</span><span class="code">    },</span></div>
+        <div class="cl"><span class="ln">8</span><span class="code">  })</span></div>
+        <div class="cl"><span class="ln">9</span><span class="code">  <span class="prop">return</span></span></div>
+        <div class="cl"><span class="ln">10</span><span class="code">}</span></div>
+      </div>
+    </div>
+    <div class="info-box info">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Es el mismo viaje de S31</div>
+      <div class="info-box-content"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">aviso</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">desde</code> viajan en el <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">state</code> del router. El Login ya los lee: muestra el aviso y, al entrar, regresa a <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/mis-pedidos</code>. <strong>Por qué cerrar la sesión:</strong> con un token vencido, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">usuario</code> seguiría lleno y el Navbar diría "Hola" aunque ya no sirva.</div>
+    </div>
+    <div class="info-box teal">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg> Esto se generaliza en S35</div>
+      <div class="info-box-content">Hoy lo resolvemos en esta página. En S35 se convierte en un componente que protege <strong>todas</strong> las rutas privadas con un loading global y el manejo del token vencido en un solo lugar.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 13 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 14 — RUTA, NAVBAR Y ATAJO DESDE EL PAGO ══════════ -->
+<section class="slide" id="conectar">
+  <div class="slide-block-badge practica">Práctica · Conectar con la tienda</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Tres conexiones pequeñas</h2>
+      <p class="sec-desc">La página ya existe, pero nadie llega a ella. Faltan una ruta, un enlace en el menú y un atajo desde la pantalla de "Pago aprobado".</p>
+    </div>
+    <div class="code-editor" style="max-width:700px;margin:0 auto 10px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">App.jsx — la ruta</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">&lt;<span class="tag">Route</span> <span class="attr">path</span>=<span class="str">"/pago/:referencia"</span> <span class="attr">element</span>={&lt;<span class="tag">PagoResultado</span> /&gt;} /&gt;</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">&lt;<span class="tag">Route</span> <span class="attr">path</span>=<span class="str">"/mis-pedidos"</span> <span class="attr">element</span>={&lt;<span class="par-funcion">MisPedidos</span> /&gt;} /&gt;</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">&lt;<span class="tag">Route</span> <span class="attr">path</span>=<span class="str">"*"</span> <span class="attr">element</span>={&lt;<span class="tag">NotFound</span> /&gt;} /&gt;</span></div>
+      </div>
+    </div>
+    <div class="code-editor" style="max-width:700px;margin:0 auto 10px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">Navbar.jsx — solo con sesión</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">{usuario ? (</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  &lt;<span class="tag">div</span> <span class="attr">className</span>=<span class="str">"hidden md:flex items-center gap-4"</span>&gt;</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">    &lt;<span class="tag">Link</span> <span class="attr">to</span>=<span class="str">"/mis-pedidos"</span>&gt;Mis pedidos&lt;/<span class="tag">Link</span>&gt;</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">    &lt;<span class="tag">span</span>&gt;Hola, {usuario}&lt;/<span class="tag">span</span>&gt;</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">    ...</span></div>
+      </div>
+    </div>
+    <div class="code-editor" style="max-width:700px;margin:0 auto 14px;">
+      <div class="code-editor-header">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="code-editor-title">PagoResultado.jsx — después de pagar</div>
+      </div>
+      <div class="code-editor-body">
+        <div class="cl"><span class="ln">1</span><span class="code">{estado === <span class="str">"APPROVED"</span> &amp;&amp; (</span></div>
+        <div class="cl"><span class="ln">2</span><span class="code">  &lt;<span class="tag">div</span> <span class="attr">className</span>=<span class="str">"flex flex-wrap justify-center gap-3"</span>&gt;</span></div>
+        <div class="cl"><span class="ln">3</span><span class="code">    &lt;<span class="tag">Link</span> <span class="attr">to</span>=<span class="str">"/mis-pedidos"</span>&gt;Ver mis pedidos&lt;/<span class="tag">Link</span>&gt;</span></div>
+        <div class="cl"><span class="ln">4</span><span class="code">    &lt;<span class="tag">Link</span> <span class="attr">to</span>=<span class="str">"/productos"</span>&gt;Seguir comprando&lt;/<span class="tag">Link</span>&gt;</span></div>
+        <div class="cl"><span class="ln">5</span><span class="code">  &lt;/<span class="tag">div</span>&gt;</span></div>
+        <div class="cl"><span class="ln">6</span><span class="code">)}</span></div>
+      </div>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Cambio</th><th>Para qué</th></tr></thead>
+        <tbody>
+          <tr><td>Ruta /mis-pedidos</td><td>Antes de la comodín <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">*</code>, como siempre</td></tr>
+          <tr><td>Enlace en el Navbar</td><td>Aparece <strong>solo con sesión</strong>, en el escritorio y en el menú del celular. Sin sesión, la persona no ve un enlace que no le sirve</td></tr>
+          <tr><td>Atajo en PagoResultado</td><td>El recorrido completo queda cerrado: pagar, ver "Pago aprobado" y, con un clic, ver el pedido recién creado</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 14 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 15 — PRERREQUISITOS ══════════ -->
+<section class="slide" id="prerrequisitos">
+  <div class="slide-block-badge contexto">Antes de empezar</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Prerrequisitos</h2>
+      <p class="sec-desc">No se instala nada. Pero hacen falta datos para ver algo en pantalla.</p>
+    </div>
+    <div class="concepto-grid">
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" /> <path d="M12 22V12" /> <polyline points="3.29 7 12 12 20.71 7" /> <path d="m7.5 4.27 9 5.15" /></svg></div>
+        <div class="concepto-titulo">Al menos una orden pagada</div>
+        <div class="concepto-desc">Las órdenes salen de los pagos de la S32. Si no tienes ninguna, paga un producto con la tarjeta <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">4242 4242 4242 4242</code> antes de empezar.</div>
+      </div>
+      <div class="concepto-card naranja">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="8" x="2" y="2" rx="2" ry="2" /> <rect width="20" height="8" x="2" y="14" rx="2" ry="2" /> <line x1="6" x2="6.01" y1="6" y2="6" /> <line x1="6" x2="6.01" y1="18" y2="18" /></svg></div>
+        <div class="concepto-titulo">Dos servidores a la vez</div>
+        <div class="concepto-desc"><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">backend/</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">frontend-react/</code>, cada uno con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">npm run dev</code>. Esta vez el backend es indispensable: sin él no hay pedidos que mostrar.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></svg></div>
+        <div class="concepto-titulo">Compass abierto</div>
+        <div class="concepto-desc">Hoy lo usas para ver tus órdenes y para <strong>cambiar el estado de una</strong> y ver cómo avanza la línea de tiempo. Es lo que hará el administrador desde la S34.</div>
+      </div>
+      <div class="concepto-card verde">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></div>
+        <div class="concepto-titulo">S32 funcionando</div>
+        <div class="concepto-desc">El pago aprobado, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PagoResultado</code> y la estructura con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">pages/</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">components/</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">context/</code> y <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">utils/</code>. Hoy se agregan dos archivos nuevos.</div>
+      </div>
+    </div>
+    <div class="info-box tip">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <path d="M16 3.128a4 4 0 0 1 0 7.744" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <circle cx="9" cy="7" r="4" /></svg> Una segunda cuenta ayuda mucho</div>
+      <div class="info-box-content">Para comprobar que cada persona ve solo lo suyo, conviene una segunda cuenta sin pedidos. Las cuentas de prueba de S30 sirven.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 15 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 16 — LOS CONCEPTOS NUEVOS DE HOY ══════════ -->
+<section class="slide" id="resumen">
+  <div class="slide-block-badge contexto">Referencia rápida</div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">Los conceptos nuevos de hoy</h2>
+      <p class="sec-desc">Todo lo de S19 a S32 sigue funcionando igual. Esto es lo que se suma.</p>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Concepto</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><td>El token define quién eres</td><td>El servidor saca la identidad del token, nunca de un dato que mande el navegador. Por eso cada quien ve solo sus pedidos</td></tr>
+          <tr><td>populate y sort</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">populate</code> cambia un id guardado por el documento completo; <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">sort({ createdAt: -1 })</code> pone lo más nuevo primero</td></tr>
+          <tr><td>Estados de una carga</td><td>Cargando, error, vacío y con datos: cada situación tiene su pantalla. Vacío se calcula, no se guarda</td></tr>
+          <tr><td>try / catch / finally</td><td><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">finally</code> se ejecuta siempre: ideal para apagar "cargando" tanto si salió bien como mal</td></tr>
+          <tr><td>findIndex</td><td>Devuelve la posición del primer elemento que cumple una condición, o <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">-1</code> si ninguno</td></tr>
+          <tr><td>Un componente según su posición</td><td>Comparar <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">i</code> con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">actual</code> decide el aspecto de cada paso: hecho, actual o pendiente</td></tr>
+          <tr><td>Retornar null</td><td>Un componente que devuelve <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">null</code> no dibuja nada. Sirve para casos que no aplican</td></tr>
+          <tr><td>401 frente a 403</td><td>401: no hay token. 403: el token no sirve (falso o vencido). En ambos, la página cierra la sesión y manda a ingresar</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 16 / 17</div>
+</section>
+
+<!-- ══════════ SLIDE 17 — ENTREGABLE Y CIERRE ══════════ -->
+<section class="slide" id="entregable">
+  <div class="slide-block-badge contexto">Cierre · Sesión 33</div>
+  <div class="bg-dots"></div>
+  <div class="slide-inner">
+    <div class="sec-header">
+      <h2 class="sec-titulo">¡Empezamos!</h2>
+    </div>
+    <div class="entregable-box">
+      <div class="entregable-title">Criterios de evaluación</div>
+      <ul class="entregable-list">
+        <li><code style="font-family:'JetBrains Mono',monospace;font-size:12px;">GET /api/ordenes</code> devuelve solo las órdenes de quien trae el token, las más nuevas primero y con nombre, precio e imagen de cada producto</li>
+        <li>Con dos cuentas distintas en Postman, cada una recibe solo sus pedidos; sin token responde 401 y con un token falso, 403</li>
+        <li>Existe <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">TimelinePedido</code>: marca como hechos los pasos anteriores, como actual el de ahora, y no dibuja nada para un estado fuera del flujo</li>
+        <li>La ruta <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">/mis-pedidos</code> muestra una tarjeta por pedido con código, fecha en español, estado, productos con imagen y cantidad, línea de tiempo y total con puntos</li>
+        <li>La página tiene respuesta para cuatro casos: cargando, error de conexión, cuenta sin pedidos y lista con pedidos</li>
+        <li>Sin sesión pide ingresar; con un token vencido cierra la sesión y lleva al login con aviso, y al entrar vuelve a Mis Pedidos</li>
+        <li>Al cambiar el estado de una orden en Compass, la línea de tiempo avanza al recargar</li>
+        <li>El enlace "Mis pedidos" aparece solo con sesión, y "Pago aprobado" ofrece "Ver mis pedidos"</li>
+        <li>Sin errores en consola ni en las terminales, y sin scroll horizontal a 390px de ancho</li>
+      </ul>
+    </div>
+    <div class="concepto-grid" style="margin-top:24px;grid-template-columns:minmax(240px,520px);">
+      <div class="concepto-card azul">
+        <div class="concepto-icon"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16" /> <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" /></svg></div>
+        <div class="concepto-titulo">02 — Guía paso a paso</div>
+        <div class="concepto-desc">La parte <strong>obligatoria</strong> de hoy: la ruta del servidor, la línea de tiempo, la página Mis Pedidos y su conexión con la tienda.</div>
+        <a href="../02_GUIA_MIGRAR_MIS_PEDIDOS/index.html" style="display:inline-block;margin-top:10px;color:#1e40af;font-weight:700;text-decoration:underline;font-size:13px;">Abrir guía →</a>
+      </div>
+    </div>
+    <div class="info-box teal">
+      <div class="info-box-title"><svg class="ic" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /> <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /> <path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg> Próxima sesión: S34</div>
+      <div class="info-box-content">Migrar Perfil y Admin: la página de perfil con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">GET /api/auth/perfil</code> y un panel de administración que lista <strong>todas</strong> las órdenes y cambia su estado con <code style="font-family:'JetBrains Mono',monospace;font-size:12px;">PATCH /api/ordenes/:id/estado</code>. El cambio de estado que hoy haces a mano en Compass lo hará el administrador desde la página.</div>
+    </div>
+  </div>
+  <div class="slide-num-badge">SLIDE 17 / 17</div>
+</section>
+
+</main>
+
+<script>
+// Alternar sidebar (colapsado en escritorio, drawer en móvil)
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main-content');
+  const toggleBtn = document.getElementById('floating-toggle');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (window.innerWidth <= 1024) {
+    const abierto = sidebar.classList.toggle('open');
+    backdrop.classList.toggle('active', abierto);
+  } else {
+    const colapsado = sidebar.classList.toggle('collapsed');
+    main.classList.toggle('expanded', colapsado);
+    toggleBtn.classList.toggle('visible', colapsado);
+  }
+}
+
+// Cerrar el drawer al elegir un slide en móvil
+document.querySelectorAll('.sidebar .nav-link').forEach((link) => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 1024) {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarBackdrop').classList.remove('active');
+    }
+  });
+});
+
+// ScrollSpy: marca en el menú el slide visible
+const secciones = document.querySelectorAll('section.slide[id]');
+const enlaces = document.querySelectorAll('.sidebar .nav-link');
+const observador = new IntersectionObserver((entradas) => {
+  entradas.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const id = e.target.id;
+    enlaces.forEach((l) => {
+      const activo = l.getAttribute('href') === '#' + id;
+      l.classList.toggle('active', activo);
+      if (activo) l.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  });
+}, { root: null, rootMargin: '-15% 0px -65% 0px', threshold: 0 });
+secciones.forEach((s) => observador.observe(s));
+</script>
+</body>
+</html>
